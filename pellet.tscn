@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bnghun6vkgf5v" path="res://assets/pellet.png" id="1_x86yg"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_x2y43"]
-radius = 3.0
+radius = 1.0
 
 [node name="Pellet" type="Node2D"]
 
@@ -11,7 +11,7 @@ radius = 3.0
 texture = ExtResource("1_x86yg")
 
 [node name="Hitbox" type="Area2D" parent="."]
-collision_layer = 2
+collision_layer = 4
 collision_mask = 0
 
 [node name="Shape" type="CollisionShape2D" parent="Hitbox"]

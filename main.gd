@@ -5,27 +5,37 @@ func _ready():
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		var grid_index = Global.to_grid_index(event.position)
+		var grid_index = Global.to_grid_position(event.position)
 		var pos = Global.to_global_position(grid_index)
-		if Global.is_in_grid(event.position) and $Pellets.get_child_count() < Global.MAX_PELLETS:
+		if Global.is_global_pos_in_grid(event.position) and $Pellets.get_child_count() < Global.MAX_PELLETS:
 			$PelletPreview.position = pos
 			$PelletPreview.visible = true
 		else:
 			$PelletPreview.visible = false
 	elif event is InputEventMouseButton:
-		var grid_index = Global.to_grid_index(event.position)
-		var pos = Global.to_global_position(grid_index)
-		if Global.is_in_grid(event.position):
-			var empty := true
+		var grid_pos = Global.to_grid_position(event.position)
+		if Global.is_grid_pos_in_grid(grid_pos):
+			# check pellet limit
+			if $Pellets.get_child_count() >= Global.MAX_PELLETS:
+				return;
+			
+			# make sure snake isn't here
+			if Global.to_grid_position($Snake.position) == grid_pos:
+				return;
+			
+			# make sure there isn't already a pellet here
 			for child in $Pellets.get_children():
-				if child.position == pos:
-					empty = false
-					break
-			if empty == true and $Pellets.get_child_count() < Global.MAX_PELLETS:
-				var new_pellet = load("res://pellet.tscn").instantiate()
-				new_pellet.position = pos
-				$Pellets.add_child(new_pellet)
+				if Global.to_grid_position(child.position) == grid_pos:
+					return
+			
+			var new_pellet = load("res://pellet.tscn").instantiate()
+			new_pellet.position = Global.to_global_position(grid_pos)
+			$Pellets.add_child(new_pellet)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	pass
+
+
+func _on_snake_dead():
+	print("You lose!")

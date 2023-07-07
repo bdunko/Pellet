@@ -5,7 +5,7 @@ const CELL_SIZE := Vector2(10, 10)
 const GRID_SIZE := Vector2(16, 16)
 const MAX_PELLETS := 5
 
-func to_grid_index(pos: Vector2) -> Vector2:
+func to_grid_position(pos: Vector2) -> Vector2:
 	pos -= GRID_OFFSET
 	var x = int(pos.x / CELL_SIZE.x)
 	var y = int(pos.y / CELL_SIZE.y)
@@ -24,6 +24,9 @@ func to_global_position(grid_index: Vector2) -> Vector2:
 	pos += CELL_SIZE/2
 	return pos
 
-func is_in_grid(pos: Vector2) -> bool:
-	var indices := Global.to_grid_index(pos)
+func is_grid_pos_in_grid(grid_pos: Vector2) -> bool:
+	return grid_pos.x >= 0 and grid_pos.y >= 0 and grid_pos.x < GRID_SIZE.x and grid_pos.y < GRID_SIZE.y
+
+func is_global_pos_in_grid(pos: Vector2) -> bool:
+	var indices := Global.to_grid_position(pos)
 	return indices.x >= 0 and indices.y >= 0 and indices.x < GRID_SIZE.x and indices.y < GRID_SIZE.y
