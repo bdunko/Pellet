@@ -36,6 +36,6 @@ texture = ExtResource("6_b0t2h")
 [node name="Pellets" type="Node" parent="."]
 
 [node name="Snake" parent="." instance=ExtResource("7_ertux")]
-position = Vector2(145, 73)
+position = Vector2(165, 153)
 
 [connection signal="dead" from="Snake" to="." method="_on_snake_dead"]
