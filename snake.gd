@@ -6,6 +6,24 @@ func _move():
 	# get my grid position
 	var grid_pos = Global.to_grid_position(position)
 	
+	var pellets = get_parent().find_child("Pellets")
+	var closest_distance = 999
+	var closest_pellet = null
+	for pellet in pellets.get_children():
+		var pellet_grid_pos = Global.to_grid_position(pellet.position)
+		print(pellet_grid_pos)
+		
+		var x_distance = abs(grid_pos.x - pellet_grid_pos.x)
+		var y_distance = abs(grid_pos.y - pellet_grid_pos.y)
+		var total_distance = x_distance + y_distance
+
+		if total_distance < closest_distance:
+			closest_distance = total_distance
+			closest_pellet = pellet
+
+
+	
+	
 	# move up by 1 (for now)
 	# TOOD - move towards nearest pellet
 	grid_pos.y -= 1
