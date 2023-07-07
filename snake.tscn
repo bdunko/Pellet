@@ -15,7 +15,10 @@ height = 14.0
 script = ExtResource("1_nwbnq")
 
 [node name="HeadSprite" type="Sprite2D" parent="."]
+z_index = 999
 texture = ExtResource("1_1n7ny")
+
+[node name="Segments" type="Node" parent="."]
 
 [node name="PelletHitbox" type="Area2D" parent="."]
 collision_mask = 6
