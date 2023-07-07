@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://c7204os4in616"]
+[gd_scene load_steps=8 format=3 uid="uid://c7204os4in616"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
 [ext_resource type="Texture2D" uid="uid://dxjyhf8br5g6w" path="res://assets/sky_background.png" id="1_pxdvb"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://covc5ai74la8j" path="res://assets/text/score.png" id="3_pc4lv"]
 [ext_resource type="Texture2D" uid="uid://fdooebg583my" path="res://assets/grid.png" id="3_q3otb"]
 [ext_resource type="Texture2D" uid="uid://bnghun6vkgf5v" path="res://assets/pellet.png" id="6_b0t2h"]
+[ext_resource type="PackedScene" uid="uid://de227doiyv2qb" path="res://snake.tscn" id="7_ertux"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_eks3d")
@@ -33,3 +34,5 @@ self_modulate = Color(1, 1, 1, 0.505882)
 texture = ExtResource("6_b0t2h")
 
 [node name="Pellets" type="Node" parent="."]
+
+[node name="Snake" parent="." instance=ExtResource("7_ertux")]
