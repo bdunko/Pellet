@@ -23,6 +23,15 @@ window/size/window_width_override=1920
 window/size/window_height_override=1080
 window/stretch/scale=6.0
 
+[layer_names]
+
+2d_physics/layer_1="Snake Head"
+2d_physics/layer_2="Snake Body"
+2d_physics/layer_3="Pellets"
+2d_physics/layer_4="Bugs"
+2d_physics/layer_5="Bullets"
+2d_physics/layer_6="Walls"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

@@ -3,6 +3,7 @@ extends Node2D
 const GRID_OFFSET := Vector2(80, 10)
 const CELL_SIZE := Vector2(10, 10)
 const GRID_SIZE := Vector2(16, 16)
+const MAX_PELLETS := 5
 
 func _ready():
 	$PelletPreview.visible = false
@@ -32,19 +33,26 @@ func _is_in_grid(pos: Vector2) -> bool:
 
 func _input(event):
 	if event is InputEventMouseMotion:
-		if _is_in_grid(event.position):
-			var grid_index = _to_grid_index(event.position)
-			var pos = _to_position(grid_index)
+		var grid_index = _to_grid_index(event.position)
+		var pos = _to_position(grid_index)
+		if _is_in_grid(event.position) and $Pellets.get_child_count() < MAX_PELLETS:
 			$PelletPreview.position = pos
 			$PelletPreview.visible = true
 		else:
 			$PelletPreview.visible = false
-		
-		print("Mouse Click/Unclick at: ", event.position)
+	elif event is InputEventMouseButton:
 		var grid_index = _to_grid_index(event.position)
-		print("Grid: ", grid_index)
-		print("In grid?: ", _is_in_grid(event.position))
-		print("Back to pos: ", _to_position(grid_index))
+		var pos = _to_position(grid_index)
+		if _is_in_grid(event.position):
+			var empty := true
+			for child in $Pellets.get_children():
+				if child.position == pos:
+					empty = false
+					break
+			if empty == true and $Pellets.get_child_count() < MAX_PELLETS:
+				var new_pellet = load("res://pellet.tscn").instantiate()
+				new_pellet.position = pos
+				$Pellets.add_child(new_pellet)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
