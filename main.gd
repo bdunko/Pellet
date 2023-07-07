@@ -23,6 +23,7 @@ func _to_grid_index(pos: Vector2) -> Vector2:
 func _to_position(grid_index: Vector2) -> Vector2:
 	var pos = grid_index * 10
 	pos += GRID_OFFSET
+	pos += CELL_SIZE/2
 	return pos
 
 func _is_in_grid(pos: Vector2) -> bool:

@@ -31,4 +31,3 @@ centered = false
 [node name="PelletPreview" type="Sprite2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.505882)
 texture = ExtResource("6_b0t2h")
-centered = false
