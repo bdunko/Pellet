@@ -1,11 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://c7204os4in616"]
+[gd_scene load_steps=7 format=3 uid="uid://c7204os4in616"]
 
+[ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
 [ext_resource type="Texture2D" uid="uid://dxjyhf8br5g6w" path="res://assets/sky_background.png" id="1_pxdvb"]
 [ext_resource type="Texture2D" uid="uid://cfnee42a60ou6" path="res://assets/board.png" id="2_ff65i"]
 [ext_resource type="Texture2D" uid="uid://covc5ai74la8j" path="res://assets/text/score.png" id="3_pc4lv"]
 [ext_resource type="Texture2D" uid="uid://fdooebg583my" path="res://assets/grid.png" id="3_q3otb"]
+[ext_resource type="Texture2D" uid="uid://bnghun6vkgf5v" path="res://assets/pellet.png" id="6_b0t2h"]
 
 [node name="Main" type="Node2D"]
+script = ExtResource("1_eks3d")
 
 [node name="Sky" type="Sprite2D" parent="."]
 texture = ExtResource("1_pxdvb")
@@ -23,4 +26,9 @@ centered = false
 [node name="Grid" type="Sprite2D" parent="."]
 position = Vector2(80, 10)
 texture = ExtResource("3_q3otb")
+centered = false
+
+[node name="PelletPreview" type="Sprite2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.505882)
+texture = ExtResource("6_b0t2h")
 centered = false
