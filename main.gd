@@ -24,7 +24,7 @@ var SCORE_TO_COMMENTARY = {
 }
 
 #                    0,  1   2   3   4   5   6   7   8   9   10  11, 12
-const LEVEL_TIMES = [-1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+const LEVEL_TIMES = [-1, 5, 20, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 40
 
@@ -38,7 +38,7 @@ var grid_color= GRID_COLORS[1]
 const NEXT_LEVEL_TIPS = [
 	"null",
 	"null", 
-	"Avoid Beetle Bullets!", 
+	"Avoid Beetle Bullets!\n(Snake eats bugs.)", 
 	"Speed up!",
 	"Watch for Dragonflies!",
 	"Snakes hate poisonous Spiders!",
