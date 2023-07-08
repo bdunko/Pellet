@@ -38,13 +38,14 @@ func _process(delta):
 
 func _on_shot_timer_timeout():
 	if not disabled:
-		var bullet = BULLET.instantiate()
+		#var bullet = BULLET.instantiate()
 		
-		var pellet_pos = get_parent().get_parent().find_child("Pellet").position
-		var direction = Vector2(pellet_pos.x - position.x, pellet_pos.y - position.y).normalized()
-		bullet.setup(position, direction, BULLET_SPEED, self)
-		bullet.position = position
-		get_parent().get_parent().find_child("Bullets").add_child(bullet)
+		#var pellet_pos = get_parent().get_parent().find_child("Pellet").position
+		#var direction = Vector2(pellet_pos.x - position.x, pellet_pos.y - position.y).normalized()
+		#bullet.setup(position, direction, BULLET_SPEED, self)
+		#bullet.position = position
+		#get_parent().get_parent().find_child("Bullets").add_child(bullet)
+		pass # removed shooting
 
 func disable():
 	disabled = true

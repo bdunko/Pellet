@@ -156,7 +156,14 @@ func _grow_snake():
 	new_segment.visible = false # initially, hide segment so it appears to 'pop in' next time snake moves
 	$Segments.add_child(new_segment)
 
+func _shrink_snake():
+	if $Segments.get_child_count() != 0:
+		var removed_seg = $Segments.get_child($Segments.get_child_count() - 1)
+		$Segments.remove_child(removed_seg)
+		removed_seg.queue_free()
+
 func reset():
+	$HeadSprite.modulate = BASE_COLOR
 	_enabled = false
 	# free segs
 	for segment in $Segments.get_children():
@@ -179,7 +186,38 @@ func disable():
 func enable():
 	_enabled = true
 
+const POISON_SEGMENTS_REMOVED = 5
 func _on_bug_body_entered(body):
+	if body.has_method("poison"): # terrible $HACK$
+		for i in range(0, POISON_SEGMENTS_REMOVED):
+			_shrink_snake()
+			$PoisonTimer.start()
+	else:
+		$YumTimer.start()
+	
 	call_deferred("_grow_snake")
 	body.queue_free()
 	emit_signal("ate_bug")
+
+const POISON_COLOR = Color(109/255.0, 78/255.0, 255/255.0)
+const YUM_COLOR = Color(79/255.0, 255/255.0, 67/255.0)
+const BASE_COLOR = Color(255/255.0, 133/255.0, 0/255.0)
+
+func _process(delta):
+	if not $PoisonTimer.is_stopped():
+		var color = Color(lerp($HeadSprite.modulate.r, POISON_COLOR.r, 8 * delta), lerp($HeadSprite.modulate.g, POISON_COLOR.g, 10 * delta), lerp($HeadSprite.modulate.b, POISON_COLOR.b, 10 * delta))
+		set_color(color)
+	elif not $YumTimer.is_stopped():
+		var color = Color(lerp($HeadSprite.modulate.r, YUM_COLOR.r, 8 * delta), lerp($HeadSprite.modulate.g, YUM_COLOR.g, 10 * delta), lerp($HeadSprite.modulate.b, YUM_COLOR.b, 10 * delta))
+		set_color(color)
+	else:
+		var color = Color(lerp($HeadSprite.modulate.r, BASE_COLOR.r, 8 * delta), lerp($HeadSprite.modulate.g, BASE_COLOR.g, 10 * delta), lerp($HeadSprite.modulate.b, BASE_COLOR.b, 10 * delta))
+		set_color(color)
+
+func set_color(color):
+	$HeadSprite.modulate = color
+	for seg in $Segments.get_children():
+		seg.modulate = color
+
+func _ready():
+	$HeadSprite.modulate = BASE_COLOR

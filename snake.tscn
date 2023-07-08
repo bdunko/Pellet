@@ -22,10 +22,9 @@ texture = ExtResource("1_1n7ny")
 [node name="Segments" type="Node" parent="."]
 
 [node name="PelletHitbox" type="Area2D" parent="."]
-collision_mask = 6
+collision_mask = 4
 
 [node name="Shape" type="CollisionShape2D" parent="PelletHitbox"]
-position = Vector2(0, 1)
 shape = SubResource("CapsuleShape2D_x1c0t")
 
 [node name="EnemyHitbox" type="Area2D" parent="."]
@@ -37,6 +36,14 @@ shape = SubResource("CapsuleShape2D_pvxa7")
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.25
 autostart = true
+
+[node name="PoisonTimer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
+[node name="YumTimer" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
 
 [connection signal="area_entered" from="PelletHitbox" to="." method="_on_pellet_hitbox_area_entered"]
 [connection signal="area_entered" from="EnemyHitbox" to="." method="_on_bug_hitbox_area_entered"]

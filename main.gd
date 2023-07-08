@@ -26,11 +26,12 @@ var SCORE_TO_COMMENTARY = {
 }
 
 #                    0,  1   2   3   4   5   6   7   8   9   10  11, 12
+#                    -1  5  15  15 15 20 20 20 25 25 25 30 30
 const LEVEL_TIMES = [-1, 5, 15, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 40
 
-var GRID_COLORS = [null, Color(99/255.0, 213/255.0, 51/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
+var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
 Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
 Color(231/255.0, 121/255.0, 41/255.0), Color(100/255.0, 28/255.0, 55/255.0), Color(56/255.0, 134/255.0, 170/255.0), 
 Color(106/255.0, 88/255.0, 225/255.0), Color(255/255.0, 190/255.0, 62/255.0), Color(0, 0, 0)]
@@ -62,7 +63,7 @@ const MAX_SPAWN_COUNT = 9
 var spawn_count = DEFAULT_SPAWN_COUNT
 var enemy_pool = []
 const BEETLE = preload("res://beetle.tscn")
-const BEETLE_SPAWN = SpawnMode.GRID
+const BEETLE_SPAWN = SpawnMode.GRID_NO_BORDER
 const DRAGONFLY = preload("res://dragonfly.tscn")
 const DRAGONFLY_SPAWN = SpawnMode.GRID
 # SPIDER
@@ -75,14 +76,19 @@ const ANT_SPAWN = SpawnMode.FRAME
 const BUTTERFLY_SPAWN = SpawnMode.GRID
 
 enum SpawnMode {
-	GRID, FRAME, BOTTOM
+	GRID, GRID_NO_BORDER, FRAME, BOTTOM
 }
 
 func _spawn_enemy(enemy, spawnmode):
-	if spawnmode == SpawnMode.GRID:
+	if spawnmode == SpawnMode.GRID or spawnmode == SpawnMode.GRID_NO_BORDER:
 		var tries = 0
 		while tries < 25:
+			tries += 1
 			var rand_pos = Global.rand_grid_pos()
+			# if border and GRID NO BETTER, reject
+			if spawnmode == SpawnMode.GRID_NO_BORDER and (rand_pos.x == 0 or rand_pos.x == Global.GRID_SIZE.x-1 or rand_pos.y == 0 or rand_pos.y == Global.GRID_SIZE.y-1):
+				continue
+			
 			# if too close to player, reject
 			var pellet_grid_pos = Global.to_grid_position($Pellet.position)
 			var total_dist = abs(pellet_grid_pos.x - rand_pos.x) + abs(pellet_grid_pos.y - rand_pos.y)
@@ -93,13 +99,19 @@ func _spawn_enemy(enemy, spawnmode):
 			if not is_grid_pos_full(rand_pos):
 				var bug = enemy.instantiate()
 				bug.position = Global.to_global_position(rand_pos)
-				$Bugs.add_child(bug)
+				queued_bugs.append(bug)
+				call_deferred("_spawn_queued_bugs")
 				return
-			tries += 1
 	elif spawnmode == SpawnMode.FRAME:
 		pass
 	elif spawnmode == SpawnMode.BOTTOM:
 		pass
+
+var queued_bugs = []
+func _spawn_queued_bugs():
+	for bug in queued_bugs:
+		$Bugs.add_child(bug)
+	queued_bugs.clear()
 
 func _spawn_rand_enemies(num):
 	for i in range(0, num):
