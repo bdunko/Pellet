@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drio8tpg4fllp"
-path="res://.godot/imported/food_cicada.png-75b0fad20d102b0a74ca7a34b72a3b43.ctex"
+uid="uid://dj6vng1f8ymcl"
+path="res://.godot/imported/enemy_hornet.png-f20976df4b12e733b5c7082478b7d4aa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bugs/food_cicada.png"
-dest_files=["res://.godot/imported/food_cicada.png-75b0fad20d102b0a74ca7a34b72a3b43.ctex"]
+source_file="res://assets/bugs/enemy_hornet.png"
+dest_files=["res://.godot/imported/enemy_hornet.png-f20976df4b12e733b5c7082478b7d4aa.ctex"]
 
 [params]
 

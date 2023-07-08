@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cil6e615vp5ru"
-path="res://.godot/imported/food_beetle.png-232e727c26033ae2173c83b56a9618ab.ctex"
+uid="uid://2akd0l042x80"
+path="res://.godot/imported/poison_spider.png-54e1c47bd519a9ff5b7fee405f34ad3c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bugs/food_beetle.png"
-dest_files=["res://.godot/imported/food_beetle.png-232e727c26033ae2173c83b56a9618ab.ctex"]
+source_file="res://assets/bugs/poison_spider.png"
+dest_files=["res://.godot/imported/poison_spider.png-54e1c47bd519a9ff5b7fee405f34ad3c.ctex"]
 
 [params]
 

@@ -59,7 +59,7 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 		
 		while to_check.size() != 0:
 			var current_check: Pair = to_check.pop_front()
-			if not Global.is_grid_pos_in_grid(current_check.pos) or _is_snake_at(current_check.pos) or current_check.pos in checked: # can't go this way
+			if not Global.is_grid_pos_in_grid(current_check.pos) or is_snake_at(current_check.pos) or current_check.pos in checked: # can't go this way
 				continue
 			
 			checked.append(current_check.pos)
@@ -100,7 +100,6 @@ func _move():
 		
 		# translate back to global and set position
 		position = Global.to_global_position(grid_pos)
-		#position.y -= 1 # move up a bit more for the tongue
 		
 		# move each segment to position of segment in front of it, from back to front
 		var segments = $Segments.get_children()
@@ -127,7 +126,9 @@ func _move():
 		# fix head's rotation
 		rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction]
 
-func _is_snake_at(grid_pos: Vector2):
+func is_snake_at(grid_pos: Vector2):
+	if grid_pos == Global.to_grid_position(position):
+		return true
 	for segment in $Segments.get_children():
 		if grid_pos == Global.to_grid_position(segment.position):
 			return true

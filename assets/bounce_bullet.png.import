@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://2akd0l042x80"
-path="res://.godot/imported/poison_bug.png-f0a02d641f53241e8b83a992ebfca322.ctex"
+uid="uid://cndbuk03udp72"
+path="res://.godot/imported/bounce_bullet.png-88c21f89e1e6d70b7a0df2a628f445b5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bugs/poison_bug.png"
-dest_files=["res://.godot/imported/poison_bug.png-f0a02d641f53241e8b83a992ebfca322.ctex"]
+source_file="res://assets/bounce_bullet.png"
+dest_files=["res://.godot/imported/bounce_bullet.png-88c21f89e1e6d70b7a0df2a628f445b5.ctex"]
 
 [params]
 

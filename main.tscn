@@ -1,9 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://c7204os4in616"]
+[gd_scene load_steps=11 format=3 uid="uid://8dpj7soup18"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
 [ext_resource type="Texture2D" uid="uid://dxjyhf8br5g6w" path="res://assets/sky_background.png" id="1_pxdvb"]
 [ext_resource type="Texture2D" uid="uid://cfnee42a60ou6" path="res://assets/board.png" id="2_ff65i"]
 [ext_resource type="Texture2D" uid="uid://fdooebg583my" path="res://assets/grid.png" id="3_q3otb"]
+[ext_resource type="Script" path="res://startupinfo.gd" id="5_162x5"]
+[ext_resource type="Script" path="res://nextlevelinfo.gd" id="5_ct2ys"]
+[ext_resource type="Script" path="res://deadinfo.gd" id="5_teiwi"]
 [ext_resource type="PackedScene" uid="uid://xe84in6ej3m7" path="res://pellet.tscn" id="6_dvu1o"]
 [ext_resource type="PackedScene" uid="uid://de227doiyv2qb" path="res://snake.tscn" id="7_ertux"]
 
@@ -57,6 +60,14 @@ theme_override_constants/outline_size = 3
 text = "15"
 horizontal_alignment = 1
 
+[node name="LevelLabel" type="RichTextLabel" parent="UI"]
+offset_left = 268.0
+offset_top = 3.0
+offset_right = 329.0
+offset_bottom = 16.0
+bbcode_enabled = true
+text = "[left]Level 1[/left]"
+
 [node name="Sky" type="Sprite2D" parent="."]
 texture = ExtResource("1_pxdvb")
 centered = false
@@ -83,12 +94,14 @@ centered = false
 
 [node name="StartupInfo" type="Node2D" parent="."]
 z_index = 4000
+script = ExtResource("5_162x5")
 
 [node name="Title" type="Label" parent="StartupInfo"]
 offset_left = 128.0
 offset_top = 16.0
 offset_right = 200.0
 offset_bottom = 45.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 32
@@ -113,8 +126,9 @@ text = "Avoid Snek!!!"
 horizontal_alignment = 1
 
 [node name="DeadInfo" type="Node2D" parent="."]
-visible = false
+modulate = Color(1, 1, 1, 0)
 z_index = 4000
+script = ExtResource("5_teiwi")
 
 [node name="DeadFilter" type="ColorRect" parent="DeadInfo"]
 offset_right = 320.0
@@ -169,12 +183,46 @@ You get some points for surviving.
 But you get more for making the
 snake eat other enemies.[/center]"
 
+[node name="NextLevelInfo" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0)
+z_index = 3999
+script = ExtResource("5_ct2ys")
+
+[node name="LevelUp" type="Label" parent="NextLevelInfo"]
+offset_top = 16.0
+offset_right = 320.0
+offset_bottom = 40.0
+theme_override_colors/font_shadow_color = Color(0.0705882, 0.298039, 0.0156863, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_constants/shadow_outline_size = 3
+text = "Level Up!"
+horizontal_alignment = 1
+clip_text = true
+
+[node name="Tip" type="RichTextLabel" parent="NextLevelInfo"]
+offset_top = 32.0
+offset_right = 320.0
+offset_bottom = 80.0
+bbcode_enabled = true
+text = "[center][color=red]Avoid Beetle Bullets![/color][/center]"
+
+[node name="Timer" type="Timer" parent="NextLevelInfo"]
+wait_time = 2.5
+one_shot = true
+
 [node name="Snake" parent="." instance=ExtResource("7_ertux")]
+z_index = 500
 position = Vector2(96, 95)
 
 [node name="Pellet" parent="." instance=ExtResource("6_dvu1o")]
 z_index = 1200
 position = Vector2(215, 95)
 
+[node name="Bullets" type="Node2D" parent="."]
+
+[node name="Bugs" type="Node2D" parent="."]
+
+[connection signal="timeout" from="NextLevelInfo/Timer" to="NextLevelInfo" method="_on_timer_timeout"]
 [connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]
 [connection signal="moved" from="Pellet" to="." method="_on_pellet_moved"]

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1rletf3dia8x"
-path="res://.godot/imported/food_snail.png-5527dfea88455afbb475b835834cb235.ctex"
+uid="uid://drvgc82anbf"
+path="res://.godot/imported/burst_bullet.png-7aacb51c0cf2205d7294009902fe70e2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/bugs/food_snail.png"
-dest_files=["res://.godot/imported/food_snail.png-5527dfea88455afbb475b835834cb235.ctex"]
+source_file="res://assets/burst_bullet.png"
+dest_files=["res://.godot/imported/burst_bullet.png-7aacb51c0cf2205d7294009902fe70e2.ctex"]
 
 [params]
 
