@@ -1,4 +1,4 @@
 extends Node2D
 
-func _on_snake_dead():
-	print("You lose!")
+func _on_pellet_dead():
+	print("Game over!")

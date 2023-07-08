@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+signal dead
+
 @export var speed = 100
 
 func get_input():
@@ -9,3 +11,6 @@ func get_input():
 func _physics_process(_delta):
 	get_input()
 	move_and_slide()
+
+func _on_snake_head_area_entered(_area):
+	emit_signal("dead")

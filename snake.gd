@@ -1,6 +1,8 @@
 extends Node2D
 
-signal dead
+signal caught_player
+
+var done = false
 
 enum Direction {
 	UP, DOWN, LEFT, RIGHT
@@ -23,6 +25,8 @@ var _MOVEMENT_BY_DIR = {
 var _direction := Direction.UP
 var _previous_head_positions := []
 
+var free_segments = 5
+
 class Pair:
 	var pos: Vector2
 	var original_dir: Direction
@@ -36,9 +40,6 @@ class Pair:
 		return self
 
 func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
-	assert(not _is_snake_at(grid_pos))
-	
-	var depth = 0
 	var checked = []
 	var to_check = []
 	var next_checks = [
@@ -68,68 +69,66 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(-1, 0), current_check.original_dir))
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, 1), current_check.original_dir))
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, -1), current_check.original_dir))
-				
 	
-	assert(false)
-	return Direction.UP # couldn't find path
+	# couldn't find path, pick a legal direction
+	return Direction.UP 
 
 func _move():
-	# store previous before moving
-	_previous_head_positions.push_front(position)
-	if(_previous_head_positions.size() == 100): #don't track forever
-		_previous_head_positions.remove_at(99)
-	
-	# get my grid position
-	var grid_pos = Global.to_grid_position(position)
-	
-	var pellet_pos = Global.to_grid_position(get_parent().find_child("Pellet").position)
-	
-	# determine next movement
-	_direction = _dir_to_pellet(grid_pos, pellet_pos)
-	
-	# move according to direction
-	grid_pos += _MOVEMENT_BY_DIR[_direction]
-	
-	# check if we hit a wall
-	if not Global.is_grid_pos_in_grid(grid_pos):
-		emit_signal("dead")
-		return
-	
-	# translate back to global and set position
-	position = Global.to_global_position(grid_pos)
-	position.y -= 1 # move up a bit more for the tongue
-	
-	
-	# move each segment to position of segment in front of it, from back to front
-	var segments = $Segments.get_children()
-	segments.reverse()
-	for i in range(0, segments.size()):
-		var segment = segments[i]
-		segment.visible = true
-		# special case: if last segment, move to head's previous
-		if i == segments.size() - 1:
-			segment.position = _previous_head_positions[0]
-		else: # otherwise move to next segment
-			var next_segment = segments[i+1]
-			segment.position = next_segment.position
-			segment.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
-	
-	# fix rotations
-	for i in range(0, segments.size()):
-		var segment = segments[i]
-		if i == segments.size() - 1: # head case
-			segment.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, position)]
-		else:
-			var next_segment = segments[i+1]
-			segment.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
-	
-	# fix head's rotation
-	$HeadSprite.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction]
+	if not done:
+		# store previous before moving
+		_previous_head_positions.push_front(position)
+		if(_previous_head_positions.size() == 100): #don't track forever
+			_previous_head_positions.remove_at(99)
+		
+		# initial grows
+		if(free_segments != 0):
+			_grow_snake()
+			free_segments -= 1
+		
+		# get my grid position
+		var grid_pos = Global.to_grid_position(position)
+		
+		var pellet_pos = Global.to_grid_position(get_parent().find_child("Pellet").position)
+		
+		# determine next movement
+		_direction = _dir_to_pellet(grid_pos, pellet_pos)
+		
+		# move according to direction
+		grid_pos += _MOVEMENT_BY_DIR[_direction]
+		
+		# translate back to global and set position
+		position = Global.to_global_position(grid_pos)
+		position.y -= 1 # move up a bit more for the tongue
+		
+		# move each segment to position of segment in front of it, from back to front
+		var segments = $Segments.get_children()
+		segments.reverse()
+		for i in range(0, segments.size()):
+			var segment = segments[i]
+			segment.visible = true
+			# special case: if last segment, move to head's previous
+			if i == segments.size() - 1:
+				segment.position = _previous_head_positions[0]
+			else: # otherwise move to next segment
+				var next_segment = segments[i+1]
+				segment.position = next_segment.position
+				segment.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
+		
+		# fix rotations
+		for i in range(0, segments.size()):
+			var segment = segments[i]
+			if i == segments.size() - 1: # head case
+				segment.find_child("Sprite").rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, position)]
+			else:
+				var next_segment = segments[i+1]
+				segment.find_child("Sprite").rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
+		
+		# fix head's rotation
+		$HeadSprite.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction]
 
 func _is_snake_at(grid_pos: Vector2):
-	var pos = Global.to_grid_position(grid_pos)
 	for segment in $Segments.get_children():
-		if pos == segment.position:
+		if grid_pos == Global.to_grid_position(segment.position):
 			return true
 	return false
 
@@ -145,8 +144,7 @@ func _direction_to(point_from: Vector2, point_to: Vector2) -> Direction:
 		else:
 			return Direction.LEFT
 
-func _on_pellet_hitbox_area_entered(area: Area2D):
-	area.get_parent().queue_free()
+func _grow_snake():
 	# grow snake, add segment at previous location
 	var new_segment = load("res://snake_segment.tscn").instantiate()
 	new_segment.position = position 

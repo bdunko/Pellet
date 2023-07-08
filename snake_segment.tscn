@@ -1,6 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://dk65o8802skf6"]
+[gd_scene load_steps=3 format=3 uid="uid://d0bi0k3smfm7s"]
 
-[ext_resource type="Texture2D" uid="uid://ctoeqvpuvr8ip" path="res://assets/snake_segment.png" id="1_y2l2g"]
+[ext_resource type="Texture2D" uid="uid://ctoeqvpuvr8ip" path="res://assets/snake_segment.png" id="1_eqhki"]
 
-[node name="SnakeSegment" type="Sprite2D"]
-texture = ExtResource("1_y2l2g")
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yvtc6"]
+size = Vector2(12, 12)
+
+[node name="SnakeSegment" type="Node2D"]
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_eqhki")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+collision_layer = 34
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("RectangleShape2D_yvtc6")

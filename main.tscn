@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c7204os4in616"]
+[gd_scene load_steps=8 format=3 uid="uid://c7204os4in616"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
 [ext_resource type="Texture2D" uid="uid://dxjyhf8br5g6w" path="res://assets/sky_background.png" id="1_pxdvb"]
@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://fdooebg583my" path="res://assets/grid.png" id="3_q3otb"]
 [ext_resource type="PackedScene" uid="uid://xe84in6ej3m7" path="res://pellet.tscn" id="6_dvu1o"]
 [ext_resource type="PackedScene" uid="uid://de227doiyv2qb" path="res://snake.tscn" id="7_ertux"]
-[ext_resource type="Script" path="res://pellet.gd" id="7_fwos1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ji84y"]
 size = Vector2(4.5, 166)
@@ -33,16 +32,6 @@ shape = SubResource("RectangleShape2D_ji84y")
 [node name="Wall2" type="CollisionPolygon2D" parent="Board/Board Walls"]
 polygon = PackedVector2Array(80, 7, 80, 10, 240, 10, 240, 170, 80, 170, 80, 173, 243, 173, 243, 7)
 
-[node name="Grid" type="Sprite2D" parent="."]
-position = Vector2(80, 10)
-texture = ExtResource("3_q3otb")
-centered = false
-
-[node name="Pellets" type="Node" parent="."]
-
-[node name="Snake" parent="." instance=ExtResource("7_ertux")]
-position = Vector2(95, 153)
-
 [node name="ScoreText" type="Label" parent="."]
 offset_left = 15.0
 offset_top = 8.0
@@ -65,8 +54,16 @@ theme_override_constants/outline_size = 3
 text = "0"
 horizontal_alignment = 1
 
-[node name="Pellet" parent="." instance=ExtResource("6_dvu1o")]
-position = Vector2(160, 90)
-script = ExtResource("7_fwos1")
+[node name="Grid" type="Sprite2D" parent="."]
+position = Vector2(80, 10)
+texture = ExtResource("3_q3otb")
+centered = false
 
-[connection signal="dead" from="Snake" to="." method="_on_snake_dead"]
+[node name="Snake" parent="." instance=ExtResource("7_ertux")]
+position = Vector2(95, 153)
+
+[node name="Pellet" parent="." instance=ExtResource("6_dvu1o")]
+z_index = 1200
+position = Vector2(160, 90)
+
+[connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]

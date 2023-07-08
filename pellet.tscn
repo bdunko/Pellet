@@ -1,16 +1,29 @@
-[gd_scene load_steps=3 format=3 uid="uid://xe84in6ej3m7"]
+[gd_scene load_steps=5 format=3 uid="uid://xe84in6ej3m7"]
 
+[ext_resource type="Script" path="res://pellet.gd" id="1_jute3"]
 [ext_resource type="Texture2D" uid="uid://bnghun6vkgf5v" path="res://assets/pellet.png" id="1_x86yg"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_x2y43"]
 radius = 2.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_vlm0v"]
+radius = 1.0
+
 [node name="Pellet" type="CharacterBody2D"]
 collision_layer = 4
-collision_mask = 32
+collision_mask = 34
+script = ExtResource("1_jute3")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_x86yg")
 
 [node name="Collision" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_x2y43")
+
+[node name="SnakeHitbox" type="Area2D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SnakeHitbox"]
+shape = SubResource("CircleShape2D_vlm0v")
+
+[connection signal="area_entered" from="SnakeHitbox" to="." method="_on_snake_head_area_entered"]
