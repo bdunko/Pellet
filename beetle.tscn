@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://nmggdkaqks7m"]
+
+[ext_resource type="Texture2D" uid="uid://gnsenqayyeir" path="res://assets/bugs/enemy_beetle.png" id="1_q0crj"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_t758q"]
+radius = 3.0
+
+[node name="Beetle" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_q0crj")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("CircleShape2D_t758q")

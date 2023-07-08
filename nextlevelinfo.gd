@@ -1,6 +1,6 @@
 extends Node2D
 
-const TIP_FORMAT = "[center][color=red]%s[/color][/center]"
+const TIP_FORMAT = "%s"
 
 var active = false
 

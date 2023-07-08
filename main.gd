@@ -93,14 +93,14 @@ func _update_dead_info():
 func _on_pellet_dead():
 	if state != State.DEAD:
 		state = State.DEAD
-		$Snake.disable()
+		$Snakes/Snake.disable()
 		$Pellet.disable()
 		_update_dead_info()
 		$DeadInfo.on_dead()
 		$NextLevelInfo.visible = false
 
 func _on_reset():
-	$Snake.reset()
+	$Snakes/Snake.reset()
 	$Pellet.reset()
 	$Pellet.enable()
 	state = State.WAITING
@@ -116,7 +116,7 @@ func _on_pellet_moved():
 	if state == State.WAITING:
 		state = State.PLAYING
 		time_elapsed = 0
-		$Snake.enable()
+		$Snakes/Snake.enable()
 		$StartupInfo.on_playing()
 
 var time_elapsed = 0
@@ -146,6 +146,6 @@ func _on_second_passed():
 		level += 1
 		_update_level()
 
-func is_grid_pos_clear(position):
+func is_grid_pos_clear(grid_pos):
 	# are there any bug or snek in pos
 	pass

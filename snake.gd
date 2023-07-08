@@ -90,7 +90,7 @@ func _move():
 		# get my grid position
 		var grid_pos = Global.to_grid_position(position)
 		
-		var pellet_pos = Global.to_grid_position(get_parent().find_child("Pellet").position)
+		var pellet_pos = Global.to_grid_position(get_parent().get_parent().find_child("Pellet").position)
 		
 		# determine next movement
 		_direction = _dir_to_pellet(grid_pos, pellet_pos)
@@ -171,3 +171,7 @@ func disable():
 
 func enable():
 	_enabled = true
+
+func _on_bug_hitbox_area_entered(area):
+	call_deferred("_grow_snake")
+	area.get_parent().queue_free()
