@@ -67,6 +67,7 @@ reset={
 2d_physics/layer_4="Bugs"
 2d_physics/layer_5="Bullets"
 2d_physics/layer_6="Walls"
+2d_physics/layer_7="Hornet"
 
 [rendering]
 

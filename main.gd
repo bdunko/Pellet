@@ -46,6 +46,7 @@ const NEXT_LEVEL_TIPS = [
 	"null",
 	"null", 
 	"Avoid Beetle bullets!\n(Snake eats bugs)", 
+	"Nice job!",
 	"Watch for Dragonflies!",
 	"Snake speed up!",
 	"Snakes hate poisonous Spiders!",
@@ -62,7 +63,7 @@ const MAX_LEVEL_TIP = "Keep it up!"
 var score = 0
 var level = 1
 
-const DEFAULT_SPAWN_COUNT = 2
+const DEFAULT_SPAWN_COUNT = 1
 const MAX_SPAWN_COUNT = 9
 var spawn_count = DEFAULT_SPAWN_COUNT
 var enemy_pool = []
@@ -72,7 +73,7 @@ const DRAGONFLY = preload("res://dragonfly.tscn")
 const DRAGONFLY_SPAWN = SpawnMode.GRID
 const SPIDER = preload("res://spider.tscn")
 const SPIDER_SPAWN = SpawnMode.GRID_NO_BORDER
-# HORNET
+const HORNET = preload("res://hornet.tscn")
 const HORNET_SPAWN = SpawnMode.BOTTOM
 # ANTS
 const ANT_SPAWN = SpawnMode.FRAME
@@ -110,7 +111,11 @@ func _spawn_enemy(enemy, spawnmode):
 	elif spawnmode == SpawnMode.FRAME:
 		pass
 	elif spawnmode == SpawnMode.BOTTOM:
-		pass
+		var bug = enemy.instantiate()
+		bug.position = Vector2(Global.RNG.randi_range(int(Global.RESOLUTION.x/2) - 80, int(Global.RESOLUTION.y/2) + 80), Global.RESOLUTION.y + 10)
+		queued_bugs.append(bug)
+		call_deferred("_spawn_queued_bugs")
+		return
 
 var queued_bugs = []
 func _spawn_queued_bugs():
@@ -149,44 +154,48 @@ func _update_level():
 		pass
 	if level == 2: # beetle
 		enemy_pool.append([BEETLE, BEETLE_SPAWN])
-	elif level == 3: # dragonfly
-		spawn_count += 1 #3
+	if level == 3:
+		spawn_count += 1 
+	elif level == 4: # dragonfly
 		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
 		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
 		forced_spawns = 1
-	elif level == 4: # snake speed
+	elif level == 5: # snake speed
 		$Sky.next_sky() # day
 		$Snakes/Snake.speed_up()
-	elif level == 5: # spider
-		pass
-	elif level == 6: # hornet
-		pass
-	elif level == 7: # ants
+	elif level == 6: # spider
+		pass # handled below
+	elif level == 7: # hornet
+		_spawn_enemy(HORNET, HORNET_SPAWN)
+		forced_spawns = 1
+	elif level == 8: # ants
 		$Sky.next_sky() # evening
-		spawn_count += 1  #4
 		forced_spawns = 2
 		pass
-	elif level == 8: # bullet speed
+	elif level == 9: # bullet speed
 		pass
-	elif level == 9: # butterfly
+	elif level == 10: # butterfly
 		forced_spawns = 2
 		spawn_count += 1 #5
-	elif level == 10: # snake
+	elif level == 11: # snake
 		$Sky.next_sky() # night
 		#speed up too
 		pass
-	elif level == 11: #snake turrets
+	elif level == 12: #snake turrets
 		pass
-	elif level == 12: #moon
+	elif level == 13: #moon
 		spawn_count += 1 #6
 		pass
-	elif level >= 13: #challenge
+	elif level >= 14: #challenge
+		if level == 14:
+			_spawn_enemy(HORNET, HORNET_SPAWN)
+			forced_spawns = 1
 		$Sky.next_sky() #midnight
 		if spawn_count < MAX_SPAWN_COUNT:
 			spawn_count += 1
 	if level >= 2:
 		_spawn_rand_enemies(spawn_count - forced_spawns)
-	if level >= 5:
+	if level >= 6:
 		for i in ceil(spawn_count/5.0):
 			_spawn_enemy(SPIDER, SPIDER_SPAWN)
 

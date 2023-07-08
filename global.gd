@@ -4,6 +4,7 @@ const GRID_OFFSET := Vector2(80, 10)
 const CELL_SIZE := Vector2(10, 10)
 const GRID_SIZE := Vector2(16, 16)
 const MAX_PELLETS := 5
+const RESOLUTION := Vector2(320, 180)
 
 func to_grid_position(pos: Vector2) -> Vector2:
 	pos -= GRID_OFFSET

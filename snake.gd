@@ -186,7 +186,7 @@ func disable():
 func enable():
 	_enabled = true
 
-const POISON_SEGMENTS_REMOVED = 4
+const POISON_SEGMENTS_REMOVED = 3
 func _on_bug_body_entered(body):
 	if body.has_method("poison"): # terrible $HACK$
 		for i in range(0, POISON_SEGMENTS_REMOVED):

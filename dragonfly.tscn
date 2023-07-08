@@ -15,12 +15,6 @@ script = ExtResource("1_ma5yb")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_7saqn")
 
-[node name="ShotTimer" type="Timer" parent="."]
-wait_time = 2.5
-autostart = true
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.5, 0)
 shape = SubResource("CapsuleShape2D_mshyp")
-
-[connection signal="timeout" from="ShotTimer" to="." method="_on_shot_timer_timeout"]
