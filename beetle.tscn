@@ -15,6 +15,7 @@ script = ExtResource("1_pmue3")
 texture = ExtResource("1_q0crj")
 
 [node name="ShotTimer" type="Timer" parent="."]
+wait_time = 2.0
 autostart = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

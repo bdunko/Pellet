@@ -9,7 +9,7 @@ height = 6.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pvxa7"]
 radius = 6.0
-height = 12.0
+height = 16.0
 
 [node name="Snake" type="Node2D"]
 rotation = 1.5708
@@ -32,7 +32,6 @@ shape = SubResource("CapsuleShape2D_x1c0t")
 collision_mask = 8
 
 [node name="Shape" type="CollisionShape2D" parent="EnemyHitbox"]
-position = Vector2(0, 1)
 shape = SubResource("CapsuleShape2D_pvxa7")
 
 [node name="Timer" type="Timer" parent="."]

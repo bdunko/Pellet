@@ -6,7 +6,7 @@ enum State {
 
 var state = State.WAITING
 
-const LEVEL_FORMAT = "Level %d"
+const LEVEL_FORMAT = "[center]Level %d[/center]"
 const TIME_FORMAT = "[center]You lasted [color=lightblue]%d[/color] seconds.[/center]"
 const SCORE_FORMAT = "[center]And earned [color=green]%d[/color] points![/center]"
 const COMMENTARY_FORMAT = "[center]%s[/center]"
@@ -24,7 +24,7 @@ var SCORE_TO_COMMENTARY = {
 }
 
 #                    0,  1   2   3   4   5   6   7   8   9   10  11, 12
-const LEVEL_TIMES = [-1, 5, 20, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+const LEVEL_TIMES = [-1, 5, 15, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 40
 
@@ -55,20 +55,55 @@ const MAX_LEVEL_TIP = "Keep it up!"
 var score = 0
 var level = 1
 
+const DEFAULT_SPAWN_COUNT = 2
+const MAX_SPAWN_COUNT = 9
+var spawn_count = DEFAULT_SPAWN_COUNT
 var enemy_pool = []
 const BEETLE = preload("res://beetle.tscn")
+const BEETLE_SPAWN = SpawnMode.GRID
 # DRAGONFLY
+const DRAGONFLY_SPAWN = SpawnMode.GRID
 # SPIDER
+const SPIDER_SPAWN = SpawnMode.GRID
 # HORNET
+const HORNET_SPAWN = SpawnMode.BOTTOM
 # ANTS
+const ANT_SPAWN = SpawnMode.FRAME
 # BUTTERFLY
+const BUTTERFLY_SPAWN = SpawnMode.GRID
 
-func _spawn_enemy(enemy):
-	pass
+enum SpawnMode {
+	GRID, FRAME, BOTTOM
+}
+
+func _spawn_enemy(enemy, spawnmode):
+	if spawnmode == SpawnMode.GRID:
+		var tries = 0
+		while tries < 25:
+			var rand_pos = Global.rand_grid_pos()
+			# if too close to player, reject
+			var pellet_grid_pos = Global.to_grid_position($Pellet.position)
+			var total_dist = abs(pellet_grid_pos.x - rand_pos.x) + abs(pellet_grid_pos.y - rand_pos.y)
+			if total_dist < 8:
+				continue
+			
+			# if already occupied, reject
+			if not is_grid_pos_full(rand_pos):
+				var bug = enemy.instantiate()
+				bug.position = Global.to_global_position(rand_pos)
+				$Bugs.add_child(bug)
+				return
+			tries += 1
+	elif spawnmode == SpawnMode.FRAME:
+		pass
+	elif spawnmode == SpawnMode.BOTTOM:
+		pass
 
 func _spawn_rand_enemies(num):
-	for i in num:
-		_spawn_enemy(Global.choose_one(enemy_pool))
+	for i in range(0, 2):
+		print(i)
+		var enemy_pair = Global.choose_one(enemy_pool)
+		_spawn_enemy(enemy_pair[0], enemy_pair[1])
 
 func _ready():
 	print(LEVEL_TIMES.size())
@@ -91,10 +126,15 @@ func _update_level():
 		$NextLevelInfo.next_level(NEXT_LEVEL_TIPS[level])
 	
 	# add enemies and stuff
-	if level == 2: # beetle
-		enemy_pool.append(BEETLE)
-	elif level == 3: # dragonfly
+	var forced_spawns = 0
+	
+	if level == 1:
 		pass
+	if level == 2: # beetle
+		enemy_pool.append([BEETLE, BEETLE_SPAWN])
+	elif level == 3: # dragonfly
+		spawn_count += 1 #3
+		forced_spawns = 1
 	elif level == 4: # snake speed
 		$Snakes/Snake.speed_up()
 	elif level == 5: # spider
@@ -102,20 +142,27 @@ func _update_level():
 	elif level == 6: # hornet
 		pass
 	elif level == 7: # ants
+		spawn_count += 1  #4
+		forced_spawns = 2
 		pass
 	elif level == 8: # bullet speed
 		pass
 	elif level == 9: # butterfly
-		pass
+		forced_spawns = 2
+		spawn_count += 1 #5
 	elif level == 10: # snake2
 		#speed up too
 		pass
 	elif level == 11: #snake turrets
 		pass
 	elif level == 12: #moon
+		spawn_count += 1 #6
 		pass
 	else: #challenge
-		pass
+		if spawn_count < MAX_SPAWN_COUNT:
+			spawn_count += 1
+	if level >= 2:
+		_spawn_rand_enemies(spawn_count - forced_spawns)
 
 func _commentary_for_score():
 	var comment = ""
@@ -149,6 +196,7 @@ func _on_reset():
 	$Pellet.enable()
 	state = State.WAITING
 	score = 0
+	spawn_count = DEFAULT_SPAWN_COUNT
 	$StartupInfo.on_reset()
 	$DeadInfo.on_reset()
 	$UI/Score.text = str(0)
@@ -202,7 +250,11 @@ func is_grid_pos_full(grid_pos):
 	for bug in $Bugs.get_children():
 		if Global.to_grid_position(bug.position) == grid_pos:
 			return true
+	# is snake at pos?
 	if is_grid_pos_snake(grid_pos):
+		return true
+	# is player at pos?
+	if Global.to_grid_position($Pellet.position) == grid_pos:
 		return true
 	return false
 
@@ -212,6 +264,13 @@ func is_grid_pos_snake(grid_pos):
 			return true
 	return false
 
+const FULL_CLEAR_BONUS = 10
 func _on_snake_ate_bug():
 	score += level * 10
 	$UI/Score.text = str(score)
+	if $Bugs.get_child_count() == 0:
+		score += FULL_CLEAR_BONUS * level
+		score += int($UI/Time.text) * level
+		$UI/Score.text = str(score)
+		level += 1
+		_update_level()
