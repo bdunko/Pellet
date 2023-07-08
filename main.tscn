@@ -1,12 +1,17 @@
-[gd_scene load_steps=12 format=3 uid="uid://8dpj7soup18"]
+[gd_scene load_steps=17 format=3 uid="uid://cuicl1alqbct3"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
-[ext_resource type="Texture2D" uid="uid://dxjyhf8br5g6w" path="res://assets/sky_background.png" id="1_pxdvb"]
 [ext_resource type="Texture2D" uid="uid://cfnee42a60ou6" path="res://assets/board.png" id="2_ff65i"]
+[ext_resource type="Script" path="res://sky.gd" id="2_iuh4t"]
+[ext_resource type="Texture2D" uid="uid://b72boic5wqc2x" path="res://assets/sky_space.png" id="2_teo7e"]
+[ext_resource type="Texture2D" uid="uid://dxjyhf8br5g6w" path="res://assets/sky_day.png" id="2_yd25x"]
+[ext_resource type="Texture2D" uid="uid://cm0mimc60tet" path="res://assets/sky_night.png" id="3_hrorm"]
 [ext_resource type="Texture2D" uid="uid://fdooebg583my" path="res://assets/grid.png" id="3_q3otb"]
+[ext_resource type="Texture2D" uid="uid://cqkf55e170y6u" path="res://assets/sky_evening.png" id="4_y164g"]
 [ext_resource type="Script" path="res://startupinfo.gd" id="5_162x5"]
 [ext_resource type="Script" path="res://nextlevelinfo.gd" id="5_ct2ys"]
 [ext_resource type="Script" path="res://deadinfo.gd" id="5_teiwi"]
+[ext_resource type="Texture2D" uid="uid://cay5ftkmugouq" path="res://assets/sky_morning.png" id="6_7fbtx"]
 [ext_resource type="PackedScene" uid="uid://xe84in6ej3m7" path="res://pellet.tscn" id="6_dvu1o"]
 [ext_resource type="PackedScene" uid="uid://de227doiyv2qb" path="res://snake.tscn" id="7_ertux"]
 [ext_resource type="PackedScene" uid="uid://bxbfstit6butu" path="res://spider.tscn" id="10_xxyul"]
@@ -69,8 +74,27 @@ offset_bottom = 16.0
 bbcode_enabled = true
 text = "[center]Level 1[/center]"
 
-[node name="Sky" type="Sprite2D" parent="."]
-texture = ExtResource("1_pxdvb")
+[node name="Sky" type="Node2D" parent="."]
+script = ExtResource("2_iuh4t")
+
+[node name="SkyMidnight" type="Sprite2D" parent="Sky"]
+texture = ExtResource("2_teo7e")
+centered = false
+
+[node name="SkyNight" type="Sprite2D" parent="Sky"]
+texture = ExtResource("3_hrorm")
+centered = false
+
+[node name="SkyEvening" type="Sprite2D" parent="Sky"]
+texture = ExtResource("4_y164g")
+centered = false
+
+[node name="SkyDay" type="Sprite2D" parent="Sky"]
+texture = ExtResource("2_yd25x")
+centered = false
+
+[node name="SkyMorning" type="Sprite2D" parent="Sky"]
+texture = ExtResource("6_7fbtx")
 centered = false
 
 [node name="Board" type="Sprite2D" parent="."]
@@ -224,6 +248,18 @@ theme_override_colors/font_color = Color(1, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 text = "Avoid Beetle Bullets!"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ClearBonus" type="Label" parent="NextLevelInfo"]
+offset_left = -127.0
+offset_top = 54.0
+offset_right = -50.0
+offset_bottom = 86.0
+theme_override_colors/font_color = Color(1, 0.839216, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+text = "Clear Bonus +1000!"
 horizontal_alignment = 1
 autowrap_mode = 2
 

@@ -7,13 +7,17 @@ enum State {
 var state = State.WAITING
 var highscore = 0
 
+const CLEAR_BONUS_FORMAT = "Clear Bonus +%d!"
 const HIGH_SCORE_FORMAT = "High Score: %d"
 const LEVEL_FORMAT = "[center]Level %d[/center]"
 const TIME_FORMAT = "[center]You lasted [color=lightblue]%d[/color] seconds.[/center]"
 const SCORE_FORMAT = "[center]And earned [color=green]%d[/color] points![/center]"
 const COMMENTARY_FORMAT = "[center]%s[/center]"
 const TIP_FORMAT = "[center]- Tip -\n%s"
-const tips = ["The snake can eat bugs.\nIt can block bullets too!", "You can touch the snake's body.\nOnly the head is deadly.", "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies."]
+const tips = ["The snake can eat bugs.\nIt can block bullets too!",
+ "You can touch the snake's body.\nOnly the head is deadly.",
+ "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies.",
+ "If you have the snake eat every enemy,\nyou'll get a score bonus."]
 
 var SCORE_TO_COMMENTARY = {
 	0 : "You let it catch you, didn't you..?",
@@ -66,7 +70,7 @@ const BEETLE = preload("res://beetle.tscn")
 const BEETLE_SPAWN = SpawnMode.GRID_NO_BORDER
 const DRAGONFLY = preload("res://dragonfly.tscn")
 const DRAGONFLY_SPAWN = SpawnMode.GRID
-# SPIDER
+const SPIDER = preload("res://spider.tscn")
 const SPIDER_SPAWN = SpawnMode.GRID
 # HORNET
 const HORNET_SPAWN = SpawnMode.BOTTOM
@@ -79,6 +83,7 @@ enum SpawnMode {
 	GRID, GRID_NO_BORDER, FRAME, BOTTOM
 }
 
+const SAFE_SPAWN_DIST = 10
 func _spawn_enemy(enemy, spawnmode):
 	if spawnmode == SpawnMode.GRID or spawnmode == SpawnMode.GRID_NO_BORDER:
 		var tries = 0
@@ -92,7 +97,7 @@ func _spawn_enemy(enemy, spawnmode):
 			# if too close to player, reject
 			var pellet_grid_pos = Global.to_grid_position($Pellet.position)
 			var total_dist = abs(pellet_grid_pos.x - rand_pos.x) + abs(pellet_grid_pos.y - rand_pos.y)
-			if total_dist < 8:
+			if total_dist < SAFE_SPAWN_DIST:
 				continue
 			
 			# if already occupied, reject
@@ -126,6 +131,7 @@ func _ready():
 
 func _update_level():
 	$NextLevelInfo.visible = true
+	$NextLevelInfo/ClearBonus.visible = false
 	if level >= MAX_LEVEL:
 		$UI/Time.text = str(MAX_LEVEL_TIME)
 		grid_color = MAX_GRID_COLOR
@@ -149,12 +155,14 @@ func _update_level():
 		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
 		forced_spawns = 1
 	elif level == 4: # snake speed
+		$Sky.next_sky() # day
 		$Snakes/Snake.speed_up()
 	elif level == 5: # spider
 		pass
 	elif level == 6: # hornet
 		pass
 	elif level == 7: # ants
+		$Sky.next_sky() # evening
 		spawn_count += 1  #4
 		forced_spawns = 2
 		pass
@@ -163,7 +171,8 @@ func _update_level():
 	elif level == 9: # butterfly
 		forced_spawns = 2
 		spawn_count += 1 #5
-	elif level == 10: # snake2
+	elif level == 10: # snake
+		$Sky.next_sky() # night
 		#speed up too
 		pass
 	elif level == 11: #snake turrets
@@ -172,6 +181,7 @@ func _update_level():
 		spawn_count += 1 #6
 		pass
 	elif level >= 13: #challenge
+		$Sky.next_sky() #midnight
 		if spawn_count < MAX_SPAWN_COUNT:
 			spawn_count += 1
 	if level >= 2:
@@ -207,6 +217,7 @@ func _on_reset():
 	$Snakes/Snake.reset()
 	$Pellet.reset()
 	$Pellet.enable()
+	$Sky.reset()
 	state = State.WAITING
 	if score > highscore:
 		highscore = score
@@ -285,9 +296,11 @@ const FULL_CLEAR_BONUS = 10
 func _on_snake_ate_bug():
 	score += level * 10
 	$UI/Score.text = str(score)
-	if $Bugs.get_child_count() == 0:
-		score += FULL_CLEAR_BONUS * level
-		score += int($UI/Time.text) * level
-		$UI/Score.text = str(score)
+	if $Bugs.get_child_count() == 1: #ate last bug
+		var full_clear_bonus = (FULL_CLEAR_BONUS * level) + (int($UI/Time.text) * level)
+		score += full_clear_bonus
+		$UI/Score.text = str(score) 
 		level += 1
 		_update_level()
+		$NextLevelInfo/ClearBonus.text = CLEAR_BONUS_FORMAT % full_clear_bonus
+		$NextLevelInfo/ClearBonus.visible = true
