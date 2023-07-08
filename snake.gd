@@ -104,6 +104,13 @@ func _move():
 	# fix head's rotation
 	$HeadSprite.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction]
 
+func _is_snake_at(grid_pos: Vector2):
+	var pos = Global.to_grid_position(grid_pos)
+	for segment in $Segments.get_children():
+		if pos == segment.position:
+			return true
+	return false
+
 func _direction_to(point_from: Vector2, point_to: Vector2) -> Direction:
 	if point_from.x == point_to.x:
 		if point_from.y > point_to.y:
