@@ -13,6 +13,50 @@ size = Vector2(4.5, 166)
 [node name="Main" type="Node2D"]
 script = ExtResource("1_eks3d")
 
+[node name="UI" type="Node" parent="."]
+
+[node name="ScoreText" type="Label" parent="UI"]
+offset_left = 15.0
+offset_top = 8.0
+offset_right = 72.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(0.839216, 0.94902, 0.392157, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+text = "Score:"
+horizontal_alignment = 1
+
+[node name="Score" type="Label" parent="UI"]
+offset_left = 15.0
+offset_top = 19.0
+offset_right = 72.0
+offset_bottom = 35.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+text = "0"
+horizontal_alignment = 1
+
+[node name="UntilNext" type="Label" parent="UI"]
+offset_left = 15.0
+offset_top = 34.0
+offset_right = 72.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.839216, 0.94902, 0.392157, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+text = "Next:"
+horizontal_alignment = 1
+
+[node name="Time" type="Label" parent="UI"]
+offset_left = 15.0
+offset_top = 45.0
+offset_right = 72.0
+offset_bottom = 61.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+text = "15"
+horizontal_alignment = 1
+
 [node name="Sky" type="Sprite2D" parent="."]
 texture = ExtResource("1_pxdvb")
 centered = false
@@ -32,38 +76,104 @@ shape = SubResource("RectangleShape2D_ji84y")
 [node name="Wall2" type="CollisionPolygon2D" parent="Board/Board Walls"]
 polygon = PackedVector2Array(80, 7, 80, 10, 240, 10, 240, 170, 80, 170, 80, 173, 243, 173, 243, 7)
 
-[node name="ScoreText" type="Label" parent="."]
-offset_left = 15.0
-offset_top = 8.0
-offset_right = 72.0
-offset_bottom = 24.0
-theme_override_colors/font_color = Color(0.839216, 0.94902, 0.392157, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 3
-text = "Score:"
-horizontal_alignment = 1
-
-[node name="Score" type="Label" parent="."]
-offset_left = 15.0
-offset_top = 19.0
-offset_right = 72.0
-offset_bottom = 35.0
-theme_override_colors/font_color = Color(0.839216, 0.94902, 0.392157, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 3
-text = "0"
-horizontal_alignment = 1
-
 [node name="Grid" type="Sprite2D" parent="."]
 position = Vector2(80, 10)
 texture = ExtResource("3_q3otb")
 centered = false
 
+[node name="StartupInfo" type="Node2D" parent="."]
+z_index = 4000
+
+[node name="Title" type="Label" parent="StartupInfo"]
+offset_left = 128.0
+offset_top = 16.0
+offset_right = 200.0
+offset_bottom = 45.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 32
+text = "PELLET"
+horizontal_alignment = 1
+
+[node name="Controls" type="Label" parent="StartupInfo"]
+offset_left = 128.0
+offset_top = 40.0
+offset_right = 196.0
+offset_bottom = 56.0
+text = "WASD - Move"
+horizontal_alignment = 1
+
+[node name="Avoid" type="Label" parent="StartupInfo"]
+offset_left = 132.0
+offset_top = 53.0
+offset_right = 193.0
+offset_bottom = 69.0
+theme_override_colors/font_color = Color(1, 0.145098, 0.137255, 1)
+text = "Avoid Snek!!!"
+horizontal_alignment = 1
+
+[node name="DeadInfo" type="Node2D" parent="."]
+visible = false
+z_index = 4000
+
+[node name="DeadFilter" type="ColorRect" parent="DeadInfo"]
+offset_right = 320.0
+offset_bottom = 180.0
+color = Color(0, 0, 0, 0.623529)
+
+[node name="OhNo" type="RichTextLabel" parent="DeadInfo"]
+offset_top = 14.0
+offset_right = 320.0
+offset_bottom = 30.0
+bbcode_enabled = true
+text = "[center]Oh no, you are [color=red]dead[/color]![/center]"
+
+[node name="Time" type="RichTextLabel" parent="DeadInfo"]
+offset_top = 32.0
+offset_right = 320.0
+offset_bottom = 45.0
+bbcode_enabled = true
+text = "[center]You lasted [color=lightblue]1000[/color] seconds.[/center]"
+
+[node name="Score" type="RichTextLabel" parent="DeadInfo"]
+offset_top = 43.0
+offset_right = 320.0
+offset_bottom = 56.0
+bbcode_enabled = true
+text = "[center]And earned [color=green]1000[/color] points![/center]"
+
+[node name="Commentary" type="RichTextLabel" parent="DeadInfo"]
+offset_left = -1.0
+offset_top = 58.0
+offset_right = 319.0
+offset_bottom = 75.0
+bbcode_enabled = true
+text = "[center]Not bad... but you can do better.[/center]"
+
+[node name="Reset" type="RichTextLabel" parent="DeadInfo"]
+offset_left = 1.0
+offset_top = 90.0
+offset_right = 320.0
+offset_bottom = 130.0
+bbcode_enabled = true
+text = "[center]Press [color=yellow]Spacebar[/color] to try again.[/center]"
+
+[node name="Tip" type="RichTextLabel" parent="DeadInfo"]
+offset_left = 2.0
+offset_top = 114.0
+offset_right = 320.0
+offset_bottom = 172.0
+bbcode_enabled = true
+text = "[center]- Tip -
+You can touch the snake's body.
+Only the head is deadly.[/center]"
+
 [node name="Snake" parent="." instance=ExtResource("7_ertux")]
-position = Vector2(95, 153)
+position = Vector2(96, 95)
 
 [node name="Pellet" parent="." instance=ExtResource("6_dvu1o")]
 z_index = 1200
-position = Vector2(160, 90)
+position = Vector2(215, 95)
 
 [connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]
+[connection signal="moved" from="Pellet" to="." method="_on_pellet_moved"]

@@ -30,3 +30,9 @@ func is_grid_pos_in_grid(grid_pos: Vector2) -> bool:
 func is_global_pos_in_grid(pos: Vector2) -> bool:
 	var indices := Global.to_grid_position(pos)
 	return indices.x >= 0 and indices.y >= 0 and indices.x < GRID_SIZE.x and indices.y < GRID_SIZE.y
+
+var RNG = RandomNumberGenerator.new()
+
+func choose_one(options: Array[Variant]):
+	assert(options.size() != 0, "No options in array!")
+	return options[RNG.randi_range(0, options.size()-1)]
