@@ -149,3 +149,8 @@ func _on_second_passed():
 func is_grid_pos_clear(grid_pos):
 	# are there any bug or snek in pos
 	pass
+
+
+func _on_snake_ate_bug():
+	score += level * 10
+	$UI/Score.text = str(score)

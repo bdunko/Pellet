@@ -1,6 +1,6 @@
 extends Node2D
 
-signal caught_player
+signal ate_bug
 
 enum Direction {
 	UP, DOWN, LEFT, RIGHT
@@ -175,3 +175,4 @@ func enable():
 func _on_bug_hitbox_area_entered(area):
 	call_deferred("_grow_snake")
 	area.get_parent().queue_free()
+	emit_signal("ate_bug")

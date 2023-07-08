@@ -237,3 +237,4 @@ position = Vector2(96, 95)
 [connection signal="timeout" from="NextLevelInfo/Timer" to="NextLevelInfo" method="_on_timer_timeout"]
 [connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]
 [connection signal="moved" from="Pellet" to="." method="_on_pellet_moved"]
+[connection signal="ate_bug" from="Snakes/Snake" to="." method="_on_snake_ate_bug"]

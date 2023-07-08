@@ -19,9 +19,6 @@ func _physics_process(_delta):
 		if velocity != Vector2.ZERO:
 			emit_signal("moved")
 
-func _on_snake_head_area_entered(_area):
-	emit_signal("dead")
-
 func disable():
 	enabled = false
 
@@ -30,3 +27,9 @@ func enable():
 
 func reset():
 	position = STARTING_POS
+
+func _on_dead_hitbox_body_entered(_body):
+	emit_signal("dead")
+
+func _on_dead_hitbox_area_entered(_area):
+	emit_signal("dead")
