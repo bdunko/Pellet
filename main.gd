@@ -51,6 +51,7 @@ func _on_reset():
 	$Pellet.reset()
 	$Pellet.enable()
 	state = State.WAITING
+	score = 0
 	$StartupInfo.visible = true
 	$DeadInfo.visible = false
 	$UI/Score.text = str(0)
@@ -74,6 +75,6 @@ func _process(delta: float) -> void:
 			score += 1
 		$UI/Score.text = str(score)
 
-func _input(event):
+func _input(_event):
 	if Input.is_action_just_pressed("reset") and state == State.DEAD:
 		_on_reset()
