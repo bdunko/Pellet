@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://bacxbnpvt2ceu"]
+
+[ext_resource type="Texture2D" uid="uid://bvetnuxbw1ahl" path="res://assets/bugs/enemy_dragonfly.png" id="1_7saqn"]
+[ext_resource type="Script" path="res://dragonfly.gd" id="1_ma5yb"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
+radius = 1.0
+height = 10.0
+
+[node name="Dragonfly" type="CharacterBody2D"]
+collision_layer = 8
+collision_mask = 42
+script = ExtResource("1_ma5yb")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_7saqn")
+
+[node name="ShotTimer" type="Timer" parent="."]
+wait_time = 2.5
+autostart = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0)
+shape = SubResource("CapsuleShape2D_mshyp")
+
+[connection signal="timeout" from="ShotTimer" to="." method="_on_shot_timer_timeout"]

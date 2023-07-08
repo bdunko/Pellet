@@ -61,7 +61,7 @@ var spawn_count = DEFAULT_SPAWN_COUNT
 var enemy_pool = []
 const BEETLE = preload("res://beetle.tscn")
 const BEETLE_SPAWN = SpawnMode.GRID
-# DRAGONFLY
+const DRAGONFLY = preload("res://dragonfly.tscn")
 const DRAGONFLY_SPAWN = SpawnMode.GRID
 # SPIDER
 const SPIDER_SPAWN = SpawnMode.GRID
@@ -100,14 +100,11 @@ func _spawn_enemy(enemy, spawnmode):
 		pass
 
 func _spawn_rand_enemies(num):
-	for i in range(0, 2):
-		print(i)
+	for i in range(0, num):
 		var enemy_pair = Global.choose_one(enemy_pool)
 		_spawn_enemy(enemy_pair[0], enemy_pair[1])
 
 func _ready():
-	print(LEVEL_TIMES.size())
-	print(GRID_COLORS.size())
 	assert(LEVEL_TIMES.size() == GRID_COLORS.size())
 	_update_level()
 	$NextLevelInfo.visible = false
@@ -134,6 +131,8 @@ func _update_level():
 		enemy_pool.append([BEETLE, BEETLE_SPAWN])
 	elif level == 3: # dragonfly
 		spawn_count += 1 #3
+		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
+		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
 		forced_spawns = 1
 	elif level == 4: # snake speed
 		$Snakes/Snake.speed_up()
@@ -158,7 +157,7 @@ func _update_level():
 	elif level == 12: #moon
 		spawn_count += 1 #6
 		pass
-	else: #challenge
+	elif level >= 13: #challenge
 		if spawn_count < MAX_SPAWN_COUNT:
 			spawn_count += 1
 	if level >= 2:
