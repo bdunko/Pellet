@@ -57,7 +57,7 @@ const NEXT_LEVEL_TIPS = [
 	"Flee the Hornet!",
 	"Watch for frame Ants!",
 	"Bullet speed up!",
-	"Dodge bouncing Butterflies!",
+	"Dodge bouncing Moths!",
 	"Double trouble!",
 	"Snake turrets!",
 	"Good luck..."
@@ -81,8 +81,8 @@ const HORNET = preload("res://hornet.tscn")
 const HORNET_SPAWN = SpawnMode.BOTTOM
 # ANTS
 const ANT_SPAWN = SpawnMode.FRAME
-# BUTTERFLY
-const BUTTERFLY_SPAWN = SpawnMode.GRID
+const MOTH = preload("res://moth.tscn")
+const MOTH_SPAWN = SpawnMode.GRID
 
 enum SpawnMode {
 	GRID, GRID_NO_BORDER, FRAME, BOTTOM
@@ -181,7 +181,10 @@ func _update_level():
 		pass
 	elif level == 9: # bullet speed
 		bullet_speed_multiplier = FAST_BULLET_SPEED
-	elif level == 10: # butterfly
+	elif level == 10: # moth
+		enemy_pool.append([MOTH, MOTH_SPAWN])
+		_spawn_enemy(MOTH, MOTH_SPAWN)
+		_spawn_enemy(MOTH, MOTH_SPAWN)
 		forced_spawns = 2
 		spawn_count += 1 #5
 	elif level == 11: # snake
@@ -233,6 +236,7 @@ func _on_pellet_dead():
 		$NextLevelInfo.visible = false
 
 func _on_reset():
+	enemy_pool.clear()
 	$Snakes/Snake.reset()
 	$Pellet.reset()
 	$Pellet.enable()
