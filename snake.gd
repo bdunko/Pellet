@@ -23,6 +23,56 @@ var _MOVEMENT_BY_DIR = {
 var _direction := Direction.UP
 var _previous_head_positions := []
 
+class Pair:
+	var pos: Vector2
+	var original_dir: Direction
+	
+	func _init():
+		pos = Vector2.ZERO
+	
+	func setup(p, dir) -> Pair:
+		pos = p
+		original_dir = dir
+		return self
+
+func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
+	assert(not _is_snake_at(grid_pos))
+	
+	var depth = 0
+	var checked = []
+	var to_check = []
+	var next_checks = [
+		Pair.new().setup(Vector2(grid_pos.x + 1, grid_pos.y), Direction.RIGHT),
+		Pair.new().setup(Vector2(grid_pos.x - 1, grid_pos.y), Direction.LEFT),
+		Pair.new().setup(Vector2(grid_pos.x, grid_pos.y + 1), Direction.DOWN),
+		Pair.new().setup(Vector2(grid_pos.x, grid_pos.y - 1), Direction.UP)
+		]
+	next_checks.shuffle()
+	
+	while next_checks.size() != 0:
+		for pair in next_checks:
+			to_check.append(pair)
+		next_checks.clear()
+		
+		while to_check.size() != 0:
+			var current_check: Pair = to_check.pop_front()
+			if not Global.is_grid_pos_in_grid(current_check.pos) or _is_snake_at(current_check.pos) or current_check.pos in checked: # can't go this way
+				continue
+			
+			checked.append(current_check.pos)
+			
+			if current_check.pos == pellet_pos:
+				return current_check.original_dir # found a path
+			else: # append left, up, right, down
+				next_checks.append(Pair.new().setup(current_check.pos + Vector2(1, 0), current_check.original_dir))
+				next_checks.append(Pair.new().setup(current_check.pos + Vector2(-1, 0), current_check.original_dir))
+				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, 1), current_check.original_dir))
+				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, -1), current_check.original_dir))
+				
+	
+	assert(false)
+	return Direction.UP # couldn't find path
+
 func _move():
 	# store previous before moving
 	_previous_head_positions.push_front(position)
@@ -32,39 +82,11 @@ func _move():
 	# get my grid position
 	var grid_pos = Global.to_grid_position(position)
 	
-	# determine the closest pellet
-	var pellets = get_parent().find_child("Pellets")
-	var closest_distance = 999
-	var closest_pellet = null
-	for pellet in pellets.get_children():
-		var pellet_grid_pos = Global.to_grid_position(pellet.position)
-		
-		var x_distance = abs(grid_pos.x - pellet_grid_pos.x)
-		var y_distance = abs(grid_pos.y - pellet_grid_pos.y)
-		var total_distance = x_distance + y_distance
-
-		if total_distance < closest_distance:
-			closest_distance = total_distance
-			closest_pellet = pellet
-
-	# if we have a pellet, update according to pellet
-	if closest_pellet != null:
-		# calculate snake's x and y dist from pellet
-		var pellet_grid_pos = Global.to_grid_position(closest_pellet.position)
-		var x_diff = grid_pos.x - pellet_grid_pos.x
-		var y_diff = grid_pos.y - pellet_grid_pos.y
-		# move towards the pellet, in the direction that is farther
-		if abs(x_diff) > abs(y_diff):
-			if x_diff > 0: 
-				_direction = Direction.LEFT
-			elif x_diff < 0: 
-				_direction = Direction.RIGHT
-		else:
-			if y_diff > 0: # up
-				_direction = Direction.UP
-			elif y_diff < 0:
-				_direction = Direction.DOWN
-			
+	var pellet_pos = Global.to_grid_position(get_parent().find_child("Pellet").position)
+	
+	# determine next movement
+	_direction = _dir_to_pellet(grid_pos, pellet_pos)
+	
 	# move according to direction
 	grid_pos += _MOVEMENT_BY_DIR[_direction]
 	
