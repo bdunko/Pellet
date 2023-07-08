@@ -97,32 +97,42 @@ z_index = 4000
 script = ExtResource("5_162x5")
 
 [node name="Title" type="Label" parent="StartupInfo"]
-offset_left = 128.0
 offset_top = 16.0
-offset_right = 200.0
+offset_right = 320.0
 offset_bottom = 45.0
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 4
+theme_override_constants/outline_size = 9
 theme_override_font_sizes/font_size = 32
 text = "PELLET"
 horizontal_alignment = 1
 
 [node name="Controls" type="Label" parent="StartupInfo"]
-offset_left = 128.0
 offset_top = 40.0
-offset_right = 196.0
+offset_right = 320.0
 offset_bottom = 56.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
 text = "WASD - Move"
 horizontal_alignment = 1
 
 [node name="Avoid" type="Label" parent="StartupInfo"]
-offset_left = 132.0
 offset_top = 53.0
-offset_right = 193.0
+offset_right = 320.0
 offset_bottom = 69.0
 theme_override_colors/font_color = Color(1, 0.145098, 0.137255, 1)
 text = "Avoid Snek!!!"
+horizontal_alignment = 1
+
+[node name="HighScore" type="Label" parent="StartupInfo"]
+visible = false
+offset_top = 118.0
+offset_right = 320.0
+offset_bottom = 134.0
+theme_override_colors/font_color = Color(1, 0.839216, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+text = "High Score: 9999"
 horizontal_alignment = 1
 
 [node name="DeadInfo" type="Node2D" parent="."]

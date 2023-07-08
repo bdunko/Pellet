@@ -5,7 +5,9 @@ enum State {
 }
 
 var state = State.WAITING
+var highscore = 0
 
+const HIGH_SCORE_FORMAT = "High Score: %d"
 const LEVEL_FORMAT = "[center]Level %d[/center]"
 const TIME_FORMAT = "[center]You lasted [color=lightblue]%d[/color] seconds.[/center]"
 const SCORE_FORMAT = "[center]And earned [color=green]%d[/color] points![/center]"
@@ -28,7 +30,7 @@ const LEVEL_TIMES = [-1, 5, 15, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 40
 
-var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
+var GRID_COLORS = [null, Color(99/255.0, 213/255.0, 51/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
 Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
 Color(231/255.0, 121/255.0, 41/255.0), Color(100/255.0, 28/255.0, 55/255.0), Color(56/255.0, 134/255.0, 170/255.0), 
 Color(106/255.0, 88/255.0, 225/255.0), Color(255/255.0, 190/255.0, 62/255.0), Color(0, 0, 0)]
@@ -194,6 +196,10 @@ func _on_reset():
 	$Pellet.reset()
 	$Pellet.enable()
 	state = State.WAITING
+	if score > highscore:
+		highscore = score
+		$StartupInfo/HighScore.text = HIGH_SCORE_FORMAT % highscore
+		$StartupInfo/HighScore.visible = true
 	score = 0
 	spawn_count = DEFAULT_SPAWN_COUNT
 	$StartupInfo.on_reset()
