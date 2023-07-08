@@ -2,8 +2,6 @@ extends Node2D
 
 signal caught_player
 
-var done = false
-
 enum Direction {
 	UP, DOWN, LEFT, RIGHT
 }
@@ -74,57 +72,55 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 	return Direction.UP 
 
 func _move():
-	if not done:
-		# store previous before moving
-		_previous_head_positions.push_front(position)
-		if(_previous_head_positions.size() == 100): #don't track forever
-			_previous_head_positions.remove_at(99)
-		
-		# initial grows
-		if(free_segments != 0):
-			_grow_snake()
-			free_segments -= 1
-		
-		# get my grid position
-		var grid_pos = Global.to_grid_position(position)
-		
-		var pellet_pos = Global.to_grid_position(get_parent().find_child("Pellet").position)
-		
-		# determine next movement
-		_direction = _dir_to_pellet(grid_pos, pellet_pos)
-		
-		# move according to direction
-		grid_pos += _MOVEMENT_BY_DIR[_direction]
-		
-		# translate back to global and set position
-		position = Global.to_global_position(grid_pos)
-		position.y -= 1 # move up a bit more for the tongue
-		
-		# move each segment to position of segment in front of it, from back to front
-		var segments = $Segments.get_children()
-		segments.reverse()
-		for i in range(0, segments.size()):
-			var segment = segments[i]
-			segment.visible = true
-			# special case: if last segment, move to head's previous
-			if i == segments.size() - 1:
-				segment.position = _previous_head_positions[0]
-			else: # otherwise move to next segment
-				var next_segment = segments[i+1]
-				segment.position = next_segment.position
-				segment.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
-		
-		# fix rotations
-		for i in range(0, segments.size()):
-			var segment = segments[i]
-			if i == segments.size() - 1: # head case
-				segment.find_child("Sprite").rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, position)]
-			else:
-				var next_segment = segments[i+1]
-				segment.find_child("Sprite").rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
-		
-		# fix head's rotation
-		$HeadSprite.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction]
+	# store previous before moving
+	_previous_head_positions.push_front(position)
+	if(_previous_head_positions.size() == 100): #don't track forever
+		_previous_head_positions.remove_at(99)
+	
+	# initial grows
+	if(free_segments != 0):
+		_grow_snake()
+		free_segments -= 1
+	
+	# get my grid position
+	var grid_pos = Global.to_grid_position(position)
+	
+	var pellet_pos = Global.to_grid_position(get_parent().find_child("Pellet").position)
+	
+	# determine next movement
+	_direction = _dir_to_pellet(grid_pos, pellet_pos)
+	
+	# move according to direction
+	grid_pos += _MOVEMENT_BY_DIR[_direction]
+	
+	# translate back to global and set position
+	position = Global.to_global_position(grid_pos)
+	position.y -= 1 # move up a bit more for the tongue
+	
+	# move each segment to position of segment in front of it, from back to front
+	var segments = $Segments.get_children()
+	segments.reverse()
+	for i in range(0, segments.size()):
+		var segment = segments[i]
+		segment.visible = true
+		# special case: if last segment, move to head's previous
+		if i == segments.size() - 1:
+			segment.position = _previous_head_positions[0]
+		else: # otherwise move to next segment
+			var next_segment = segments[i+1]
+			segment.position = next_segment.position
+	
+	# fix rotations
+	for i in range(0, segments.size()):
+		var segment = segments[i]
+		if i == segments.size() - 1: # head case
+			segment.find_child("Sprite").rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, position)]
+		else:
+			var next_segment = segments[i+1]
+			segment.find_child("Sprite").rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
+	
+	# fix head's rotation
+	$HeadSprite.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction]
 
 func _is_snake_at(grid_pos: Vector2):
 	for segment in $Segments.get_children():
