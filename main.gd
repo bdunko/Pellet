@@ -11,7 +11,7 @@ const TIME_FORMAT = "[center]You lasted [color=lightblue]%d[/color] seconds.[/ce
 const SCORE_FORMAT = "[center]And earned [color=green]%d[/color] points![/center]"
 const COMMENTARY_FORMAT = "[center]%s[/center]"
 const TIP_FORMAT = "[center]- Tip -\n%s"
-const tips = ["You can touch the snake's body.\nOnly the head is deadly.", "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies."]
+const tips = ["The snake can eat bugs.\nIt can block bullets too!", "You can touch the snake's body.\nOnly the head is deadly.", "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies."]
 
 var SCORE_TO_COMMENTARY = {
 	0 : "You let it catch you, didn't you..?",
@@ -38,22 +38,37 @@ var grid_color= GRID_COLORS[1]
 const NEXT_LEVEL_TIPS = [
 	"null",
 	"null", 
-	"Avoid Beetle Bullets!\n(Snake eats bugs.)", 
-	"Speed up!",
+	"Avoid Beetle bullets!\n(Snake eats bugs)", 
 	"Watch for Dragonflies!",
+	"Snake speed up!",
 	"Snakes hate poisonous Spiders!",
-	"Dodge bouncing Butterflies!",
-	"Watch for frame Crawlers!",
-	"Burst bullets!",
 	"Flee the Hornet!",
+	"Watch for frame Ants!",
+	"Bullet speed up!",
+	"Dodge bouncing Butterflies!",
 	"Double trouble!",
-	"Speed up!",
+	"Snake turrets!",
 	"Good luck..."
 ]
 const MAX_LEVEL_TIP = "Keep it up!"
 
 var score = 0
 var level = 1
+
+var enemy_pool = []
+const BEETLE = preload("res://beetle.tscn")
+# DRAGONFLY
+# SPIDER
+# HORNET
+# ANTS
+# BUTTERFLY
+
+func _spawn_enemy(enemy):
+	pass
+
+func _spawn_rand_enemies(num):
+	for i in num:
+		_spawn_enemy(Global.choose_one(enemy_pool))
 
 func _ready():
 	print(LEVEL_TIMES.size())
@@ -74,7 +89,33 @@ func _update_level():
 		$UI/Time.text = str(LEVEL_TIMES[level])
 		grid_color = GRID_COLORS[level]
 		$NextLevelInfo.next_level(NEXT_LEVEL_TIPS[level])
+	
 	# add enemies and stuff
+	if level == 2: # beetle
+		enemy_pool.append(BEETLE)
+	elif level == 3: # dragonfly
+		pass
+	elif level == 4: # snake speed
+		$Snakes/Snake.speed_up()
+	elif level == 5: # spider
+		pass
+	elif level == 6: # hornet
+		pass
+	elif level == 7: # ants
+		pass
+	elif level == 8: # bullet speed
+		pass
+	elif level == 9: # butterfly
+		pass
+	elif level == 10: # snake2
+		#speed up too
+		pass
+	elif level == 11: #snake turrets
+		pass
+	elif level == 12: #moon
+		pass
+	else: #challenge
+		pass
 
 func _commentary_for_score():
 	var comment = ""
@@ -93,7 +134,10 @@ func _update_dead_info():
 func _on_pellet_dead():
 	if state != State.DEAD:
 		state = State.DEAD
-		$Snakes/Snake.disable()
+		for snake in $Snakes.get_children():
+			snake.disable()
+		for bug in $Bugs.get_children():
+			bug.disable()
 		$Pellet.disable()
 		_update_dead_info()
 		$DeadInfo.on_dead()
@@ -111,12 +155,19 @@ func _on_reset():
 	level = 1
 	_update_level()
 	$NextLevelInfo.visible = false
+	for bug in $Bugs.get_children():
+		bug.queue_free()
+	if $Snakes.find_child("Snake2"):
+		$Snakes/Snake2.queue_free()
+	for bullet in $Bullets.get_children():
+		bullet.queue_free()
 
 func _on_pellet_moved():
 	if state == State.WAITING:
 		state = State.PLAYING
 		time_elapsed = 0
-		$Snakes/Snake.enable()
+		for snake in $Snakes.get_children():
+			snake.enable()
 		$StartupInfo.on_playing()
 
 var time_elapsed = 0
@@ -146,10 +197,20 @@ func _on_second_passed():
 		level += 1
 		_update_level()
 
-func is_grid_pos_clear(grid_pos):
-	# are there any bug or snek in pos
-	pass
+func is_grid_pos_full(grid_pos):
+	# are there any bug at pos?
+	for bug in $Bugs.get_children():
+		if Global.to_grid_position(bug.position) == grid_pos:
+			return true
+	if is_grid_pos_snake(grid_pos):
+		return true
+	return false
 
+func is_grid_pos_snake(grid_pos):
+	for snake in $Snakes.get_children():
+		if snake.is_snake_at(grid_pos):
+			return true
+	return false
 
 func _on_snake_ate_bug():
 	score += level * 10

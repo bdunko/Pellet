@@ -29,6 +29,9 @@ var _enabled = false
 const FREE_SEGMENTS_MAX = 10
 var free_segments = FREE_SEGMENTS_MAX
 
+@onready var BASE_SPEED = $Timer.wait_time
+const MORE_SPEED = 0.175
+
 class Pair:
 	var pos: Vector2
 	var original_dir: Direction
@@ -59,7 +62,7 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 		
 		while to_check.size() != 0:
 			var current_check: Pair = to_check.pop_front()
-			if not Global.is_grid_pos_in_grid(current_check.pos) or is_snake_at(current_check.pos) or current_check.pos in checked: # can't go this way
+			if not Global.is_grid_pos_in_grid(current_check.pos) or get_parent().get_parent().is_grid_pos_snake(current_check.pos) or current_check.pos in checked: # can't go this way
 				continue
 			
 			checked.append(current_check.pos)
@@ -165,6 +168,10 @@ func reset():
 	_previous_head_positions.clear()
 	# free segs
 	free_segments = FREE_SEGMENTS_MAX
+	$Timer.wait_time = BASE_SPEED
+
+func speed_up():
+	$Timer.wait_time = MORE_SPEED
 
 func disable():
 	_enabled = false
@@ -172,7 +179,7 @@ func disable():
 func enable():
 	_enabled = true
 
-func _on_bug_hitbox_area_entered(area):
+func _on_bug_body_entered(body):
 	call_deferred("_grow_snake")
-	area.get_parent().queue_free()
+	body.queue_free()
 	emit_signal("ate_bug")

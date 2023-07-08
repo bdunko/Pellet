@@ -226,7 +226,7 @@ z_index = 1500
 z_index = 1600
 
 [node name="Beetle" parent="Bugs" instance=ExtResource("9_tq60e")]
-position = Vector2(215, 54)
+position = Vector2(145, 95)
 
 [node name="Beetle2" parent="Bugs" instance=ExtResource("9_tq60e")]
 position = Vector2(215, 144)
@@ -237,7 +237,12 @@ position = Vector2(215, 144)
 z_index = 500
 position = Vector2(96, 95)
 
+[node name="Snake2" parent="Snakes" instance=ExtResource("7_ertux")]
+z_index = 500
+position = Vector2(136, 135)
+
 [connection signal="timeout" from="NextLevelInfo/Timer" to="NextLevelInfo" method="_on_timer_timeout"]
 [connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]
 [connection signal="moved" from="Pellet" to="." method="_on_pellet_moved"]
 [connection signal="ate_bug" from="Snakes/Snake" to="." method="_on_snake_ate_bug"]
+[connection signal="ate_bug" from="Snakes/Snake2" to="." method="_on_snake_ate_bug"]
