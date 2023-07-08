@@ -21,13 +21,13 @@ var _MOVEMENT_BY_DIR = {
 }
 
 var _direction := Direction.UP
-var _previous_head_position := Vector2(0, 0)
-var _previous_head_rotation := 0
+var _previous_head_positions := []
 
 func _move():
 	# store previous before moving
-	_previous_head_position = position
-	_previous_head_rotation = $HeadSprite.rotation_degrees
+	_previous_head_positions.push_front(position)
+	if(_previous_head_positions.size() == 100): #don't track forever
+		_previous_head_positions.remove_at(99)
 	
 	# get my grid position
 	var grid_pos = Global.to_grid_position(position)
@@ -78,33 +78,48 @@ func _move():
 	position.y -= 1 # move up a bit more for the tongue
 	
 	
-	# move each segment to position/rotation of segment in front of it, from back to front, and update z-index
+	# move each segment to position of segment in front of it, from back to front
 	var segments = $Segments.get_children()
 	segments.reverse()
 	for i in range(0, segments.size()):
 		var segment = segments[i]
-		
+		segment.visible = true
 		# special case: if last segment, move to head's previous
 		if i == segments.size() - 1:
-			segment.position = _previous_head_position
-			segment.rotation_degrees = _previous_head_rotation
+			segment.position = _previous_head_positions[0]
 		else: # otherwise move to next segment
 			var next_segment = segments[i+1]
 			segment.position = next_segment.position
-			segment.rotation_degrees = next_segment.rotation_degrees
-		
-		
-		print(i)
+			segment.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
 	
-	_update_sprite_rotation()
-
-func _update_sprite_rotation():
+	# fix rotations
+	for i in range(0, segments.size()):
+		var segment = segments[i]
+		if i == segments.size() - 1: # head case
+			segment.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, position)]
+		else:
+			var next_segment = segments[i+1]
+			segment.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
+	
+	# fix head's rotation
 	$HeadSprite.rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction]
+
+func _direction_to(point_from: Vector2, point_to: Vector2) -> Direction:
+	if point_from.x == point_to.x:
+		if point_from.y > point_to.y:
+			return Direction.UP
+		else:
+			return Direction.DOWN
+	else:
+		if point_from.x < point_to.x:
+			return Direction.RIGHT
+		else:
+			return Direction.LEFT
 
 func _on_pellet_hitbox_area_entered(area: Area2D):
 	area.get_parent().queue_free()
 	# grow snake, add segment at previous location
 	var new_segment = load("res://snake_segment.tscn").instantiate()
+	new_segment.position = position 
+	new_segment.visible = false # initially, hide segment so it appears to 'pop in' next time snake moves
 	$Segments.add_child(new_segment)
-	new_segment.rotation_degrees = _previous_head_rotation
-	new_segment.position = _previous_head_position
