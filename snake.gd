@@ -30,7 +30,7 @@ const FREE_SEGMENTS_MAX = 10
 var free_segments = FREE_SEGMENTS_MAX
 
 @onready var BASE_SPEED = $Timer.wait_time
-const MORE_SPEED = 0.175
+const MORE_SPEED = 0.18
 
 class Pair:
 	var pos: Vector2

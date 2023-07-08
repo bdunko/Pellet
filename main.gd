@@ -4,6 +4,10 @@ enum State {
 	WAITING, PLAYING, DEAD
 }
 
+const DEFAULT_BULLET_SPEED = 1
+const FAST_BULLET_SPEED = 1.5
+var bullet_speed_multiplier = DEFAULT_BULLET_SPEED
+
 var state = State.WAITING
 var highscore = 0
 
@@ -31,11 +35,11 @@ var SCORE_TO_COMMENTARY = {
 
 #                    0,  1   2   3   4   5   6   7   8   9   10  11, 12
 #                    -1  5  15  15 15 20 20 20 25 25 25 30 30
-const LEVEL_TIMES = [-1, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3]
+const LEVEL_TIMES = [-1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 40
 
-var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
+var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(181/255.0, 181/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
 Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
 Color(231/255.0, 121/255.0, 41/255.0), Color(100/255.0, 28/255.0, 55/255.0), Color(56/255.0, 134/255.0, 170/255.0), 
 Color(106/255.0, 88/255.0, 225/255.0), Color(255/255.0, 190/255.0, 62/255.0), Color(0, 0, 0)]
@@ -130,9 +134,12 @@ func _spawn_rand_enemies(num):
 
 func _ready():
 	assert(LEVEL_TIMES.size() == GRID_COLORS.size())
+	assert(LEVEL_TIMES.size() == NEXT_LEVEL_TIPS.size())
 	_update_level()
 	$NextLevelInfo.visible = false
 	$Grid.self_modulate = grid_color
+
+var spider_enabled = false
 
 func _update_level():
 	$NextLevelInfo.visible = true
@@ -164,7 +171,7 @@ func _update_level():
 		$Sky.next_sky() # day
 		$Snakes/Snake.speed_up()
 	elif level == 6: # spider
-		pass # handled below
+		spider_enabled = true
 	elif level == 7: # hornet
 		_spawn_enemy(HORNET, HORNET_SPAWN)
 		forced_spawns = 1
@@ -173,7 +180,7 @@ func _update_level():
 		forced_spawns = 2
 		pass
 	elif level == 9: # bullet speed
-		pass
+		bullet_speed_multiplier = FAST_BULLET_SPEED
 	elif level == 10: # butterfly
 		forced_spawns = 2
 		spawn_count += 1 #5
@@ -195,7 +202,7 @@ func _update_level():
 			spawn_count += 1
 	if level >= 2:
 		_spawn_rand_enemies(spawn_count - forced_spawns)
-	if level >= 6:
+	if spider_enabled:
 		for i in ceil(spawn_count/5.0):
 			_spawn_enemy(SPIDER, SPIDER_SPAWN)
 
@@ -249,6 +256,8 @@ func _on_reset():
 		$Snakes/Snake2.queue_free()
 	for bullet in $Bullets.get_children():
 		bullet.queue_free()
+	spider_enabled = false
+	bullet_speed_multiplier = DEFAULT_BULLET_SPEED
 
 func _on_pellet_moved():
 	if state == State.WAITING:
