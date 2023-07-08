@@ -12,6 +12,9 @@ func _ready():
 	if roll == 3:
 		rotation_degrees = 0
 
+func disable():
+	pass
+
 # Terrible $HACK$
 func poison():
 	pass

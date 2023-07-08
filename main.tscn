@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://cuicl1alqbct3"]
+[gd_scene load_steps=16 format=3 uid="uid://cuicl1alqbct3"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
 [ext_resource type="Texture2D" uid="uid://cfnee42a60ou6" path="res://assets/board.png" id="2_ff65i"]
@@ -14,7 +14,6 @@
 [ext_resource type="Texture2D" uid="uid://cay5ftkmugouq" path="res://assets/sky_morning.png" id="6_7fbtx"]
 [ext_resource type="PackedScene" uid="uid://xe84in6ej3m7" path="res://pellet.tscn" id="6_dvu1o"]
 [ext_resource type="PackedScene" uid="uid://de227doiyv2qb" path="res://snake.tscn" id="7_ertux"]
-[ext_resource type="PackedScene" uid="uid://bxbfstit6butu" path="res://spider.tscn" id="10_xxyul"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ji84y"]
 size = Vector2(4.5, 166)
@@ -282,9 +281,6 @@ z_index = 1600
 [node name="Snake" parent="Snakes" instance=ExtResource("7_ertux")]
 z_index = 500
 position = Vector2(96, 95)
-
-[node name="Spider" parent="." instance=ExtResource("10_xxyul")]
-position = Vector2(165, 95)
 
 [connection signal="timeout" from="NextLevelInfo/Timer" to="NextLevelInfo" method="_on_timer_timeout"]
 [connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]

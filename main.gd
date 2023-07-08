@@ -31,7 +31,7 @@ var SCORE_TO_COMMENTARY = {
 
 #                    0,  1   2   3   4   5   6   7   8   9   10  11, 12
 #                    -1  5  15  15 15 20 20 20 25 25 25 30 30
-const LEVEL_TIMES = [-1, 5, 15, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3]
+const LEVEL_TIMES = [-1, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3]
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 40
 
@@ -71,7 +71,7 @@ const BEETLE_SPAWN = SpawnMode.GRID_NO_BORDER
 const DRAGONFLY = preload("res://dragonfly.tscn")
 const DRAGONFLY_SPAWN = SpawnMode.GRID
 const SPIDER = preload("res://spider.tscn")
-const SPIDER_SPAWN = SpawnMode.GRID
+const SPIDER_SPAWN = SpawnMode.GRID_NO_BORDER
 # HORNET
 const HORNET_SPAWN = SpawnMode.BOTTOM
 # ANTS
@@ -186,6 +186,9 @@ func _update_level():
 			spawn_count += 1
 	if level >= 2:
 		_spawn_rand_enemies(spawn_count - forced_spawns)
+	if level >= 5:
+		for i in ceil(spawn_count/5.0):
+			_spawn_enemy(SPIDER, SPIDER_SPAWN)
 
 func _commentary_for_score():
 	var comment = ""
