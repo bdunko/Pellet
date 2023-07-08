@@ -14,12 +14,12 @@ const tips = ["You can touch the snake's body.\nOnly the head is deadly.", "You 
 
 var SCORE_TO_COMMENTARY = {
 	0 : "You let it catch you, didn't you..?",
-	100 : "Give it another try!",
-	1000 : "Not bad... but you can do better.",
-	2500 : "You're getting pretty good!",
-	5000 : "Wow! Nice job!",
-	10000 : "Hey, that's better than my high score... :(",
-	15000 : "Amazing score!!! Incredible!"
+	15 : "Give it another try!",
+	250 : "Not bad... but you can do better.",
+	1000 : "You're getting pretty good!",
+	2500 : "Wow! Nice job!",
+	5000 : "Hey, that's better than my high score... :(",
+	10000 : "Amazing score!!! Incredible!"
 }
 
 var score = 0
