@@ -7,6 +7,7 @@ var disabled = false
 var SPEED = 60
 
 func _ready():
+	modulate.a = 0
 	# pick a direction...
 	var roll = Global.RNG.randi_range(0, 3)
 	if roll == 0:
@@ -23,6 +24,9 @@ func _ready():
 		rotation_degrees = 0
 
 func _process(delta):
+	# transparency
+	modulate.a = lerp(modulate.a, 1.0, 12 * delta)
+	
 	if not disabled:
 		var collide = move_and_collide(velocity * delta)
 		if collide: #flip direction

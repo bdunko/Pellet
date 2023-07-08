@@ -5,7 +5,13 @@ const BULLET_SPEED = 45
 
 var disabled = false
 
-func _process(_delta):
+func _ready():
+	modulate.a = 0
+
+func _process(delta):
+	# transparency
+	modulate.a = lerp(modulate.a, 1.0, 12 * delta)
+	
 	#rotate to face player
 	var pellet_pos = get_parent().get_parent().find_child("Pellet").position
 	var x_diff = position.x - pellet_pos.x

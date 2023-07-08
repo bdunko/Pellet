@@ -4,7 +4,13 @@ var SPEED = 30
 
 var disabled = false
 
+func _ready():
+	modulate.a = 0
+
 func _process(delta):
+	# transparency
+	modulate.a = lerp(modulate.a, 1.0, 12 * delta)
+	
 	if not disabled:
 		#rotate to face player
 		var pellet_pos = get_parent().get_parent().find_child("Pellet").position
