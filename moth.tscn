@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://bgjm1nfpl3dji"]
+
+[ext_resource type="Script" path="res://moth.gd" id="1_y05nh"]
+[ext_resource type="Texture2D" uid="uid://c6i5gil2rc3c" path="res://assets/bugs/enemy_moth.png" id="2_3qle5"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
+radius = 1.0
+height = 4.0
+
+[node name="Moth" type="CharacterBody2D"]
+collision_layer = 8
+collision_mask = 42
+script = ExtResource("1_y05nh")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_3qle5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0)
+shape = SubResource("CapsuleShape2D_mshyp")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 3.0
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_shot_timer_timeout"]

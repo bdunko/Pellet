@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 const BULLET = preload("res://bullet.tscn")
-const BULLET_SPEED = 50
+const BULLET_SPEED = 45
 
 var disabled = false
 

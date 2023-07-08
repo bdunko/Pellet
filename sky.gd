@@ -10,7 +10,6 @@ func next_sky():
 func _process(delta):
 	for index in get_child_count():
 		var sky = get_child(index)
-		print(sky)
 		if index <= current_sky_index: # we should be visible
 			sky.self_modulate.a = lerp(sky.self_modulate.a, 1.0, 5 * delta)
 		if index > current_sky_index: # we should be invisible

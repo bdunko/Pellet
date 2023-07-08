@@ -325,3 +325,6 @@ func _on_snake_ate_bug():
 		_update_level()
 		$NextLevelInfo/ClearBonus.text = CLEAR_BONUS_FORMAT % full_clear_bonus
 		$NextLevelInfo/ClearBonus.visible = true
+	if level >= 14 and $Bugs.get_child_count() < 12:
+		_spawn_rand_enemies(1)
+		
