@@ -1,11 +1,15 @@
-[gd_scene load_steps=7 format=3 uid="uid://c7204os4in616"]
+[gd_scene load_steps=9 format=3 uid="uid://c7204os4in616"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
 [ext_resource type="Texture2D" uid="uid://dxjyhf8br5g6w" path="res://assets/sky_background.png" id="1_pxdvb"]
 [ext_resource type="Texture2D" uid="uid://cfnee42a60ou6" path="res://assets/board.png" id="2_ff65i"]
 [ext_resource type="Texture2D" uid="uid://fdooebg583my" path="res://assets/grid.png" id="3_q3otb"]
-[ext_resource type="Texture2D" uid="uid://bnghun6vkgf5v" path="res://assets/pellet.png" id="6_b0t2h"]
+[ext_resource type="PackedScene" uid="uid://xe84in6ej3m7" path="res://pellet.tscn" id="6_dvu1o"]
 [ext_resource type="PackedScene" uid="uid://de227doiyv2qb" path="res://snake.tscn" id="7_ertux"]
+[ext_resource type="Script" path="res://pellet.gd" id="7_fwos1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ji84y"]
+size = Vector2(4.5, 166)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_eks3d")
@@ -18,19 +22,26 @@ centered = false
 texture = ExtResource("2_ff65i")
 centered = false
 
+[node name="Board Walls" type="StaticBody2D" parent="Board"]
+collision_layer = 32
+collision_mask = 0
+
+[node name="Wall" type="CollisionShape2D" parent="Board/Board Walls"]
+position = Vector2(77.75, 90)
+shape = SubResource("RectangleShape2D_ji84y")
+
+[node name="Wall2" type="CollisionPolygon2D" parent="Board/Board Walls"]
+polygon = PackedVector2Array(80, 7, 80, 10, 240, 10, 240, 170, 80, 170, 80, 173, 243, 173, 243, 7)
+
 [node name="Grid" type="Sprite2D" parent="."]
 position = Vector2(80, 10)
 texture = ExtResource("3_q3otb")
 centered = false
 
-[node name="PelletPreview" type="Sprite2D" parent="."]
-self_modulate = Color(1, 1, 1, 0.505882)
-texture = ExtResource("6_b0t2h")
-
 [node name="Pellets" type="Node" parent="."]
 
 [node name="Snake" parent="." instance=ExtResource("7_ertux")]
-position = Vector2(165, 153)
+position = Vector2(95, 153)
 
 [node name="ScoreText" type="Label" parent="."]
 offset_left = 15.0
@@ -53,5 +64,9 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 text = "0"
 horizontal_alignment = 1
+
+[node name="Pellet" parent="." instance=ExtResource("6_dvu1o")]
+position = Vector2(160, 90)
+script = ExtResource("7_fwos1")
 
 [connection signal="dead" from="Snake" to="." method="_on_snake_dead"]
