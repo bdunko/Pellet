@@ -50,7 +50,7 @@ const NEXT_LEVEL_TIPS = [
 	"null",
 	"null", 
 	"Avoid Beetle bullets!\n(Snake eats bugs)", 
-	"Nice job!",
+	"More Beetles!",
 	"Watch for Dragonflies!",
 	"Snake speed up!",
 	"Snakes hate poisonous Spiders!",
@@ -248,16 +248,16 @@ func _on_reset():
 	$DeadInfo.on_reset()
 	$UI/Score.text = str(0)
 	level = 1
-	_update_level()
-	$NextLevelInfo.visible = false
+	spider_enabled = false
 	for bug in $Bugs.get_children():
 		bug.queue_free()
 	if $Snakes.find_child("Snake2"):
 		$Snakes/Snake2.queue_free()
 	for bullet in $Bullets.get_children():
 		bullet.queue_free()
-	spider_enabled = false
 	bullet_speed_multiplier = DEFAULT_BULLET_SPEED
+	_update_level()
+	$NextLevelInfo.visible = false # $HACK$, must be after _update_level
 
 func _on_pellet_moved():
 	if state == State.WAITING:

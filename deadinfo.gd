@@ -10,6 +10,6 @@ func on_reset():
 
 func _process(delta):
 	if active:
-		modulate.a = lerp(modulate.a, 1.0, 8.0 * delta)
+		modulate.a = lerp(modulate.a, 1.0, 10.0 * delta)
 	else:
-		modulate.a = lerp(modulate.a, 0.0, 8.0 * delta)
+		modulate.a = lerp(modulate.a, 0.0, 10.0 * delta)

@@ -5,7 +5,7 @@
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
 radius = 1.0
-height = 10.0
+height = 4.0
 
 [node name="Dragonfly" type="CharacterBody2D"]
 collision_layer = 8
