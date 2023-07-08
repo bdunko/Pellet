@@ -165,8 +165,9 @@ offset_right = 320.0
 offset_bottom = 172.0
 bbcode_enabled = true
 text = "[center]- Tip -
-You can touch the snake's body.
-Only the head is deadly.[/center]"
+You get some points for surviving.
+But you get more for making the
+snake eat other enemies.[/center]"
 
 [node name="Snake" parent="." instance=ExtResource("7_ertux")]
 position = Vector2(96, 95)

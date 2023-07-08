@@ -10,7 +10,7 @@ const TIME_FORMAT = "[center]You lasted [color=lightblue]%d[/color] seconds.[/ce
 const SCORE_FORMAT = "[center]And earned [color=green]%d[/color] points![/center]"
 const COMMENTARY_FORMAT = "[center]%s[/center]"
 const TIP_FORMAT = "[center]- Tip -\n%s"
-const tips = ["You can touch the body.\nOnly the snake's head is deadly."]
+const tips = ["You can touch the snake's body.\nOnly the head is deadly.", "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies."]
 
 var SCORE_TO_COMMENTARY = {
 	0 : "You let it catch you, didn't you..?",
