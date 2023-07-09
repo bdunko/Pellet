@@ -14,7 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://cay5ftkmugouq" path="res://assets/sky_morning.png" id="6_7fbtx"]
 [ext_resource type="PackedScene" uid="uid://xe84in6ej3m7" path="res://pellet.tscn" id="6_dvu1o"]
 [ext_resource type="PackedScene" uid="uid://de227doiyv2qb" path="res://snake.tscn" id="7_ertux"]
-[ext_resource type="PackedScene" uid="uid://bgjm1nfpl3dji" path="res://moth.tscn" id="14_iufdd"]
+[ext_resource type="PackedScene" uid="uid://27ewt5mll2od" path="res://moon.tscn" id="14_joual"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ji84y"]
 size = Vector2(4.5, 166)
@@ -289,8 +289,8 @@ z_index = 1500
 [node name="Bugs" type="Node2D" parent="."]
 z_index = 1600
 
-[node name="Moth" parent="Bugs" instance=ExtResource("14_iufdd")]
-position = Vector2(165, 112)
+[node name="Moon" parent="Bugs" instance=ExtResource("14_joual")]
+position = Vector2(280, 32)
 
 [node name="Snakes" type="Node2D" parent="."]
 

@@ -1,13 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://27ewt5mll2od"]
+[gd_scene load_steps=3 format=3 uid="uid://27ewt5mll2od"]
 
 [ext_resource type="Texture2D" uid="uid://bc3644en5rjpo" path="res://assets/moon.png" id="1_o2dt6"]
 [ext_resource type="Script" path="res://moon.gd" id="1_p5myj"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
-radius = 13.5
-height = 27.0
-
 [node name="Moon" type="CharacterBody2D"]
+z_index = 1600
 collision_layer = 0
 collision_mask = 0
 script = ExtResource("1_p5myj")
@@ -15,8 +12,7 @@ script = ExtResource("1_p5myj")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_o2dt6")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CapsuleShape2D_mshyp")
-
 [node name="ShotTimer" type="Timer" parent="."]
 autostart = true
+
+[connection signal="timeout" from="ShotTimer" to="." method="_on_shot_timer_timeout"]

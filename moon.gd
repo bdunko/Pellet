@@ -23,7 +23,6 @@ func _process(delta):
 func _on_shot_timer_timeout():
 	if not disabled:
 		var bullet = BULLET.instantiate()
-		
 		var pellet_pos = get_parent().get_parent().find_child("Pellet").position
 		var direction = Vector2(pellet_pos.x - position.x, pellet_pos.y - position.y).normalized()
 		bullet.setup(position, direction, BULLET_SPEED * get_parent().get_parent().bullet_speed_multiplier, self)
