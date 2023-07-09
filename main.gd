@@ -165,8 +165,6 @@ func _ready():
 	$NextLevelInfo.visible = false
 	$Grid.self_modulate = grid_color
 
-var spider_enabled = false
-
 func _update_level():
 	$NextLevelInfo.visible = true
 	$NextLevelInfo/ClearBonus.visible = false
@@ -195,7 +193,8 @@ func _update_level():
 		forced_spawns = 1
 	elif level == 5: 
 		$Sky.next_sky() #day
-		spider_enabled = true
+		enemy_pool.append([SPIDER, SPIDER_SPAWN])
+		_spawn_enemy(SPIDER, SPIDER_SPAWN)
 	elif level == 6: 
 		$Snakes/Snake.speed_up()
 	elif level == 7:
@@ -232,9 +231,6 @@ func _update_level():
 			spawn_count += 1
 	if level >= 2:
 		_spawn_rand_enemies(spawn_count - forced_spawns)
-	if spider_enabled:
-		for i in ceil(spawn_count/5.0):
-			_spawn_enemy(SPIDER, SPIDER_SPAWN)
 
 func _commentary_for_score():
 	var comment = ""
@@ -279,7 +275,6 @@ func _on_reset():
 	$DeadInfo.on_reset()
 	$UI/Score.text = str(0)
 	level = 1
-	spider_enabled = false
 	for bug in $Bugs.get_children():
 		bug.queue_free()
 	if $Snakes.find_child("Snake2"):
