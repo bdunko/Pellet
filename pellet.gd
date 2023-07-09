@@ -28,8 +28,12 @@ func enable():
 func reset():
 	position = STARTING_POS
 
+var DEBUG = true
+
 func _on_dead_hitbox_body_entered(_body):
-	emit_signal("dead")
+	if not DEBUG:
+		emit_signal("dead")
 
 func _on_dead_hitbox_area_entered(_area):
-	emit_signal("dead")
+	if not DEBUG:
+		emit_signal("dead")

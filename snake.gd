@@ -170,7 +170,7 @@ func _shrink_snake():
 		removed_seg.queue_free()
 
 func reset():
-	$HeadSprite.modulate = BASE_COLOR
+	$HeadSprite.modulate = color
 	_enabled = false
 	# free segs
 	for segment in $Segments.get_children():
@@ -215,24 +215,35 @@ func _on_bug_body_entered(body):
 const POISON_COLOR = Color(109/255.0, 78/255.0, 255/255.0)
 const YUM_COLOR = Color(79/255.0, 255/255.0, 67/255.0)
 const BASE_COLOR = Color(255/255.0, 133/255.0, 0/255.0)
+const BASE_COLOR2 = Color(147/255.0, 255/255.0, 139/255.0)
+const BASE_COLOR3 = Color(255/255.0, 255/255.0, 255/255.0)
+var color = BASE_COLOR
+
+func set_base_color(c):
+	if c == 1:
+		color = BASE_COLOR2
+	elif c == 2:
+		color = BASE_COLOR3
+	else:
+		color = BASE_COLOR
 
 func _process(delta):
 	modulate.a = lerp(modulate.a, 1.0, 20 * delta)
 	
 	if not $PoisonTimer.is_stopped():
-		var color = Color(lerp($HeadSprite.modulate.r, POISON_COLOR.r, 8 * delta), lerp($HeadSprite.modulate.g, POISON_COLOR.g, 10 * delta), lerp($HeadSprite.modulate.b, POISON_COLOR.b, 10 * delta))
-		set_color(color)
+		var c = Color(lerp($HeadSprite.modulate.r, POISON_COLOR.r, 8 * delta), lerp($HeadSprite.modulate.g, POISON_COLOR.g, 10 * delta), lerp($HeadSprite.modulate.b, POISON_COLOR.b, 10 * delta))
+		recolor_parts(c)
 	elif not $YumTimer.is_stopped():
-		var color = Color(lerp($HeadSprite.modulate.r, YUM_COLOR.r, 8 * delta), lerp($HeadSprite.modulate.g, YUM_COLOR.g, 10 * delta), lerp($HeadSprite.modulate.b, YUM_COLOR.b, 10 * delta))
-		set_color(color)
+		var c = Color(lerp($HeadSprite.modulate.r, YUM_COLOR.r, 8 * delta), lerp($HeadSprite.modulate.g, YUM_COLOR.g, 10 * delta), lerp($HeadSprite.modulate.b, YUM_COLOR.b, 10 * delta))
+		recolor_parts(c)
 	else:
-		var color = Color(lerp($HeadSprite.modulate.r, BASE_COLOR.r, 8 * delta), lerp($HeadSprite.modulate.g, BASE_COLOR.g, 10 * delta), lerp($HeadSprite.modulate.b, BASE_COLOR.b, 10 * delta))
-		set_color(color)
+		var c = Color(lerp($HeadSprite.modulate.r, color.r, 8 * delta), lerp($HeadSprite.modulate.g, color.g, 10 * delta), lerp($HeadSprite.modulate.b, color.b, 10 * delta))
+		recolor_parts(c)
 
-func set_color(color):
-	$HeadSprite.modulate = color
+func recolor_parts(c):
+	$HeadSprite.modulate = c
 	for seg in $Segments.get_children():
-		seg.modulate = color
+		seg.modulate = c
 
 func no_free_segments():
 	free_segments = 1
@@ -240,5 +251,5 @@ func no_free_segments():
 func _ready():
 	$Timer.wait_time = BASE_SPEED
 	speed_level = 0
-	$HeadSprite.modulate = BASE_COLOR
+	$HeadSprite.modulate = color
 	modulate.a = 0

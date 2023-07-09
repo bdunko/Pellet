@@ -227,7 +227,7 @@ func _ready():
 	$NextLevelInfo.visible = false
 	$Grid.self_modulate = grid_color
 
-func _spawn_new_snake(speed = 0):
+func _spawn_new_snake(speed = 0, color = 0):
 	var rand_pos = _try_find_legal_position(SNAKE_SPAWN, 200) #try really hard to spawn this snek
 	if rand_pos != null:
 		var snek = SNAKE.instantiate()
@@ -236,6 +236,7 @@ func _spawn_new_snake(speed = 0):
 		snek.enable()
 		for s in speed:
 			snek.speed_up()
+		snek.set_base_color(color)
 		snek.ate_bug.connect(on_bug_killed)
 		$Snakes.add_child(snek)
 
@@ -281,14 +282,14 @@ func _update_level():
 	elif level == 10:
 		$Sky.next_sky() #evening
 		$Board.next_board()
-		_spawn_new_snake(1)
+		_spawn_new_snake(1, 1)
 	elif level == 12:
 		_spawn_enemy(HORNET, HORNET_SPAWN)
 		forced_spawns = 1
 	elif level == 14:
 		$Sky.next_sky() # night
 		$Board.next_board()
-		_spawn_new_snake(1)
+		_spawn_new_snake(1, 2)
 	elif level == 16: 
 		enemy_pool.append([MOTH, MOTH_SPAWN])
 		_spawn_enemy(MOTH, MOTH_SPAWN)
