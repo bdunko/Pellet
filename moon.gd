@@ -25,9 +25,9 @@ func _on_shot_timer_timeout():
 		var bullet = BULLET.instantiate()
 		var pellet_pos = get_parent().get_parent().find_child("Pellet").position
 		var direction = Vector2(pellet_pos.x - position.x, pellet_pos.y - position.y).normalized()
-		bullet.rotation_degrees = position.angle_to(pellet_pos)
 		bullet.setup(position, direction, BULLET_SPEED * get_parent().get_parent().bullet_speed_multiplier, self)
 		bullet.position = position
+		bullet.rotation = position.direction_to(pellet_pos).angle()
 		get_parent().get_parent().find_child("Bullets").add_child(bullet)
 		bullet.hit_bug.connect(get_parent().get_parent().on_bug_killed)
 

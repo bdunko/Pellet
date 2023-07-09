@@ -4,6 +4,8 @@ var bug_owner
 
 var mod_target = 1.0
 
+var disabled = false
+
 func setup(pos, dir, speed, owned_bug):
 	position = pos
 	velocity = dir * speed
@@ -16,9 +18,10 @@ func _process(delta):
 	if modulate.r == 0:
 		queue_free()
 	
-	var collide = move_and_collide(velocity  * delta) 
-	if collide != null:
-		call_deferred("_begin_destroy")
+	if not disabled:
+		var collide = move_and_collide(velocity  * delta) 
+		if collide != null:
+			call_deferred("_begin_destroy")
 		
 
 
@@ -30,3 +33,6 @@ func _begin_destroy():
 	mod_target = 0.0
 	$CollisionShape2D.disabled = true
 	velocity = Vector2.ZERO
+
+func disable():
+	disabled = true

@@ -84,7 +84,7 @@ const ANT_SPAWN = SpawnMode.FRAME
 const MOTH = preload("res://moth.tscn")
 const MOTH_SPAWN = SpawnMode.GRID
 const SNAKE = preload("res://snake.tscn")
-const SNAKE_SPAWN = SpawnMode.GRID
+const SNAKE_SPAWN = SpawnMode.GRID_NO_BORDER # $HACK$ lol because it always go right
 const MOON = preload("res://moon.tscn")
 const MOON_SPAWN = SpawnMode.MOON
 const MOON_POSITION = Vector2(283, 32)
@@ -196,7 +196,7 @@ func _ready():
 	$Grid.self_modulate = grid_color
 
 func _spawn_new_snake(speed = 0):
-	var rand_pos = _try_find_legal_position(SpawnMode.GRID, 200) #try really hard to spawn this snek
+	var rand_pos = _try_find_legal_position(SNAKE_SPAWN, 200) #try really hard to spawn this snek
 	if rand_pos != null:
 		var snek = SNAKE.instantiate()
 		snek.position = Global.to_global_position(rand_pos)
@@ -300,6 +300,8 @@ func _on_pellet_dead():
 			snake.disable()
 		for bug in $Bugs.get_children():
 			bug.disable()
+		for bullet in $Bullets.get_children():
+			bullet.disable()
 		$Pellet.disable()
 		_update_dead_info()
 		$DeadInfo.on_dead()

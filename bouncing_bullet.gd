@@ -2,6 +2,8 @@ extends CharacterBody2D
 
 var bug_owner
 
+var disabled = false
+
 func setup(pos, dir, speed, owned_bug):
 	position = pos
 	velocity = dir * speed
@@ -18,16 +20,17 @@ func _process(delta):
 	if modulate.r == 0:
 		queue_free()
 		
-	var collision: KinematicCollision2D = move_and_collide(velocity * delta)
-	if collision:
-		_update_num_collisions()
-		var reflect = collision.get_remainder().bounce(collision.get_normal())
-		velocity = velocity.bounce(collision.get_normal())
-		if velocity.y > 0:
-			rotation_degrees = -180
-		else:
-			rotation_degrees = 0
-		move_and_collide(reflect)
+	if not disabled:
+		var collision: KinematicCollision2D = move_and_collide(velocity * delta)
+		if collision:
+			_update_num_collisions()
+			var reflect = collision.get_remainder().bounce(collision.get_normal())
+			velocity = velocity.bounce(collision.get_normal())
+			if velocity.y > 0:
+				rotation_degrees = -180
+			else:
+				rotation_degrees = 0
+			move_and_collide(reflect)
 
 func _on_collide_with_bug(body): #hmm... rethink this
 	if body != bug_owner:
@@ -42,3 +45,6 @@ func _begin_destroy():
 	mod_target = 0.0
 	$CollisionShape2D.disabled = true
 	velocity = Vector2.ZERO
+
+func disable():
+	disabled = true
