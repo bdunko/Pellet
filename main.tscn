@@ -178,7 +178,7 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 9
 theme_override_font_sizes/font_size = 32
-text = "PELLET"
+text = "PELLET!"
 horizontal_alignment = 1
 
 [node name="Controls" type="Label" parent="StartupInfo"]
@@ -271,7 +271,6 @@ But you get more for making the
 snake eat other enemies.[/center]"
 
 [node name="NextLevelInfo" type="Node2D" parent="."]
-modulate = Color(1, 1, 1, 0)
 z_index = 3999
 position = Vector2(127, 9)
 script = ExtResource("5_ct2ys")
@@ -290,10 +289,10 @@ horizontal_alignment = 1
 clip_text = true
 
 [node name="Tip" type="Label" parent="NextLevelInfo"]
-offset_left = -127.0
+offset_left = -125.0
 offset_top = 52.0
-offset_right = -50.0
-offset_bottom = 174.0
+offset_right = -52.0
+offset_bottom = 137.0
 theme_override_colors/font_color = Color(1, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
@@ -302,7 +301,7 @@ horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="Timer" type="Timer" parent="NextLevelInfo"]
-wait_time = 3.0
+wait_time = 5.0
 one_shot = true
 
 [node name="Pellet" parent="." instance=ExtResource("6_dvu1o")]
@@ -333,6 +332,7 @@ bus = &"Snake"
 
 [node name="BulletSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("19_dp7f8")
+bus = &"Bullets"
 
 [node name="NextLevelSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("21_hy2j7")

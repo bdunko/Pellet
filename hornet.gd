@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-var SPEED = 30
+var SPEED = 20
 
 var disabled = false
 

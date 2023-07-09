@@ -4,7 +4,7 @@ const BULLET = preload("res://bullet.tscn")
 const BULLET_SPEED = 80
 
 var disabled = false
-var SPEED = 40
+var SPEED = 35
 var vertical = false
 
 func _ready():

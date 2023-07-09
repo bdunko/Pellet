@@ -29,11 +29,11 @@ const tips = ["The snake can eat bugs.\nIt can block bullets too!",
 
 var SCORE_TO_COMMENTARY = {
 	0 : "You let it catch you, didn't you..?",
-	15 : "Give it another try!",
-	250 : "Not bad... but you can do better.",
-	1000 : "You're getting pretty good!",
-	2500 : "Wow! Nice job!",
-	5000 : "Amazing score! Incredible!",
+	50 : "Give it another try!",
+	500 : "Not bad... but you can do better.",
+	1800 : "You're getting pretty good!",
+	4000 : "Wow! Nice job!",
+	7500 : "Amazing score! Incredible!",
 	10000 : "Hey, that's better than my high score... :(",
 	25000 : "Unbelievable score... are you cheating?"
 }
@@ -44,7 +44,7 @@ const LEVEL_TIMES = [-1, 5, 15, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 30, 
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 30
 
-var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
+var GRID_COLORS = [null, Color(57/255.0, 255/255.0, 120/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
 Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
 Color(219/255.0, 146/255.0, 94/255.0), Color(224/255.0, 117/255.0, 157/255.0),Color(168/255.0, 85/255.0, 211/255.0), 
 Color(209/255.0, 82/255.0, 73/255.0), Color(178/255.0, 222/255.0, 91/255.0), Color(91/255.0, 222/255.0, 215/255.0), 
@@ -55,22 +55,22 @@ var grid_color= GRID_COLORS[1]
 const NEXT_LEVEL_TIPS = [
 	"null",
 	"null", 
-	"Avoid Beetle bullets!\n(Snake eats bugs)", 
-	"Nice job!",
+	"Avoid Beetle bullets!", 
+	"Snake eats bugs!",
 	"Watch for Dragonflies!",
 	"Dragonflying!!",
-	"Snakes hate poisonous Spiders!",
+	"Spiders shrink Snakes!",
 	"Speed up!",
-	"Look out for Ants!",
 	"Double trouble!",
+	"Look out for Ants!",
 	"Flee the Hornet!",
 	"No pressure...",
 	"Triple trouble!",
-	"Bullet-bouncing Moths?",
+	"Bullet-bouncing Moths??",
 	"Speed up!",
 	"Uh oh..."
 ]
-const MAX_LEVEL_TIP = "How much harder can it get...?"
+const MAX_LEVEL_TIP = "How much longer...?"
 
 func _update_level():
 	$NextLevelInfo.visible = true
@@ -110,13 +110,13 @@ func _update_level():
 		enemy_pool.append([SPIDER, SPIDER_SPAWN]) # add spider next time so only 1 spawns on 5
 		speed_up()
 	elif level == 8: 
-		enemy_pool.append([ANT, ANT_SPAWN]) # add ants after
-		_spawn_enemy(ANT, ANT_SPAWN)
-		forced_spawns = 1
-	elif level == 9:
 		$Sky.next_sky() #evening
 		$Board.next_board()
 		_spawn_new_snake(1)
+	elif level == 9:
+		enemy_pool.append([ANT, ANT_SPAWN]) # add ants after
+		_spawn_enemy(ANT, ANT_SPAWN)
+		forced_spawns = 1
 	elif level == 10:
 		_spawn_enemy(HORNET, HORNET_SPAWN)
 		forced_spawns = 1
@@ -259,20 +259,20 @@ func _spawn_enemy(enemy, spawnmode):
 			bug.position = Global.to_global_position(Vector2(x, y))
 			#nudge onto wall...
 			if x == 0: #left wall
-				bug.position -= Vector2(4, 0)
+				bug.position -= Vector2(3, 0)
 			elif x == Global.GRID_SIZE.x - 1: #right wall
-				bug.position += Vector2(4, 0)
+				bug.position += Vector2(3, 0)
 			elif y == 0: #top wall
-				bug.position -= Vector2(0, 4)
+				bug.position -= Vector2(0, 3)
 			else: #bottom wall
-				bug.position += Vector2(0, 4)
+				bug.position += Vector2(0, 3)
 			bug.setup(vertical)
 			queued_bugs.append(bug)
 			call_deferred("_spawn_queued_bugs")
 			return
 	elif spawnmode == SpawnMode.BOTTOM:
 		var bug = enemy.instantiate()
-		bug.position = Vector2(Global.RNG.randi_range(int(Global.RESOLUTION.x/2) - 80, int(Global.RESOLUTION.y/2) + 80), Global.RESOLUTION.y + 10)
+		bug.position = Vector2(Global.RNG.randi_range(int(Global.RESOLUTION.x/2) - 80, int(Global.RESOLUTION.y/2) + 80), Global.RESOLUTION.y + 20)
 		queued_bugs.append(bug)
 		call_deferred("_spawn_queued_bugs")
 		return
