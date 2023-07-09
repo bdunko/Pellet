@@ -325,6 +325,7 @@ autostart = true
 
 [node name="DieSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("19_3536b")
+bus = &"Death"
 
 [node name="MoveSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("18_2hrks")
@@ -339,6 +340,7 @@ stream = ExtResource("21_hy2j7")
 
 [node name="TransitionSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("22_bont8")
+bus = &"Start"
 
 [node name="EatSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("23_rfv8v")
