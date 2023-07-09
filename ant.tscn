@@ -5,7 +5,7 @@
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
 radius = 3.0
-height = 8.0
+height = 10.0
 
 [node name="Ant" type="CharacterBody2D"]
 collision_layer = 8

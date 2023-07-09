@@ -21,6 +21,7 @@ const tips = ["The snake can eat bugs.\nIt can block bullets too!",
  "You can touch the snake's body.\nOnly the head is deadly.",
  "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies.",
  "If you have the snake eat every enemy,\nyou'll get a score bonus.",
+ "Have you noticed?\nEnemies flash before shooting.",
  "There's a pretty amazing gimmick if you reach the max level...\nJust saying..."]
 
 var SCORE_TO_COMMENTARY = {
@@ -33,44 +34,53 @@ var SCORE_TO_COMMENTARY = {
 	10000 : "Amazing score!!! Incredible!"
 }
 
-#                    0,  1   2   3   4   5   6   7   8   9   10  11, 12
-#                    -1  5  15  15 15 20 20 20 25 25 25 30 30
-const LEVEL_TIMES = [-1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-var MAX_LEVEL = LEVEL_TIMES.size()
-var MAX_LEVEL_TIME = 30
+#const LEVEL_TIMES = [-1, 5, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 35, 35, 40, 40, 45, 45, 50]
+const LEVEL_TIMES = [-1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5]
 
-var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(181/255.0, 181/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
-Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
-Color(231/255.0, 121/255.0, 41/255.0), Color(100/255.0, 28/255.0, 55/255.0), Color(168/255.0, 85/255.0, 211/255.0), Color(56/255.0, 134/255.0, 170/255.0), 
-Color(106/255.0, 88/255.0, 225/255.0), Color(0, 0, 0)]
-var MAX_GRID_COLOR = Color(0, 0, 0)
+var MAX_LEVEL = LEVEL_TIMES.size()
+var MAX_LEVEL_TIME = 60
+
+var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0),Color(181/255.0, 181/255.0, 71/255.0), 
+Color(222/255.0, 181/255.0, 190/255.0),Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
+Color(231/255.0, 121/255.0, 41/255.0), Color(100/255.0, 28/255.0, 55/255.0),Color(168/255.0, 85/255.0, 211/255.0), Color(56/255.0, 134/255.0, 170/255.0), 
+Color(106/255.0, 88/255.0, 225/255.0), Color(209/255.0, 82/255.0, 73/255.0), Color(73/255.0, 209/255.0, 91/255.0), Color(178/255.0, 222/255.0, 91/255.0), 
+Color(91/255.0, 222/255.0, 215/255.0), Color(163/255.0, 111/255.0, 222/255.0), Color(222/255.0, 109/255.0, 131/255.0), Color(0, 0, 0)]
+var MAX_GRID_COLOR = Color(25, 25, 25)
 var grid_color= GRID_COLORS[1]
 
 const NEXT_LEVEL_TIPS = [
 	"null",
 	"null", 
 	"Avoid Beetle bullets!\n(Snake eats bugs)", 
-	"More Beetles!",
+	"Nice job!",
 	"Look out for Ants!",
+	"Ants! Ants!", 
 	"Snakes hate poisonous Spiders!",
 	"Speed up!",
-	"Flee the Hornet!",
-	"Double trouble!",
 	"Watch for Dragonflies!",
+	"Dragonflying!!",
+	"Double trouble!",
+	"Now you're getting it!",
+	"Flee the Hornet!",
+	"More bugs!",
 	"Triple trouble!",
+	"No pressure...",
+	"Bullet-bouncing Moths?",
+	"Almost there!",
 	"Speed up!",
-	"Bouncing-bullet Moths!",
-	"Good luck..."
+	"Uh oh..."
 ]
-const MAX_LEVEL_TIP = "Keep it up!"
+const MAX_LEVEL_TIP = "How much harder can it get...?"
 
 var score = 0
 var level = 1
 
-const DEFAULT_SPAWN_COUNT = 1
-const MAX_SPAWN_COUNT = 15
+const MAX_ANTS_MAX = 3 #too annoying otherwise
+var max_ants = 1
+const DEFAULT_SPAWN_COUNT = 2
+const MAX_SPAWN_COUNT = 10
 var spawn_count = DEFAULT_SPAWN_COUNT
-var enemy_pool = [[BEETLE, BEETLE_SPAWN]]
+var enemy_pool = []
 const BEETLE = preload("res://beetle.tscn")
 const BEETLE_SPAWN = SpawnMode.GRID_NO_BORDER
 const DRAGONFLY = preload("res://dragonfly.tscn")
@@ -87,13 +97,13 @@ const SNAKE = preload("res://snake.tscn")
 const SNAKE_SPAWN = SpawnMode.GRID_NO_BORDER # $HACK$ lol because it always go right
 const MOON = preload("res://moon.tscn")
 const MOON_SPAWN = SpawnMode.MOON
-const MOON_POSITION = Vector2(283, 32)
+const MOON_POSITION = Vector2(281,43)
 
 enum SpawnMode {
 	GRID, GRID_NO_BORDER, FRAME, BOTTOM, MOON
 }
 
-const SAFE_SPAWN_DIST = 10
+const SAFE_SPAWN_DIST = 8 #dont' spawn next to player if possible
 func _try_find_legal_position(spawnmode, max_attempts = 25):
 	var tries = 0
 	while tries < max_attempts:
@@ -103,6 +113,15 @@ func _try_find_legal_position(spawnmode, max_attempts = 25):
 		if spawnmode == SpawnMode.GRID_NO_BORDER and (rand_pos.x == 0 or rand_pos.x == Global.GRID_SIZE.x-1 or rand_pos.y == 0 or rand_pos.y == Global.GRID_SIZE.y-1):
 			continue
 		
+		# prevent bugs spawning on top of other queued up bugs
+		var fail = false
+		for queued_bug in queued_bugs:
+			if Global.to_grid_position(queued_bug.position) == rand_pos:
+				fail = true
+				break
+		if fail:
+			continue
+			
 		# if too close to player, reject
 		var pellet_grid_pos = Global.to_grid_position($Pellet.position)
 		var total_dist = abs(pellet_grid_pos.x - rand_pos.x) + abs(pellet_grid_pos.y - rand_pos.y)
@@ -114,6 +133,17 @@ func _try_find_legal_position(spawnmode, max_attempts = 25):
 		
 		return rand_pos
 	return null
+
+func _num_ants():
+	var count = 0
+	for bug in $Bugs.get_children():
+		# $HACK$
+		if bug.has_method("IS_ANT"):
+			count += 1
+	for bug in queued_bugs:
+		if bug.has_method("IS_ANT"):
+			count += 1
+	return count
 
 func _spawn_enemy(enemy, spawnmode):
 	if spawnmode == SpawnMode.GRID or spawnmode == SpawnMode.GRID_NO_BORDER:
@@ -136,9 +166,9 @@ func _spawn_enemy(enemy, spawnmode):
 			var y = -1
 			if vertical:
 				x = 0 if Global.RNG.randi_range(0, 1) == 1 else int(Global.GRID_SIZE.x)-1
-				y = Global.RNG.randi_range(1, int(Global.GRID_SIZE.y) - 1)
+				y = Global.RNG.randi_range(2, int(Global.GRID_SIZE.y) - 2)
 			else:
-				x = Global.RNG.randi_range(1, int(Global.GRID_SIZE.x) - 1)
+				x = Global.RNG.randi_range(2, int(Global.GRID_SIZE.x) - 2)
 				y = 0 if Global.RNG.randi_range(0, 1) == 1 else int(Global.GRID_SIZE.y)-1
 			
 			var rand_pos = Vector2(x, y)
@@ -153,13 +183,13 @@ func _spawn_enemy(enemy, spawnmode):
 			bug.position = Global.to_global_position(Vector2(x, y))
 			#nudge onto wall...
 			if x == 0: #left wall
-				bug.position -= Vector2(6, 0)
+				bug.position -= Vector2(4, 0)
 			elif x == Global.GRID_SIZE.x - 1: #right wall
-				bug.position += Vector2(6, 0)
+				bug.position += Vector2(4, 0)
 			elif y == 0: #top wall
-				bug.position -= Vector2(0, 6)
+				bug.position -= Vector2(0, 4)
 			else: #bottom wall
-				bug.position += Vector2(0, 6)
+				bug.position += Vector2(0, 4)
 			bug.setup(vertical)
 			queued_bugs.append(bug)
 			call_deferred("_spawn_queued_bugs")
@@ -186,6 +216,8 @@ func _spawn_queued_bugs():
 func _spawn_rand_enemies(num):
 	for i in range(0, num):
 		var enemy_pair = Global.choose_one(enemy_pool)
+		while enemy_pair[0] == ANT and _num_ants() >= max_ants:
+			enemy_pair = Global.choose_one(enemy_pool) #reroll ants if too many
 		_spawn_enemy(enemy_pair[0], enemy_pair[1])
 
 func _ready():
@@ -219,63 +251,68 @@ func _update_level():
 		grid_color = GRID_COLORS[level]
 		$NextLevelInfo.next_level(NEXT_LEVEL_TIPS[level])
 	
+	# 1 spawn per level
+	spawn_count = max(2, min(int(level/2), MAX_SPAWN_COUNT))
+	max_ants = max(1, min(int(level/6), MAX_ANTS_MAX))
+	
 	# add enemies and stuff
 	# terrible horrible code structure $HACK$
 	var forced_spawns = 0
 	if level == 1:
 		pass
-	if level == 2:
+	elif level == 2:
 		enemy_pool.append([BEETLE, BEETLE_SPAWN])
-	if level == 3:
-		spawn_count += 1 
 	elif level == 4:
-		enemy_pool.append([ANT, ANT_SPAWN])
 		_spawn_enemy(ANT, ANT_SPAWN)
 		forced_spawns = 1
-	elif level == 5: 
+	elif level == 6: 
 		$Sky.next_sky() #day
+		enemy_pool.append([ANT, ANT_SPAWN]) # add ants after
 		_spawn_enemy(SPIDER, SPIDER_SPAWN)
-	elif level == 6:
+		forced_spawns = 1
+	elif level == 7:
 		enemy_pool.append([SPIDER, SPIDER_SPAWN]) # add spider next time so only 1 spawns on 5
 		$Snakes/Snake.speed_up()
-	elif level == 7: 
-		_spawn_enemy(HORNET, HORNET_SPAWN)
-		forced_spawns = 1
-	elif level == 8:
-		$Sky.next_sky() #evening
-		_spawn_new_snake(1)
-	elif level == 9:
+	elif level == 8: 
 		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
 		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
-		forced_spawns = 1
+		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
+		forced_spawns = 2
 	elif level == 10:
+		$Sky.next_sky() #evening
 		_spawn_new_snake(1)
-	elif level == 11: 
+	elif level == 12:
+		_spawn_enemy(HORNET, HORNET_SPAWN)
+		forced_spawns = 1
+	elif level == 14:
 		$Sky.next_sky() # night
-		for snake in $Snakes.get_children():
-			snake.speed_up()
-	elif level == 12: 
+		_spawn_new_snake(1)
+	elif level == 16: 
 		enemy_pool.append([MOTH, MOTH_SPAWN])
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		forced_spawns = 2
 		spawn_count += 1 #5
-	elif level == 13: #moon
+	elif level == 18: 
+		for snake in $Snakes.get_children():
+			snake.speed_up()
+	elif level == 19: #moon
 		_spawn_enemy(MOON, MOON_SPAWN)
 		spawn_count += 1
 		pass
-	elif level >= 14: #challenge
+	elif level >= 20: #challenge
 		$Sky.next_sky() #midnight
 		bullet_speed_multiplier = FAST_BULLET_SPEED
-		if level == 14:
+		# speed up moon
+		if level == 21 or level == 25:
+			for bug in $Bugs.get_children():
+				if bug.has_method("IS_MOON"): #$HACK$
+					bug.fire_faster()
+		# second hornet
+		if level == 23:
 			_spawn_enemy(HORNET, HORNET_SPAWN)
 			forced_spawns = 1
-		if spawn_count < MAX_SPAWN_COUNT:
-			spawn_count += 1
-		if level == 17:
-			_spawn_enemy(MOON, MOON_SPAWN)
-		if level == 20:
-			_spawn_enemy(MOON, MOON_SPAWN)
+	
 	if level >= 2:
 		_spawn_rand_enemies(spawn_count - forced_spawns)
 
@@ -308,6 +345,7 @@ func _on_pellet_dead():
 		$NextLevelInfo.visible = false
 
 func _on_reset():
+	max_ants = 1
 	enemy_pool.clear()
 	$Snakes/Snake.reset()
 	$Pellet.reset()
@@ -398,7 +436,15 @@ func on_bug_killed(bug_pos):
 	text.position = bug_pos - Vector2(50, 0)
 	add_child(text)
 	$UI/Score.text = str(score)
-	if $Bugs.get_child_count() == 1: #ate last bug
+	
+	# horrible $HACK$, so moon and hornets don't count...
+	var real_bugs = 0
+	for bug in $Bugs.get_children():
+		if bug.has_method("DONT_COUNT"):
+			continue
+		real_bugs += 1
+	
+	if real_bugs == 1: #ate last bug
 		var full_clear_bonus = (FULL_CLEAR_BONUS * level) + (int($UI/Time.text) * level)
 		score += full_clear_bonus
 		$UI/Score.text = str(score) 
@@ -408,5 +454,3 @@ func on_bug_killed(bug_pos):
 		bonus_text.setup_bonus(full_clear_bonus)
 		bonus_text.position = Vector2(Global.RESOLUTION.x/2 - 50, 15)
 		add_child(bonus_text)
-	if level >= 14 and $Bugs.get_child_count() < 15:
-		_spawn_rand_enemies(1)

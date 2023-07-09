@@ -31,5 +31,24 @@ func _on_shot_timer_timeout():
 		get_parent().get_parent().find_child("Bullets").add_child(bullet)
 		bullet.hit_bug.connect(get_parent().get_parent().on_bug_killed)
 
+const FASTER_RATE = 0.66
+const FASTEST_RATE = 0.33
+const fire_speed = 0
+
+func fire_faster():
+	fire_speed += 1
+	if fire_speed == 1:
+		$ShotTimer.wait_time = FASTER_RATE
+	else:
+		$ShotTimer.wait_time = FASTEST_RATE
+
 func disable():
 	disabled = true
+
+# TERRIBLE $HACK$
+func DONT_COUNT():
+	pass
+
+# TERRIBLE $HACK$
+func IS_MOON():
+	pass

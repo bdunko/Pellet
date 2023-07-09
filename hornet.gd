@@ -35,3 +35,7 @@ func _process(delta):
 
 func disable():
 	disabled = true
+
+# TERRIBLE $HACK$
+func DONT_COUNT():
+	pass

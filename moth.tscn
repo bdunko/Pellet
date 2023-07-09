@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://c6i5gil2rc3c" path="res://assets/bugs/enemy_moth.png" id="2_3qle5"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
-radius = 1.5
+radius = 2.0
 height = 6.0
 
 [node name="Moth" type="CharacterBody2D"]

@@ -49,3 +49,7 @@ func _process(delta):
 
 func disable():
 	disabled = true
+
+# $HACK$
+func IS_ANT():
+	pass
