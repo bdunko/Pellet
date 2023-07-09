@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://3hexxv3yrh65"
+path="res://.godot/imported/Eggy Toast - Mud.mp3-3ee4ca0c341f99ce658b7644a94376c8.mp3str"
+
+[deps]
+
+source_file="res://assets/sound/Eggy Toast - Mud.mp3"
+dest_files=["res://.godot/imported/Eggy Toast - Mud.mp3-3ee4ca0c341f99ce658b7644a94376c8.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=28.82
+bpm=0.0
+beat_count=0
+bar_beats=4
