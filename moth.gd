@@ -5,8 +5,11 @@ var SPEED = 45
 const BULLET = preload("res://bouncing_bullet.tscn")
 const BULLET_SPEED = 60
 
+const SHOT_PREVIEW_MODULATE = 0.5
+
 func _ready():
 	modulate.a = 0
+	
 	# pick a diagonal...
 	var roll = Global.RNG.randi_range(0, 3)
 	if roll == 0:
@@ -25,15 +28,27 @@ func _ready():
 func _process(delta):
 	# transparency
 	modulate.a = lerp(modulate.a, 1.0, 12 * delta)
+	
+	if $ShotTimer.time_left <= 0.2:
+		modulate.r = lerp(modulate.r, SHOT_PREVIEW_MODULATE, 20 * delta)
+	else:
+		modulate.r = lerp(modulate.r, 1.0, 30 * delta)
+	
 	if not disabled:
 		var collision: KinematicCollision2D = move_and_collide(velocity * delta)
 		if collision:
 			var reflect = collision.get_remainder().bounce(collision.get_normal())
 			velocity = velocity.bounce(collision.get_normal())
-			if velocity.y > 0:
-				rotation_degrees = -180
+			if velocity.y > velocity.x:
+				if velocity.y > 0:
+					rotation_degrees = -180
+				else:
+					rotation_degrees = 0
 			else:
-				rotation_degrees = 0
+				if velocity.x > 0:
+					rotation_degrees = 90
+				else:
+					rotation_degrees = -90
 			move_and_collide(reflect)
 
 func _on_shot_timer_timeout():

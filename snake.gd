@@ -3,7 +3,7 @@ extends Node2D
 signal ate_bug
 
 enum Direction {
-	UP, DOWN, LEFT, RIGHT
+	UP, DOWN, LEFT, RIGHT, NONE
 }
 
 var _ROTATION_DEGREES_BY_DIR = {
@@ -75,8 +75,8 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, 1), current_check.original_dir))
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, -1), current_check.original_dir))
 	
-	# couldn't find path, pick a legal direction
-	return Direction.UP 
+	# stuck, wait
+	return Direction.NONE 
 
 func _move():
 	if _enabled:
@@ -97,6 +97,8 @@ func _move():
 		
 		# determine next movement
 		_direction = _dir_to_pellet(grid_pos, pellet_pos)
+		if _direction == Direction.NONE:
+			return
 		
 		# move according to direction
 		grid_pos += _MOVEMENT_BY_DIR[_direction]

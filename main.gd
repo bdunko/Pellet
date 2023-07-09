@@ -35,14 +35,14 @@ var SCORE_TO_COMMENTARY = {
 
 #                    0,  1   2   3   4   5   6   7   8   9   10  11, 12
 #                    -1  5  15  15 15 20 20 20 25 25 25 30 30
-const LEVEL_TIMES = [-1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+const LEVEL_TIMES = [-1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 40
 
 var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(181/255.0, 181/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
 Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
 Color(231/255.0, 121/255.0, 41/255.0), Color(100/255.0, 28/255.0, 55/255.0), Color(56/255.0, 134/255.0, 170/255.0), 
-Color(106/255.0, 88/255.0, 225/255.0), Color(255/255.0, 190/255.0, 62/255.0), Color(0, 0, 0)]
+Color(106/255.0, 88/255.0, 225/255.0), Color(0, 0, 0)]
 var MAX_GRID_COLOR = Color(0, 0, 0)
 var grid_color= GRID_COLORS[1]
 
@@ -59,7 +59,6 @@ const NEXT_LEVEL_TIPS = [
 	"Speed up!",
 	"Triple trouble!",
 	"Bouncing-bullet Moths!",
-	"Snake turrets!",
 	"Good luck..."
 ]
 const MAX_LEVEL_TIP = "Keep it up!"
@@ -195,7 +194,7 @@ func _spawn_new_snake(fast = false):
 		snek.enable()
 		if fast:
 			snek.speed_up()
-		snek.ate_bug.connect("_on_snake_ate_bug")
+		snek.ate_bug.connect(_on_snake_ate_bug)
 		$Snakes.add_child(snek)
 
 func _update_level():
@@ -250,8 +249,6 @@ func _update_level():
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		forced_spawns = 2
 		spawn_count += 1 #5
-	elif level == 12: #snake turrets
-		pass
 	elif level == 13: #moon
 		spawn_count += 1 #6
 		pass
