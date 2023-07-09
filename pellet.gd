@@ -28,7 +28,7 @@ func enable():
 func reset():
 	position = STARTING_POS
 
-var DEBUG = true
+var DEBUG = false
 
 func _on_dead_hitbox_body_entered(_body):
 	if not DEBUG:

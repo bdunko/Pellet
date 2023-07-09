@@ -1,5 +1,7 @@
 extends Node2D
 
+# $HACK$ GOD CLASS $HACK$
+
 enum State {
 	WAITING, PLAYING, DEAD
 }
@@ -22,7 +24,8 @@ const tips = ["The snake can eat bugs.\nIt can block bullets too!",
  "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies.",
  "If you have the snake eat every enemy,\nyou'll get a score bonus.",
  "Have you noticed?\nEnemies flash before shooting.",
- "There's something pretty amazing at level 20...\nJust saying..."]
+ "There's something pretty amazing at level 15...\nJust saying...",
+ "Bugs will block bullets shot\nby other bugs."]
 
 var SCORE_TO_COMMENTARY = {
 	0 : "You let it catch you, didn't you..?",
@@ -34,18 +37,18 @@ var SCORE_TO_COMMENTARY = {
 	10000 : "Amazing score!!! Incredible!"
 }
 
-#const LEVEL_TIMES = [-1, 5, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 35, 35, 40, 40, 45, 45, 50]
-const LEVEL_TIMES = [-1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5]
+const LEVEL_TIMES = [-1, 5, 15, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 30, 30]
+#const LEVEL_TIMES = [-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 var MAX_LEVEL = LEVEL_TIMES.size()
-var MAX_LEVEL_TIME = 60
+var MAX_LEVEL_TIME = 30
 
-var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0),Color(181/255.0, 181/255.0, 71/255.0), 
-Color(222/255.0, 181/255.0, 190/255.0),Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
-Color(219/255.0, 146/255.0, 94/255.0), Color(224/255.0, 117/255.0, 157/255.0),Color(168/255.0, 85/255.0, 211/255.0), Color(56/255.0, 134/255.0, 170/255.0), 
-Color(106/255.0, 88/255.0, 225/255.0), Color(209/255.0, 82/255.0, 73/255.0), Color(73/255.0, 209/255.0, 91/255.0), Color(178/255.0, 222/255.0, 91/255.0), 
-Color(91/255.0, 222/255.0, 215/255.0), Color(163/255.0, 111/255.0, 222/255.0), Color(222/255.0, 109/255.0, 131/255.0), Color(25, 25, 25)]
-var MAX_GRID_COLOR = Color(25/255.0, 25/255.0, 25/255.0)
+var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
+Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
+Color(219/255.0, 146/255.0, 94/255.0), Color(224/255.0, 117/255.0, 157/255.0),Color(168/255.0, 85/255.0, 211/255.0), 
+Color(209/255.0, 82/255.0, 73/255.0), Color(178/255.0, 222/255.0, 91/255.0), Color(91/255.0, 222/255.0, 215/255.0), 
+Color(163/255.0, 111/255.0, 222/255.0), Color(222/255.0, 109/255.0, 131/255.0), Color(45/255.0, 45/255.0, 45/255.0)]
+var MAX_GRID_COLOR = Color(15/255.0, 15/255.0, 15/255.0)
 var grid_color= GRID_COLORS[1]
 
 const NEXT_LEVEL_TIPS = [
@@ -53,24 +56,101 @@ const NEXT_LEVEL_TIPS = [
 	"null", 
 	"Avoid Beetle bullets!\n(Snake eats bugs)", 
 	"Nice job!",
-	"Look out for Ants!",
-	"Ants! Ants!", 
-	"Snakes hate poisonous Spiders!",
-	"Speed up!",
 	"Watch for Dragonflies!",
 	"Dragonflying!!",
+	"Snakes hate poisonous Spiders!",
+	"Speed up!",
+	"Look out for Ants!",
 	"Double trouble!",
-	"Now you're getting it!",
 	"Flee the Hornet!",
-	"More bugs!",
-	"Triple trouble!",
 	"No pressure...",
+	"Triple trouble!",
 	"Bullet-bouncing Moths?",
-	"Almost there!",
 	"Speed up!",
 	"Uh oh..."
 ]
 const MAX_LEVEL_TIP = "How much harder can it get...?"
+
+func _update_level():
+	$NextLevelInfo.visible = true
+	if level >= MAX_LEVEL:
+		$UI/Time.text = str(MAX_LEVEL_TIME)
+		grid_color = MAX_GRID_COLOR
+		$NextLevelInfo.next_level(MAX_LEVEL_TIP)
+	else:
+		$UI/LevelLabel.text = LEVEL_FORMAT % level
+		$UI/Time.text = str(LEVEL_TIMES[level])
+		grid_color = GRID_COLORS[level]
+		$NextLevelInfo.next_level(NEXT_LEVEL_TIPS[level])
+	
+	# 1 spawn per level
+	spawn_count = max(2, min(int(level/2.0), MAX_SPAWN_COUNT))
+	max_ants = max(1, min(int(level/6.0), MAX_ANTS_MAX))
+	
+	# add enemies and stuff
+	# terrible horrible code structure $HACK$
+	var forced_spawns = 0
+	if level == 1:
+		pass
+	elif level == 2:
+		enemy_pool.append([BEETLE, BEETLE_SPAWN])
+	elif level == 4:
+		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
+		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
+		forced_spawns = 1
+	elif level == 5:
+		$Sky.next_sky() #day
+		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
+		forced_spawns = 1
+	elif level == 6: 
+		_spawn_enemy(SPIDER, SPIDER_SPAWN)
+		forced_spawns = 1
+	elif level == 7:
+		enemy_pool.append([SPIDER, SPIDER_SPAWN]) # add spider next time so only 1 spawns on 5
+		$Snakes/Snake.speed_up()
+	elif level == 8: 
+		enemy_pool.append([ANT, ANT_SPAWN]) # add ants after
+		_spawn_enemy(ANT, ANT_SPAWN)
+		forced_spawns = 1
+	elif level == 9:
+		$Sky.next_sky() #evening
+		$Board.next_board()
+		_spawn_new_snake(1, 1)
+	elif level == 10:
+		_spawn_enemy(HORNET, HORNET_SPAWN)
+		forced_spawns = 1
+	elif level == 12:
+		$Sky.next_sky() # night
+		$Board.next_board()
+		_spawn_new_snake(1, 2)
+	elif level == 13: 
+		enemy_pool.append([MOTH, MOTH_SPAWN])
+		_spawn_enemy(MOTH, MOTH_SPAWN)
+		_spawn_enemy(MOTH, MOTH_SPAWN)
+		forced_spawns = 2
+		spawn_count += 1 #5
+	elif level == 14: 
+		for snake in $Snakes.get_children():
+			snake.speed_up()
+	elif level == 15: #moon
+		bullet_speed_multiplier = FAST_BULLET_SPEED
+		_spawn_enemy(MOON, MOON_SPAWN)
+		spawn_count += 1
+		pass
+	elif level >= 16: #challenge
+		$Sky.next_sky() #midnight
+		# speed up moon
+		if level == 17 or level == 19:
+			for bug in $Bugs.get_children():
+				if bug.has_method("IS_MOON"): #$HACK$
+					bug.fire_faster()
+		# second hornet
+		if level == 18 or level == 20:
+			_spawn_enemy(HORNET, HORNET_SPAWN)
+			forced_spawns = 1
+	
+	if level >= 2:
+		_spawn_rand_enemies(spawn_count - forced_spawns)
 
 var score = 0
 var level = 1
@@ -238,86 +318,14 @@ func _spawn_new_snake(speed = 0, color = 0):
 			snek.speed_up()
 		snek.set_base_color(color)
 		snek.ate_bug.connect(on_bug_killed)
-		$Snakes.add_child(snek)
+		queued_snakes.add(snek)
+		call_deferred("_add_queued_snakes")
 
-func _update_level():
-	$NextLevelInfo.visible = true
-	if level >= MAX_LEVEL:
-		$UI/Time.text = str(MAX_LEVEL_TIME)
-		grid_color = MAX_GRID_COLOR
-		$NextLevelInfo.next_level(MAX_LEVEL_TIP)
-	else:
-		$UI/LevelLabel.text = LEVEL_FORMAT % level
-		$UI/Time.text = str(LEVEL_TIMES[level])
-		grid_color = GRID_COLORS[level]
-		$NextLevelInfo.next_level(NEXT_LEVEL_TIPS[level])
-	
-	# 1 spawn per level
-	spawn_count = max(2, min(int(level/2.0), MAX_SPAWN_COUNT))
-	max_ants = max(1, min(int(level/6.0), MAX_ANTS_MAX))
-	
-	# add enemies and stuff
-	# terrible horrible code structure $HACK$
-	var forced_spawns = 0
-	if level == 1:
-		pass
-	elif level == 2:
-		enemy_pool.append([BEETLE, BEETLE_SPAWN])
-	elif level == 4:
-		_spawn_enemy(ANT, ANT_SPAWN)
-		forced_spawns = 1
-	elif level == 6: 
-		$Sky.next_sky() #day
-		enemy_pool.append([ANT, ANT_SPAWN]) # add ants after
-		_spawn_enemy(SPIDER, SPIDER_SPAWN)
-		forced_spawns = 1
-	elif level == 7:
-		enemy_pool.append([SPIDER, SPIDER_SPAWN]) # add spider next time so only 1 spawns on 5
-		$Snakes/Snake.speed_up()
-	elif level == 8: 
-		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
-		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
-		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
-		forced_spawns = 2
-	elif level == 10:
-		$Sky.next_sky() #evening
-		$Board.next_board()
-		_spawn_new_snake(1, 1)
-	elif level == 12:
-		_spawn_enemy(HORNET, HORNET_SPAWN)
-		forced_spawns = 1
-	elif level == 14:
-		$Sky.next_sky() # night
-		$Board.next_board()
-		_spawn_new_snake(1, 2)
-	elif level == 16: 
-		enemy_pool.append([MOTH, MOTH_SPAWN])
-		_spawn_enemy(MOTH, MOTH_SPAWN)
-		_spawn_enemy(MOTH, MOTH_SPAWN)
-		forced_spawns = 2
-		spawn_count += 1 #5
-	elif level == 18: 
-		for snake in $Snakes.get_children():
-			snake.speed_up()
-	elif level == 19: #moon
-		_spawn_enemy(MOON, MOON_SPAWN)
-		spawn_count += 1
-		pass
-	elif level >= 20: #challenge
-		$Sky.next_sky() #midnight
-		bullet_speed_multiplier = FAST_BULLET_SPEED
-		# speed up moon
-		if level == 21 or level == 25:
-			for bug in $Bugs.get_children():
-				if bug.has_method("IS_MOON"): #$HACK$
-					bug.fire_faster()
-		# second hornet
-		if level == 23:
-			_spawn_enemy(HORNET, HORNET_SPAWN)
-			forced_spawns = 1
-	
-	if level >= 2:
-		_spawn_rand_enemies(spawn_count - forced_spawns)
+var queued_snakes = []
+func _add_queued_snake():
+	for snake in queued_snakes:
+		$Snakes.add_child(snake)
+	queued_snakes.clear()
 
 func _commentary_for_score():
 	var comment = ""
