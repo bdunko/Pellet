@@ -29,12 +29,12 @@ func _process(delta):
 	# transparency
 	modulate.a = lerp(modulate.a, 1.0, 12 * delta)
 	
-	if $ShotTimer.time_left <= 0.2:
-		modulate.r = lerp(modulate.r, SHOT_PREVIEW_MODULATE, 20 * delta)
-	else:
-		modulate.r = lerp(modulate.r, 1.0, 30 * delta)
-	
 	if not disabled:
+		if $ShotTimer.time_left <= 0.2:
+			modulate.r = lerp(modulate.r, SHOT_PREVIEW_MODULATE, 20 * delta)
+		else:
+			modulate.r = lerp(modulate.r, 1.0, 30 * delta)
+		
 		var collision: KinematicCollision2D = move_and_collide(velocity * delta)
 		if collision:
 			var reflect = collision.get_remainder().bounce(collision.get_normal())

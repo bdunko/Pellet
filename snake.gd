@@ -30,7 +30,8 @@ const FREE_SEGMENTS_MAX = 10
 var free_segments = FREE_SEGMENTS_MAX
 
 @onready var BASE_SPEED = $Timer.wait_time
-const MORE_SPEED = 0.19
+const MORE_SPEED = 0.35
+const MOST_SPEED = 0.2
 
 class Pair:
 	var pos: Vector2
@@ -180,7 +181,10 @@ func reset():
 	$Timer.wait_time = BASE_SPEED
 
 func speed_up():
-	$Timer.wait_time = MORE_SPEED
+	if $Timer.wait_time == BASE_SPEED:
+		$Timer.wait_time = MORE_SPEED
+	else:
+		$Timer.wait_time = MOST_SPEED
 
 func disable():
 	_enabled = false

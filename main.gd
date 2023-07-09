@@ -11,7 +11,6 @@ var bullet_speed_multiplier = DEFAULT_BULLET_SPEED
 var state = State.WAITING
 var highscore = 0
 
-const CLEAR_BONUS_FORMAT = "Clear Bonus +%d!"
 const HIGH_SCORE_FORMAT = "High Score: %d"
 const LEVEL_FORMAT = "[center]Level %d[/center]"
 const TIME_FORMAT = "[center]You lasted [color=lightblue]%d[/color] seconds.[/center]"
@@ -35,13 +34,13 @@ var SCORE_TO_COMMENTARY = {
 
 #                    0,  1   2   3   4   5   6   7   8   9   10  11, 12
 #                    -1  5  15  15 15 20 20 20 25 25 25 30 30
-const LEVEL_TIMES = [-1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+const LEVEL_TIMES = [-1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 40
 
 var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(181/255.0, 181/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
 Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
-Color(231/255.0, 121/255.0, 41/255.0), Color(100/255.0, 28/255.0, 55/255.0), Color(56/255.0, 134/255.0, 170/255.0), 
+Color(231/255.0, 121/255.0, 41/255.0), Color(100/255.0, 28/255.0, 55/255.0), Color(168/255.0, 85/255.0, 211/255.0), Color(56/255.0, 134/255.0, 170/255.0), 
 Color(106/255.0, 88/255.0, 225/255.0), Color(0, 0, 0)]
 var MAX_GRID_COLOR = Color(0, 0, 0)
 var grid_color= GRID_COLORS[1]
@@ -53,11 +52,12 @@ const NEXT_LEVEL_TIPS = [
 	"More Beetles!",
 	"Look out for Ants!",
 	"Snakes hate poisonous Spiders!",
+	"Speed up!",
 	"Flee the Hornet!",
 	"Double trouble!",
 	"Watch for Dragonflies!",
-	"Speed up!",
 	"Triple trouble!",
+	"Speed up!",
 	"Bouncing-bullet Moths!",
 	"Good luck..."
 ]
@@ -185,21 +185,20 @@ func _ready():
 	$NextLevelInfo.visible = false
 	$Grid.self_modulate = grid_color
 
-func _spawn_new_snake(fast = false):
+func _spawn_new_snake(speed = 0):
 	var rand_pos = _try_find_legal_position(SpawnMode.GRID, 200) #try really hard to spawn this snek
 	if rand_pos != null:
 		var snek = SNAKE.instantiate()
 		snek.position = Global.to_global_position(rand_pos)
 		snek.no_free_segments()
 		snek.enable()
-		if fast:
+		for s in speed:
 			snek.speed_up()
 		snek.ate_bug.connect(_on_snake_ate_bug)
 		$Snakes.add_child(snek)
 
 func _update_level():
 	$NextLevelInfo.visible = true
-	$NextLevelInfo/ClearBonus.visible = false
 	if level >= MAX_LEVEL:
 		$UI/Time.text = str(MAX_LEVEL_TIME)
 		grid_color = MAX_GRID_COLOR
@@ -225,25 +224,26 @@ func _update_level():
 	elif level == 5: 
 		$Sky.next_sky() #day
 		_spawn_enemy(SPIDER, SPIDER_SPAWN)
-	elif level == 6: 
+	elif level == 6:
 		enemy_pool.append([SPIDER, SPIDER_SPAWN]) # add spider next time so only 1 spawns on 5
+		$Snakes/Snake.speed_up()
+	elif level == 7: 
 		_spawn_enemy(HORNET, HORNET_SPAWN)
 		forced_spawns = 1
-	elif level == 7:
-		$Sky.next_sky() #evening
-		_spawn_new_snake()
 	elif level == 8:
+		$Sky.next_sky() #evening
+		_spawn_new_snake(1)
+	elif level == 9:
 		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
 		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
 		forced_spawns = 1
-	elif level == 9:
+	elif level == 10:
+		_spawn_new_snake(1)
+	elif level == 11: 
+		$Sky.next_sky() # night
 		for snake in $Snakes.get_children():
 			snake.speed_up()
-		bullet_speed_multiplier = FAST_BULLET_SPEED
-	elif level == 10: 
-		$Sky.next_sky() # night
-		_spawn_new_snake(true)
-	elif level == 11: 
+	elif level == 12: 
 		enemy_pool.append([MOTH, MOTH_SPAWN])
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		_spawn_enemy(MOTH, MOTH_SPAWN)
@@ -254,6 +254,7 @@ func _update_level():
 		pass
 	elif level >= 14: #challenge
 		$Sky.next_sky() #midnight
+		bullet_speed_multiplier = FAST_BULLET_SPEED
 		if level == 14:
 			_spawn_enemy(HORNET, HORNET_SPAWN)
 			forced_spawns = 1
@@ -376,7 +377,7 @@ func _on_snake_ate_bug(bug_pos):
 	score += level * 10
 	var text = POINTS_TEXT.instantiate()
 	text.setup(level * 10)
-	text.position = bug_pos - Vector2(10, 0)
+	text.position = bug_pos - Vector2(50, 0)
 	add_child(text)
 	$UI/Score.text = str(score)
 	if $Bugs.get_child_count() == 1: #ate last bug
@@ -385,8 +386,10 @@ func _on_snake_ate_bug(bug_pos):
 		$UI/Score.text = str(score) 
 		level += 1
 		_update_level()
-		$NextLevelInfo/ClearBonus.text = CLEAR_BONUS_FORMAT % full_clear_bonus
-		$NextLevelInfo/ClearBonus.visible = true
+		var bonus_text = POINTS_TEXT.instantiate()
+		bonus_text.setup_bonus(full_clear_bonus)
+		bonus_text.position = Vector2(Global.RESOLUTION.x/2 - 50, 15)
+		add_child(bonus_text)
 	if level >= 14 and $Bugs.get_child_count() < 12:
 		_spawn_rand_enemies(1)
 		
