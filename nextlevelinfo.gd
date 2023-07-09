@@ -15,7 +15,5 @@ func _process(delta):
 	else:
 		modulate.a = lerp(modulate.a, 0.0, 12.0 * delta)
 	
-
-
 func _on_timer_timeout():
 	active = false
