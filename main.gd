@@ -51,11 +51,11 @@ const NEXT_LEVEL_TIPS = [
 	"null", 
 	"Avoid Beetle bullets!\n(Snake eats bugs)", 
 	"More Beetles!",
-	"Watch for Dragonflies!",
-	"Snake speed up!",
+	"Look out for Ants!",
 	"Snakes hate poisonous Spiders!",
+	"Snake speed up!",
 	"Flee the Hornet!",
-	"Watch for frame Ants!",
+	"Watch for Dragonflies!",
 	"Bullet speed up!",
 	"Dodge bouncing Moths!",
 	"Double trouble!",
@@ -74,12 +74,12 @@ var enemy_pool = []
 const BEETLE = preload("res://beetle.tscn")
 const BEETLE_SPAWN = SpawnMode.GRID_NO_BORDER
 const DRAGONFLY = preload("res://dragonfly.tscn")
-const DRAGONFLY_SPAWN = SpawnMode.GRID
+const DRAGONFLY_SPAWN = SpawnMode.GRID_NO_BORDER
 const SPIDER = preload("res://spider.tscn")
 const SPIDER_SPAWN = SpawnMode.GRID_NO_BORDER
 const HORNET = preload("res://hornet.tscn")
 const HORNET_SPAWN = SpawnMode.BOTTOM
-# ANTS
+const ANT = preload("res://ant.tscn")
 const ANT_SPAWN = SpawnMode.FRAME
 const MOTH = preload("res://moth.tscn")
 const MOTH_SPAWN = SpawnMode.GRID
@@ -113,7 +113,33 @@ func _spawn_enemy(enemy, spawnmode):
 				call_deferred("_spawn_queued_bugs")
 				return
 	elif spawnmode == SpawnMode.FRAME:
-		pass
+		# vertical or horizontal?
+		var vertical = Global.RNG.randi_range(0, 1) == 1
+		var x = -1
+		var y = -1
+		if vertical:
+			x = 0 if Global.RNG.randi_range(0, 1) == 1 else int(Global.GRID_SIZE.x)-1
+			y = Global.RNG.randi_range(1, int(Global.GRID_SIZE.y) - 1)
+		else:
+			x = Global.RNG.randi_range(1, int(Global.GRID_SIZE.x) - 1)
+			y = 0 if Global.RNG.randi_range(0, 1) == 1 else int(Global.GRID_SIZE.y)-1
+		
+		#spawn the ant
+		var bug = enemy.instantiate()
+		bug.position = Global.to_global_position(Vector2(x, y))
+		#nudge onto wall...
+		if x == 0: #left wall
+			bug.position -= Vector2(6, 0)
+		elif x == Global.GRID_SIZE.x - 1: #right wall
+			bug.position += Vector2(6, 0)
+		elif y == 0: #top wall
+			bug.position -= Vector2(0, 6)
+		else: #bottom wall
+			bug.position += Vector2(0, 6)
+		bug.setup(vertical)
+		queued_bugs.append(bug)
+		call_deferred("_spawn_queued_bugs")
+		return
 	elif spawnmode == SpawnMode.BOTTOM:
 		var bug = enemy.instantiate()
 		bug.position = Vector2(Global.RNG.randi_range(int(Global.RESOLUTION.x/2) - 80, int(Global.RESOLUTION.y/2) + 80), Global.RESOLUTION.y + 10)
@@ -159,35 +185,36 @@ func _update_level():
 	
 	if level == 1:
 		pass
-	if level == 2: # beetle
+	if level == 2:
 		enemy_pool.append([BEETLE, BEETLE_SPAWN])
 	if level == 3:
 		spawn_count += 1 
-	elif level == 4: # dragonfly
+	elif level == 4:
+		enemy_pool.append([ANT, ANT_SPAWN])
+		_spawn_enemy(ANT, ANT_SPAWN)
+		forced_spawns = 1
+	elif level == 5: 
+		$Sky.next_sky() #day
+		spider_enabled = true
+	elif level == 6: 
+		$Snakes/Snake.speed_up()
+	elif level == 7:
+		_spawn_enemy(HORNET, HORNET_SPAWN)
+		forced_spawns = 1
+	elif level == 8:
+		$Sky.next_sky() #evening
 		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
 		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
 		forced_spawns = 1
-	elif level == 5: # snake speed
-		$Sky.next_sky() # day
-		$Snakes/Snake.speed_up()
-	elif level == 6: # spider
-		spider_enabled = true
-	elif level == 7: # hornet
-		_spawn_enemy(HORNET, HORNET_SPAWN)
-		forced_spawns = 1
-	elif level == 8: # ants
-		$Sky.next_sky() # evening
-		forced_spawns = 2
-		pass
-	elif level == 9: # bullet speed
+	elif level == 9:
 		bullet_speed_multiplier = FAST_BULLET_SPEED
-	elif level == 10: # moth
+	elif level == 10: 
 		enemy_pool.append([MOTH, MOTH_SPAWN])
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		forced_spawns = 2
 		spawn_count += 1 #5
-	elif level == 11: # snake
+	elif level == 11: 
 		$Sky.next_sky() # night
 		#speed up too
 		pass
