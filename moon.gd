@@ -33,7 +33,7 @@ func _on_shot_timer_timeout():
 
 const FASTER_RATE = 0.66
 const FASTEST_RATE = 0.33
-const fire_speed = 0
+var fire_speed = 0
 
 func fire_faster():
 	fire_speed += 1
