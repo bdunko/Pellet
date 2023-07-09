@@ -19,6 +19,8 @@ func _process(delta):
 	var collide = move_and_collide(velocity  * delta) 
 	if collide != null:
 		call_deferred("_begin_destroy")
+		
+
 
 func _on_collide_with_bug(body):
 	if body != bug_owner:
