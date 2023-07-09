@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://cuicl1alqbct3"]
+[gd_scene load_steps=20 format=3 uid="uid://b2owfgm8rrpak"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
 [ext_resource type="Texture2D" uid="uid://cfnee42a60ou6" path="res://assets/board.png" id="2_ff65i"]
@@ -14,6 +14,9 @@
 [ext_resource type="Texture2D" uid="uid://cay5ftkmugouq" path="res://assets/sky_morning.png" id="6_7fbtx"]
 [ext_resource type="PackedScene" uid="uid://xe84in6ej3m7" path="res://pellet.tscn" id="6_dvu1o"]
 [ext_resource type="PackedScene" uid="uid://de227doiyv2qb" path="res://snake.tscn" id="7_ertux"]
+[ext_resource type="Script" path="res://board.gd" id="9_na4cx"]
+[ext_resource type="Texture2D" uid="uid://l5tuspu7fgkj" path="res://assets/board_black.png" id="10_l81du"]
+[ext_resource type="Texture2D" uid="uid://0c1wwikxym33" path="res://assets/board_autumn.png" id="11_ud181"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ji84y"]
 size = Vector2(4.5, 166)
@@ -99,44 +102,55 @@ centered = false
 texture = ExtResource("6_7fbtx")
 centered = false
 
-[node name="Board" type="Sprite2D" parent="."]
-texture = ExtResource("2_ff65i")
-centered = false
-
-[node name="Board Walls" type="StaticBody2D" parent="Board"]
+[node name="Board Walls" type="StaticBody2D" parent="."]
 collision_layer = 32
 collision_mask = 0
 
-[node name="Wall" type="CollisionShape2D" parent="Board/Board Walls"]
+[node name="Wall" type="CollisionShape2D" parent="Board Walls"]
 position = Vector2(77.75, 90)
 shape = SubResource("RectangleShape2D_ji84y")
 
-[node name="Wall2" type="CollisionPolygon2D" parent="Board/Board Walls"]
+[node name="Wall2" type="CollisionPolygon2D" parent="Board Walls"]
 polygon = PackedVector2Array(80, 7, 80, 10, 240, 10, 240, 170, 80, 170, 80, 173, 243, 173, 243, 7)
 
-[node name="Ant Walls" type="StaticBody2D" parent="Board"]
+[node name="Ant Walls" type="StaticBody2D" parent="."]
 collision_layer = 128
 collision_mask = 0
 
-[node name="TL" type="CollisionShape2D" parent="Board/Ant Walls"]
+[node name="TL" type="CollisionShape2D" parent="Ant Walls"]
 position = Vector2(77, 7)
 shape = SubResource("RectangleShape2D_v7t8t")
 
-[node name="TR" type="CollisionShape2D" parent="Board/Ant Walls"]
+[node name="TR" type="CollisionShape2D" parent="Ant Walls"]
 position = Vector2(243, 7)
 shape = SubResource("RectangleShape2D_v7t8t")
 
-[node name="BR" type="CollisionShape2D" parent="Board/Ant Walls"]
+[node name="BR" type="CollisionShape2D" parent="Ant Walls"]
 position = Vector2(243, 174)
 shape = SubResource("RectangleShape2D_v7t8t")
 
-[node name="BL" type="CollisionShape2D" parent="Board/Ant Walls"]
+[node name="BL" type="CollisionShape2D" parent="Ant Walls"]
 position = Vector2(76, 174)
 shape = SubResource("RectangleShape2D_v7t8t")
 
 [node name="Grid" type="Sprite2D" parent="."]
 position = Vector2(80, 10)
 texture = ExtResource("3_q3otb")
+centered = false
+
+[node name="Board" type="Node2D" parent="."]
+script = ExtResource("9_na4cx")
+
+[node name="Black" type="Sprite2D" parent="Board"]
+position = Vector2(160, 90)
+texture = ExtResource("10_l81du")
+
+[node name="Autumn" type="Sprite2D" parent="Board"]
+position = Vector2(160, 90)
+texture = ExtResource("11_ud181")
+
+[node name="Default" type="Sprite2D" parent="Board"]
+texture = ExtResource("2_ff65i")
 centered = false
 
 [node name="StartupInfo" type="Node2D" parent="."]

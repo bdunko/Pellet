@@ -34,8 +34,8 @@ var SCORE_TO_COMMENTARY = {
 	10000 : "Amazing score!!! Incredible!"
 }
 
-const LEVEL_TIMES = [-1, 5, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 35, 35, 40, 40, 45, 45, 50]
-#const LEVEL_TIMES = [-1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5]
+#const LEVEL_TIMES = [-1, 5, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 35, 35, 40, 40, 45, 45, 50]
+const LEVEL_TIMES = [-1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5]
 
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 60
@@ -252,8 +252,8 @@ func _update_level():
 		$NextLevelInfo.next_level(NEXT_LEVEL_TIPS[level])
 	
 	# 1 spawn per level
-	spawn_count = max(2, min(int(level/2), MAX_SPAWN_COUNT))
-	max_ants = max(1, min(int(level/6), MAX_ANTS_MAX))
+	spawn_count = max(2, min(int(level/2.0), MAX_SPAWN_COUNT))
+	max_ants = max(1, min(int(level/6.0), MAX_ANTS_MAX))
 	
 	# add enemies and stuff
 	# terrible horrible code structure $HACK$
@@ -280,12 +280,14 @@ func _update_level():
 		forced_spawns = 2
 	elif level == 10:
 		$Sky.next_sky() #evening
+		$Board.next_board()
 		_spawn_new_snake(1)
 	elif level == 12:
 		_spawn_enemy(HORNET, HORNET_SPAWN)
 		forced_spawns = 1
 	elif level == 14:
 		$Sky.next_sky() # night
+		$Board.next_board()
 		_spawn_new_snake(1)
 	elif level == 16: 
 		enemy_pool.append([MOTH, MOTH_SPAWN])
@@ -351,6 +353,7 @@ func _on_reset():
 	$Pellet.reset()
 	$Pellet.enable()
 	$Sky.reset()
+	$Board.reset()
 	state = State.WAITING
 	if score > highscore:
 		highscore = score
