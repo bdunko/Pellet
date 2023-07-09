@@ -491,3 +491,77 @@ func _on_timer_timeout():
 		
 func on_bullet_shot():
 	$BulletSound.play()
+	
+
+var music_state = 1
+func _on_music_control_pressed():
+	if music_state == 0:
+		music_state = 1
+		$MusicButton.text = "Music 1"
+		$Music1.play(0)
+		AudioServer.set_bus_mute(2, false)
+		AudioServer.set_bus_mute(3, true)
+		AudioServer.set_bus_mute(4, true)
+		AudioServer.set_bus_mute(5, true)
+		AudioServer.set_bus_mute(6, true)
+		AudioServer.set_bus_mute(7, true)
+	elif music_state == 1:
+		music_state = 2
+		$Music2.play(0)
+		$MusicButton.text = "Music 2"
+		AudioServer.set_bus_mute(2, true)
+		AudioServer.set_bus_mute(3, false)
+		AudioServer.set_bus_mute(4, true)
+		AudioServer.set_bus_mute(5, true)
+		AudioServer.set_bus_mute(6, true)
+		AudioServer.set_bus_mute(7, true)
+	elif music_state == 2:
+		music_state = 3
+		$Music3.play(0)
+		$MusicButton.text = "Music 3"
+		AudioServer.set_bus_mute(2, true)
+		AudioServer.set_bus_mute(3, true)
+		AudioServer.set_bus_mute(4, false)
+		AudioServer.set_bus_mute(5, true)
+		AudioServer.set_bus_mute(6, true)
+		AudioServer.set_bus_mute(7, true)
+	elif music_state == 3:
+		music_state = 4
+		$Music4.play(0)
+		$MusicButton.text = "Music 4"
+		AudioServer.set_bus_mute(2, true)
+		AudioServer.set_bus_mute(3, true)
+		AudioServer.set_bus_mute(4, true)
+		AudioServer.set_bus_mute(5, false)
+		AudioServer.set_bus_mute(6, true)
+		AudioServer.set_bus_mute(7, true)
+	elif music_state == 4:
+		music_state = 5
+		$Music5.play(0)
+		$MusicButton.text = "Music 5"
+		AudioServer.set_bus_mute(2, true)
+		AudioServer.set_bus_mute(3, true)
+		AudioServer.set_bus_mute(4, true)
+		AudioServer.set_bus_mute(5, true)
+		AudioServer.set_bus_mute(6, false)
+		AudioServer.set_bus_mute(7, true)
+	elif music_state == 5:
+		music_state = 6
+		$Music6.play(0)
+		$MusicButton.text = "Music 6"
+		AudioServer.set_bus_mute(2, true)
+		AudioServer.set_bus_mute(3, true)
+		AudioServer.set_bus_mute(4, true)
+		AudioServer.set_bus_mute(5, true)
+		AudioServer.set_bus_mute(6, true)
+		AudioServer.set_bus_mute(7, false)
+	elif music_state == 6:
+		music_state = 0
+		AudioServer.set_bus_mute(2, true)
+		AudioServer.set_bus_mute(3, true)
+		AudioServer.set_bus_mute(4, true)
+		AudioServer.set_bus_mute(5, true)
+		AudioServer.set_bus_mute(6, true)
+		AudioServer.set_bus_mute(7, true)
+		$Music1.play()
+		$MusicButton.text = "Music Off"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://b2owfgm8rrpak"]
+[gd_scene load_steps=32 format=3 uid="uid://b2owfgm8rrpak"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
 [ext_resource type="Texture2D" uid="uid://cfnee42a60ou6" path="res://assets/board.png" id="2_ff65i"]
@@ -23,7 +23,12 @@
 [ext_resource type="AudioStream" uid="uid://cmekayqr68vk8" path="res://assets/sound/nextlevel.mp3" id="21_hy2j7"]
 [ext_resource type="AudioStream" uid="uid://pfhawlwllb4k" path="res://assets/sound/transition.mp3" id="22_bont8"]
 [ext_resource type="AudioStream" uid="uid://syjyduu4a4g" path="res://assets/sound/eat.mp3" id="23_rfv8v"]
-[ext_resource type="AudioStream" uid="uid://3hexxv3yrh65" path="res://assets/sound/Eggy Toast - Mud.mp3" id="25_urkdu"]
+[ext_resource type="AudioStream" uid="uid://i8nppwi6m68n" path="res://assets/sound/bgm.mp3" id="24_s4yrh"]
+[ext_resource type="AudioStream" uid="uid://bpjmdgt25o538" path="res://assets/sound/bgm3.mp3" id="25_5arei"]
+[ext_resource type="AudioStream" uid="uid://70nmu5rysblg" path="res://assets/sound/bgm2.mp3" id="26_nyssc"]
+[ext_resource type="AudioStream" uid="uid://bamw7dcs75bfe" path="res://assets/sound/bgm4.mp3" id="27_mo04j"]
+[ext_resource type="AudioStream" uid="uid://bd24mkc8s8nx" path="res://assets/sound/bgm5.mp3" id="28_m5f41"]
+[ext_resource type="AudioStream" uid="uid://8006g383kcen" path="res://assets/sound/bgm6.mp3" id="29_p4wmy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ji84y"]
 size = Vector2(4.5, 166)
@@ -213,6 +218,7 @@ script = ExtResource("5_teiwi")
 [node name="DeadFilter" type="ColorRect" parent="DeadInfo"]
 offset_right = 320.0
 offset_bottom = 180.0
+mouse_filter = 2
 color = Color(0, 0, 0, 0.623529)
 
 [node name="OhNo" type="RichTextLabel" parent="DeadInfo"]
@@ -322,6 +328,7 @@ stream = ExtResource("19_3536b")
 
 [node name="MoveSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("18_2hrks")
+bus = &"Snake"
 
 [node name="BulletSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("19_dp7f8")
@@ -335,13 +342,47 @@ stream = ExtResource("22_bont8")
 [node name="EatSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("23_rfv8v")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("25_urkdu")
+[node name="Music1" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("24_s4yrh")
 autoplay = true
-bus = &"New Bus"
+bus = &"Music1"
+
+[node name="Music2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("25_5arei")
+autoplay = true
+bus = &"Music2"
+
+[node name="Music3" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("26_nyssc")
+autoplay = true
+bus = &"Music3"
+
+[node name="Music4" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("27_mo04j")
+autoplay = true
+bus = &"Music4"
+
+[node name="Music5" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("28_m5f41")
+autoplay = true
+bus = &"Music5"
+
+[node name="Music6" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("29_p4wmy")
+autoplay = true
+bus = &"Music6"
+
+[node name="MusicButton" type="Button" parent="."]
+z_index = 4096
+offset_left = 9.0
+offset_top = 149.0
+offset_right = 68.0
+offset_bottom = 170.0
+text = "Music 1"
 
 [connection signal="timeout" from="NextLevelInfo/Timer" to="NextLevelInfo" method="_on_timer_timeout"]
 [connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]
 [connection signal="moved" from="Pellet" to="." method="_on_pellet_moved"]
 [connection signal="ate_bug" from="Snakes/Snake" to="." method="on_bug_killed"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="pressed" from="MusicButton" to="." method="_on_music_control_pressed"]
