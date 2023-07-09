@@ -22,7 +22,7 @@ const tips = ["The snake can eat bugs.\nIt can block bullets too!",
  "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies.",
  "If you have the snake eat every enemy,\nyou'll get a score bonus.",
  "Have you noticed?\nEnemies flash before shooting.",
- "There's a pretty amazing gimmick if you reach the max level...\nJust saying..."]
+ "There's something pretty amazing at level 20...\nJust saying..."]
 
 var SCORE_TO_COMMENTARY = {
 	0 : "You let it catch you, didn't you..?",
