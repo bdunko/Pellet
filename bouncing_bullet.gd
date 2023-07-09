@@ -4,6 +4,8 @@ var bug_owner
 
 var disabled = false
 
+signal shot
+
 func setup(pos, dir, speed, owned_bug):
 	position = pos
 	velocity = dir * speed
@@ -31,6 +33,7 @@ func _process(delta):
 			else:
 				rotation_degrees = 0
 			move_and_collide(reflect)
+			emit_signal("shot")
 
 func _on_collide_with_bug(body): #hmm... rethink this
 	if body != bug_owner:
@@ -48,3 +51,6 @@ func _begin_destroy():
 
 func disable():
 	disabled = true
+
+func shoot():
+	emit_signal("shot")

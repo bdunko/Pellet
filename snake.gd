@@ -29,9 +29,7 @@ var _enabled = false
 const FREE_SEGMENTS_MAX = 10
 var free_segments = FREE_SEGMENTS_MAX
 
-@onready var BASE_SPEED = 0.35
-const MORE_SPEED = 0.28
-const MOST_SPEED = 0.22
+
 
 class Pair:
 	var pos: Vector2
@@ -79,7 +77,7 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 	# stuck, wait
 	return Direction.NONE 
 
-func _move():
+func move():
 	if _enabled:
 		# store previous before moving
 		_previous_head_positions.push_front(position)
@@ -182,16 +180,7 @@ func reset():
 	_previous_head_positions.clear()
 	# free segs
 	free_segments = FREE_SEGMENTS_MAX
-	$Timer.wait_time = BASE_SPEED
-	speed_level = 0
 
-var speed_level = 0
-func speed_up():
-	speed_level += 1
-	if speed_level == 1:
-		$Timer.wait_time = MORE_SPEED
-	else:
-		$Timer.wait_time = MOST_SPEED
 
 func disable():
 	_enabled = false
@@ -249,7 +238,5 @@ func no_free_segments():
 	free_segments = 1
 
 func _ready():
-	$Timer.wait_time = BASE_SPEED
-	speed_level = 0
 	$HeadSprite.modulate = color
 	modulate.a = 0

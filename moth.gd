@@ -59,6 +59,8 @@ func _on_shot_timer_timeout():
 		bullet.setup(position, direction, BULLET_SPEED * get_parent().get_parent().bullet_speed_multiplier, self)
 		bullet.position = position
 		get_parent().get_parent().find_child("Bullets").add_child(bullet)
+		bullet.shot.connect(get_parent().get_parent().on_bullet_shot)
+		bullet.shoot()
 
 func disable():
 	disabled = true

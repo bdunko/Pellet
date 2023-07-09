@@ -107,7 +107,7 @@ func _update_level():
 		forced_spawns = 1
 	elif level == 7:
 		enemy_pool.append([SPIDER, SPIDER_SPAWN]) # add spider next time so only 1 spawns on 5
-		$Snakes/Snake.speed_up()
+		speed_up()
 	elif level == 8: 
 		enemy_pool.append([ANT, ANT_SPAWN]) # add ants after
 		_spawn_enemy(ANT, ANT_SPAWN)
@@ -115,14 +115,14 @@ func _update_level():
 	elif level == 9:
 		$Sky.next_sky() #evening
 		$Board.next_board()
-		_spawn_new_snake(1, 1)
+		_spawn_new_snake(1)
 	elif level == 10:
 		_spawn_enemy(HORNET, HORNET_SPAWN)
 		forced_spawns = 1
 	elif level == 12:
 		$Sky.next_sky() # night
 		$Board.next_board()
-		_spawn_new_snake(1, 2)
+		_spawn_new_snake(2)
 	elif level == 13: 
 		enemy_pool.append([MOTH, MOTH_SPAWN])
 		_spawn_enemy(MOTH, MOTH_SPAWN)
@@ -130,8 +130,7 @@ func _update_level():
 		forced_spawns = 2
 		spawn_count += 1 #5
 	elif level == 14: 
-		for snake in $Snakes.get_children():
-			snake.speed_up()
+		speed_up()
 	elif level == 15: #moon
 		bullet_speed_multiplier = FAST_BULLET_SPEED
 		_spawn_enemy(MOON, MOON_SPAWN)
@@ -150,6 +149,7 @@ func _update_level():
 			forced_spawns = 1
 	
 	if level >= 2:
+		$NextLevelSound.play()
 		_spawn_rand_enemies(spawn_count - forced_spawns)
 
 var score = 0
@@ -307,22 +307,25 @@ func _ready():
 	$NextLevelInfo.visible = false
 	$Grid.self_modulate = grid_color
 
-func _spawn_new_snake(speed = 0, color = 0):
+@onready var BASE_SPEED = 0.4
+const MORE_SPEED = 0.33
+const MOST_SPEED = 0.23
+var speed_level = 0
+
+func _spawn_new_snake(color = 0):
 	var rand_pos = _try_find_legal_position(SNAKE_SPAWN, 200) #try really hard to spawn this snek
 	if rand_pos != null:
 		var snek = SNAKE.instantiate()
 		snek.position = Global.to_global_position(rand_pos)
 		snek.no_free_segments()
 		snek.enable()
-		for s in speed:
-			snek.speed_up()
 		snek.set_base_color(color)
 		snek.ate_bug.connect(on_bug_killed)
-		queued_snakes.add(snek)
+		queued_snakes.append(snek)
 		call_deferred("_add_queued_snakes")
 
 var queued_snakes = []
-func _add_queued_snake():
+func _add_queued_snakes():
 	for snake in queued_snakes:
 		$Snakes.add_child(snake)
 	queued_snakes.clear()
@@ -343,6 +346,7 @@ func _update_dead_info():
 
 func _on_pellet_dead():
 	if state != State.DEAD:
+		$DieSound.play()
 		state = State.DEAD
 		for snake in $Snakes.get_children():
 			snake.disable()
@@ -355,7 +359,17 @@ func _on_pellet_dead():
 		$DeadInfo.on_dead()
 		$NextLevelInfo.visible = false
 
+func speed_up():
+	speed_level += 1
+	if speed_level == 1:
+		$Timer.wait_time = MORE_SPEED
+	else:
+		$Timer.wait_time = MOST_SPEED
+
 func _on_reset():
+	$TransitionSound.play()
+	speed_level = 0
+	$Timer.wait_time = BASE_SPEED
 	max_ants = 1
 	enemy_pool.clear()
 	$Snakes/Snake.reset()
@@ -442,6 +456,7 @@ func is_grid_pos_snake(grid_pos):
 var POINTS_TEXT = preload("res://points.tscn")
 const FULL_CLEAR_BONUS = 10
 func on_bug_killed(bug_pos):
+	$EatSound.play()
 	score += level * 10
 	var text = POINTS_TEXT.instantiate()
 	text.setup(level * 10)
@@ -466,3 +481,13 @@ func on_bug_killed(bug_pos):
 		bonus_text.setup_bonus(full_clear_bonus)
 		bonus_text.position = Vector2(Global.RESOLUTION.x/2 - 50, 15)
 		add_child(bonus_text)
+
+
+func _on_timer_timeout():
+	for s in $Snakes.get_children():
+		s.move()
+	if state == State.PLAYING:
+		$MoveSound.play()
+		
+func on_bullet_shot():
+	$BulletSound.play()

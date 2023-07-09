@@ -6,6 +6,12 @@ var mod_target = 1.0
 
 var disabled = false
 
+signal shot
+
+#$HACK$
+func shoot():
+	emit_signal("shot")
+
 func setup(pos, dir, speed, owned_bug):
 	position = pos
 	velocity = dir * speed
