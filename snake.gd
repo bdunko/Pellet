@@ -197,7 +197,7 @@ func _on_bug_body_entered(body):
 	
 	call_deferred("_grow_snake")
 	body.queue_free()
-	emit_signal("ate_bug")
+	emit_signal("ate_bug", body.position)
 
 const POISON_COLOR = Color(109/255.0, 78/255.0, 255/255.0)
 const YUM_COLOR = Color(79/255.0, 255/255.0, 67/255.0)

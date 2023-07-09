@@ -58,7 +58,7 @@ const NEXT_LEVEL_TIPS = [
 	"Watch for Dragonflies!",
 	"Speed up!",
 	"Triple trouble!",
-	"Dodge bouncing Moths!",
+	"Bouncing-bullet Moths!",
 	"Snake turrets!",
 	"Good luck..."
 ]
@@ -195,6 +195,7 @@ func _spawn_new_snake(fast = false):
 		snek.enable()
 		if fast:
 			snek.speed_up()
+		snek.ate_bug.connect("_on_snake_ate_bug")
 		$Snakes.add_child(snek)
 
 func _update_level():
@@ -372,9 +373,14 @@ func is_grid_pos_snake(grid_pos):
 			return true
 	return false
 
+var POINTS_TEXT = preload("res://points.tscn")
 const FULL_CLEAR_BONUS = 10
-func _on_snake_ate_bug():
+func _on_snake_ate_bug(bug_pos):
 	score += level * 10
+	var text = POINTS_TEXT.instantiate()
+	text.setup(level * 10)
+	text.position = bug_pos - Vector2(10, 0)
+	add_child(text)
 	$UI/Score.text = str(score)
 	if $Bugs.get_child_count() == 1: #ate last bug
 		var full_clear_bonus = (FULL_CLEAR_BONUS * level) + (int($UI/Time.text) * level)
