@@ -49,7 +49,7 @@ offset_right = 72.0
 offset_bottom = 24.0
 theme_override_colors/font_color = Color(0.839216, 0.94902, 0.392157, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 3
+theme_override_constants/outline_size = 4
 text = "Score:"
 horizontal_alignment = 1
 
@@ -59,7 +59,7 @@ offset_top = 19.0
 offset_right = 72.0
 offset_bottom = 35.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 3
+theme_override_constants/outline_size = 4
 text = "0"
 horizontal_alignment = 1
 
@@ -70,7 +70,7 @@ offset_right = 72.0
 offset_bottom = 50.0
 theme_override_colors/font_color = Color(0.839216, 0.94902, 0.392157, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 3
+theme_override_constants/outline_size = 4
 text = "Next:"
 horizontal_alignment = 1
 
@@ -80,7 +80,7 @@ offset_top = 45.0
 offset_right = 72.0
 offset_bottom = 61.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 3
+theme_override_constants/outline_size = 4
 text = "15"
 horizontal_alignment = 1
 
@@ -280,7 +280,7 @@ offset_left = 116.0
 offset_top = 5.0
 offset_right = 193.0
 offset_bottom = 29.0
-theme_override_colors/font_shadow_color = Color(0.0705882, 0.298039, 0.0156863, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 theme_override_constants/shadow_outline_size = 3
