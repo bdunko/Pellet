@@ -4,6 +4,8 @@ var bug_owner
 
 var mod_target = 1.0
 
+signal hit_bug
+
 func setup(pos, dir, speed, owned_bug):
 	position = pos
 	velocity = dir * speed
@@ -21,10 +23,9 @@ func _process(delta):
 	
 	move_and_collide(velocity  * delta) 
 
-func _on_collide_with_bug(_body):
-	print("bug")
-	pass
-	#maybe something crazy later
+func _on_collide_with_bug(body):
+	body.queue_free()
+	emit_signal("hit_bug", body.position)
 
 func _begin_destroy():
 	mod_target = 0.0

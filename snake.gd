@@ -31,7 +31,7 @@ var free_segments = FREE_SEGMENTS_MAX
 
 @onready var BASE_SPEED = 0.5
 const MORE_SPEED = 0.35
-const MOST_SPEED = 0.2
+const MOST_SPEED = 0.23
 
 class Pair:
 	var pos: Vector2
@@ -100,6 +100,10 @@ func _move():
 		_direction = _dir_to_pellet(grid_pos, pellet_pos)
 		if _direction == Direction.NONE:
 			return
+		
+		# $HACK$ - force a right on first move, fixes a graphical glitch
+		if _previous_head_positions.size() == 1:
+			_direction = Direction.RIGHT
 		
 		# move according to direction
 		grid_pos += _MOVEMENT_BY_DIR[_direction]

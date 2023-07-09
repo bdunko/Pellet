@@ -20,7 +20,8 @@ const TIP_FORMAT = "[center]- Tip -\n%s"
 const tips = ["The snake can eat bugs.\nIt can block bullets too!",
  "You can touch the snake's body.\nOnly the head is deadly.",
  "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies.",
- "If you have the snake eat every enemy,\nyou'll get a score bonus."]
+ "If you have the snake eat every enemy,\nyou'll get a score bonus.",
+ "There's a pretty amazing gimmick if you reach the max level...\nJust saying..."]
 
 var SCORE_TO_COMMENTARY = {
 	0 : "You let it catch you, didn't you..?",
@@ -36,7 +37,7 @@ var SCORE_TO_COMMENTARY = {
 #                    -1  5  15  15 15 20 20 20 25 25 25 30 30
 const LEVEL_TIMES = [-1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 var MAX_LEVEL = LEVEL_TIMES.size()
-var MAX_LEVEL_TIME = 40
+var MAX_LEVEL_TIME = 30
 
 var GRID_COLORS = [null, Color(119/255.0, 233/255.0, 71/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(181/255.0, 181/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
 Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
@@ -67,7 +68,7 @@ var score = 0
 var level = 1
 
 const DEFAULT_SPAWN_COUNT = 1
-const MAX_SPAWN_COUNT = 9
+const MAX_SPAWN_COUNT = 15
 var spawn_count = DEFAULT_SPAWN_COUNT
 var enemy_pool = [[BEETLE, BEETLE_SPAWN]]
 const BEETLE = preload("res://beetle.tscn")
@@ -84,9 +85,12 @@ const MOTH = preload("res://moth.tscn")
 const MOTH_SPAWN = SpawnMode.GRID
 const SNAKE = preload("res://snake.tscn")
 const SNAKE_SPAWN = SpawnMode.GRID
+const MOON = preload("res://moon.tscn")
+const MOON_SPAWN = SpawnMode.MOON
+const MOON_POSITION = Vector2(283, 32)
 
 enum SpawnMode {
-	GRID, GRID_NO_BORDER, FRAME, BOTTOM
+	GRID, GRID_NO_BORDER, FRAME, BOTTOM, MOON
 }
 
 const SAFE_SPAWN_DIST = 10
@@ -166,6 +170,12 @@ func _spawn_enemy(enemy, spawnmode):
 		queued_bugs.append(bug)
 		call_deferred("_spawn_queued_bugs")
 		return
+	elif spawnmode == SpawnMode.MOON:
+		var moon = enemy.instantiate()
+		moon.position = MOON_POSITION
+		queued_bugs.append(moon)
+		call_deferred("_spawn_queued_bugs")
+		return
 
 var queued_bugs = []
 func _spawn_queued_bugs():
@@ -194,7 +204,7 @@ func _spawn_new_snake(speed = 0):
 		snek.enable()
 		for s in speed:
 			snek.speed_up()
-		snek.ate_bug.connect(_on_snake_ate_bug)
+		snek.ate_bug.connect(on_bug_killed)
 		$Snakes.add_child(snek)
 
 func _update_level():
@@ -210,6 +220,7 @@ func _update_level():
 		$NextLevelInfo.next_level(NEXT_LEVEL_TIPS[level])
 	
 	# add enemies and stuff
+	# terrible horrible code structure $HACK$
 	var forced_spawns = 0
 	if level == 1:
 		pass
@@ -250,7 +261,8 @@ func _update_level():
 		forced_spawns = 2
 		spawn_count += 1 #5
 	elif level == 13: #moon
-		spawn_count += 1 #6
+		_spawn_enemy(MOON, MOON_SPAWN)
+		spawn_count += 1
 		pass
 	elif level >= 14: #challenge
 		$Sky.next_sky() #midnight
@@ -260,6 +272,10 @@ func _update_level():
 			forced_spawns = 1
 		if spawn_count < MAX_SPAWN_COUNT:
 			spawn_count += 1
+		if level == 17:
+			_spawn_enemy(MOON, MOON_SPAWN)
+		if level == 20:
+			_spawn_enemy(MOON, MOON_SPAWN)
 	if level >= 2:
 		_spawn_rand_enemies(spawn_count - forced_spawns)
 
@@ -373,7 +389,7 @@ func is_grid_pos_snake(grid_pos):
 
 var POINTS_TEXT = preload("res://points.tscn")
 const FULL_CLEAR_BONUS = 10
-func _on_snake_ate_bug(bug_pos):
+func on_bug_killed(bug_pos):
 	score += level * 10
 	var text = POINTS_TEXT.instantiate()
 	text.setup(level * 10)
@@ -390,6 +406,5 @@ func _on_snake_ate_bug(bug_pos):
 		bonus_text.setup_bonus(full_clear_bonus)
 		bonus_text.position = Vector2(Global.RESOLUTION.x/2 - 50, 15)
 		add_child(bonus_text)
-	if level >= 14 and $Bugs.get_child_count() < 12:
+	if level >= 14 and $Bugs.get_child_count() < 15:
 		_spawn_rand_enemies(1)
-		
