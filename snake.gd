@@ -30,7 +30,7 @@ const FREE_SEGMENTS_MAX = 10
 var free_segments = FREE_SEGMENTS_MAX
 
 @onready var BASE_SPEED = $Timer.wait_time
-const MORE_SPEED = 0.18
+const MORE_SPEED = 0.19
 
 class Pair:
 	var pos: Vector2
@@ -204,6 +204,8 @@ const YUM_COLOR = Color(79/255.0, 255/255.0, 67/255.0)
 const BASE_COLOR = Color(255/255.0, 133/255.0, 0/255.0)
 
 func _process(delta):
+	modulate.a = lerp(modulate.a, 1.0, 20 * delta)
+	
 	if not $PoisonTimer.is_stopped():
 		var color = Color(lerp($HeadSprite.modulate.r, POISON_COLOR.r, 8 * delta), lerp($HeadSprite.modulate.g, POISON_COLOR.g, 10 * delta), lerp($HeadSprite.modulate.b, POISON_COLOR.b, 10 * delta))
 		set_color(color)
@@ -219,5 +221,9 @@ func set_color(color):
 	for seg in $Segments.get_children():
 		seg.modulate = color
 
+func no_free_segments():
+	free_segments = 1
+
 func _ready():
 	$HeadSprite.modulate = BASE_COLOR
+	modulate.a = 0

@@ -5,7 +5,7 @@ enum State {
 }
 
 const DEFAULT_BULLET_SPEED = 1
-const FAST_BULLET_SPEED = 1.5
+const FAST_BULLET_SPEED = 1.4
 var bullet_speed_multiplier = DEFAULT_BULLET_SPEED
 
 var state = State.WAITING
@@ -53,12 +53,12 @@ const NEXT_LEVEL_TIPS = [
 	"More Beetles!",
 	"Look out for Ants!",
 	"Snakes hate poisonous Spiders!",
-	"Snake speed up!",
 	"Flee the Hornet!",
-	"Watch for Dragonflies!",
-	"Bullet speed up!",
-	"Dodge bouncing Moths!",
 	"Double trouble!",
+	"Watch for Dragonflies!",
+	"Speed up!",
+	"Triple trouble!",
+	"Dodge bouncing Moths!",
 	"Snake turrets!",
 	"Good luck..."
 ]
@@ -70,7 +70,7 @@ var level = 1
 const DEFAULT_SPAWN_COUNT = 1
 const MAX_SPAWN_COUNT = 9
 var spawn_count = DEFAULT_SPAWN_COUNT
-var enemy_pool = []
+var enemy_pool = [[BEETLE, BEETLE_SPAWN]]
 const BEETLE = preload("res://beetle.tscn")
 const BEETLE_SPAWN = SpawnMode.GRID_NO_BORDER
 const DRAGONFLY = preload("res://dragonfly.tscn")
@@ -83,63 +83,84 @@ const ANT = preload("res://ant.tscn")
 const ANT_SPAWN = SpawnMode.FRAME
 const MOTH = preload("res://moth.tscn")
 const MOTH_SPAWN = SpawnMode.GRID
+const SNAKE = preload("res://snake.tscn")
+const SNAKE_SPAWN = SpawnMode.GRID
 
 enum SpawnMode {
 	GRID, GRID_NO_BORDER, FRAME, BOTTOM
 }
 
 const SAFE_SPAWN_DIST = 10
+func _try_find_legal_position(spawnmode, max_attempts = 25):
+	var tries = 0
+	while tries < max_attempts:
+		tries += 1
+		var rand_pos = Global.rand_grid_pos()
+		# if border and GRID NO BETTER, reject
+		if spawnmode == SpawnMode.GRID_NO_BORDER and (rand_pos.x == 0 or rand_pos.x == Global.GRID_SIZE.x-1 or rand_pos.y == 0 or rand_pos.y == Global.GRID_SIZE.y-1):
+			continue
+		
+		# if too close to player, reject
+		var pellet_grid_pos = Global.to_grid_position($Pellet.position)
+		var total_dist = abs(pellet_grid_pos.x - rand_pos.x) + abs(pellet_grid_pos.y - rand_pos.y)
+		if total_dist < SAFE_SPAWN_DIST:
+			continue
+		
+		if is_grid_pos_full(rand_pos):
+			continue
+		
+		return rand_pos
+	return null
+
 func _spawn_enemy(enemy, spawnmode):
 	if spawnmode == SpawnMode.GRID or spawnmode == SpawnMode.GRID_NO_BORDER:
+		var rand_pos = _try_find_legal_position(spawnmode)
+		if rand_pos != null:
+			var bug = enemy.instantiate()
+			bug.position = Global.to_global_position(rand_pos)
+			queued_bugs.append(bug)
+			call_deferred("_spawn_queued_bugs")
+			return
+	elif spawnmode == SpawnMode.FRAME:
 		var tries = 0
-		while tries < 25:
+		
+		while tries < 10:
 			tries += 1
-			var rand_pos = Global.rand_grid_pos()
-			# if border and GRID NO BETTER, reject
-			if spawnmode == SpawnMode.GRID_NO_BORDER and (rand_pos.x == 0 or rand_pos.x == Global.GRID_SIZE.x-1 or rand_pos.y == 0 or rand_pos.y == Global.GRID_SIZE.y-1):
-				continue
+			
+			# vertical or horizontal?
+			var vertical = Global.RNG.randi_range(0, 1) == 1
+			var x = -1
+			var y = -1
+			if vertical:
+				x = 0 if Global.RNG.randi_range(0, 1) == 1 else int(Global.GRID_SIZE.x)-1
+				y = Global.RNG.randi_range(1, int(Global.GRID_SIZE.y) - 1)
+			else:
+				x = Global.RNG.randi_range(1, int(Global.GRID_SIZE.x) - 1)
+				y = 0 if Global.RNG.randi_range(0, 1) == 1 else int(Global.GRID_SIZE.y)-1
+			
+			var rand_pos = Vector2(x, y)
 			
 			# if too close to player, reject
 			var pellet_grid_pos = Global.to_grid_position($Pellet.position)
 			var total_dist = abs(pellet_grid_pos.x - rand_pos.x) + abs(pellet_grid_pos.y - rand_pos.y)
 			if total_dist < SAFE_SPAWN_DIST:
 				continue
-			
-			# if already occupied, reject
-			if not is_grid_pos_full(rand_pos):
-				var bug = enemy.instantiate()
-				bug.position = Global.to_global_position(rand_pos)
-				queued_bugs.append(bug)
-				call_deferred("_spawn_queued_bugs")
-				return
-	elif spawnmode == SpawnMode.FRAME:
-		# vertical or horizontal?
-		var vertical = Global.RNG.randi_range(0, 1) == 1
-		var x = -1
-		var y = -1
-		if vertical:
-			x = 0 if Global.RNG.randi_range(0, 1) == 1 else int(Global.GRID_SIZE.x)-1
-			y = Global.RNG.randi_range(1, int(Global.GRID_SIZE.y) - 1)
-		else:
-			x = Global.RNG.randi_range(1, int(Global.GRID_SIZE.x) - 1)
-			y = 0 if Global.RNG.randi_range(0, 1) == 1 else int(Global.GRID_SIZE.y)-1
-		
-		#spawn the ant
-		var bug = enemy.instantiate()
-		bug.position = Global.to_global_position(Vector2(x, y))
-		#nudge onto wall...
-		if x == 0: #left wall
-			bug.position -= Vector2(6, 0)
-		elif x == Global.GRID_SIZE.x - 1: #right wall
-			bug.position += Vector2(6, 0)
-		elif y == 0: #top wall
-			bug.position -= Vector2(0, 6)
-		else: #bottom wall
-			bug.position += Vector2(0, 6)
-		bug.setup(vertical)
-		queued_bugs.append(bug)
-		call_deferred("_spawn_queued_bugs")
-		return
+			#spawn the ant
+			var bug = enemy.instantiate()
+			bug.position = Global.to_global_position(Vector2(x, y))
+			#nudge onto wall...
+			if x == 0: #left wall
+				bug.position -= Vector2(6, 0)
+			elif x == Global.GRID_SIZE.x - 1: #right wall
+				bug.position += Vector2(6, 0)
+			elif y == 0: #top wall
+				bug.position -= Vector2(0, 6)
+			else: #bottom wall
+				bug.position += Vector2(0, 6)
+			bug.setup(vertical)
+			queued_bugs.append(bug)
+			call_deferred("_spawn_queued_bugs")
+			return
 	elif spawnmode == SpawnMode.BOTTOM:
 		var bug = enemy.instantiate()
 		bug.position = Vector2(Global.RNG.randi_range(int(Global.RESOLUTION.x/2) - 80, int(Global.RESOLUTION.y/2) + 80), Global.RESOLUTION.y + 10)
@@ -165,6 +186,17 @@ func _ready():
 	$NextLevelInfo.visible = false
 	$Grid.self_modulate = grid_color
 
+func _spawn_new_snake(fast = false):
+	var rand_pos = _try_find_legal_position(SpawnMode.GRID, 200) #try really hard to spawn this snek
+	if rand_pos != null:
+		var snek = SNAKE.instantiate()
+		snek.position = Global.to_global_position(rand_pos)
+		snek.no_free_segments()
+		snek.enable()
+		if fast:
+			snek.speed_up()
+		$Snakes.add_child(snek)
+
 func _update_level():
 	$NextLevelInfo.visible = true
 	$NextLevelInfo/ClearBonus.visible = false
@@ -180,7 +212,6 @@ func _update_level():
 	
 	# add enemies and stuff
 	var forced_spawns = 0
-	
 	if level == 1:
 		pass
 	if level == 2:
@@ -193,40 +224,41 @@ func _update_level():
 		forced_spawns = 1
 	elif level == 5: 
 		$Sky.next_sky() #day
-		enemy_pool.append([SPIDER, SPIDER_SPAWN])
 		_spawn_enemy(SPIDER, SPIDER_SPAWN)
 	elif level == 6: 
-		$Snakes/Snake.speed_up()
-	elif level == 7:
+		enemy_pool.append([SPIDER, SPIDER_SPAWN]) # add spider next time so only 1 spawns on 5
 		_spawn_enemy(HORNET, HORNET_SPAWN)
 		forced_spawns = 1
-	elif level == 8:
+	elif level == 7:
 		$Sky.next_sky() #evening
+		_spawn_new_snake()
+	elif level == 8:
 		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
 		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
 		forced_spawns = 1
 	elif level == 9:
+		for snake in $Snakes.get_children():
+			snake.speed_up()
 		bullet_speed_multiplier = FAST_BULLET_SPEED
 	elif level == 10: 
+		$Sky.next_sky() # night
+		_spawn_new_snake(true)
+	elif level == 11: 
 		enemy_pool.append([MOTH, MOTH_SPAWN])
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		forced_spawns = 2
 		spawn_count += 1 #5
-	elif level == 11: 
-		$Sky.next_sky() # night
-		#speed up too
-		pass
 	elif level == 12: #snake turrets
 		pass
 	elif level == 13: #moon
 		spawn_count += 1 #6
 		pass
 	elif level >= 14: #challenge
+		$Sky.next_sky() #midnight
 		if level == 14:
 			_spawn_enemy(HORNET, HORNET_SPAWN)
 			forced_spawns = 1
-		$Sky.next_sky() #midnight
 		if spawn_count < MAX_SPAWN_COUNT:
 			spawn_count += 1
 	if level >= 2:
@@ -277,8 +309,9 @@ func _on_reset():
 	level = 1
 	for bug in $Bugs.get_children():
 		bug.queue_free()
-	if $Snakes.find_child("Snake2"):
-		$Snakes/Snake2.queue_free()
+	while $Snakes.get_child_count() != 1:
+		$Snakes.get_child(1).queue_free()
+		$Snakes.remove_child($Snakes.get_child(1))
 	for bullet in $Bullets.get_children():
 		bullet.queue_free()
 	bullet_speed_multiplier = DEFAULT_BULLET_SPEED

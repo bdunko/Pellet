@@ -303,7 +303,6 @@ z_index = 1600
 [node name="Snakes" type="Node2D" parent="."]
 
 [node name="Snake" parent="Snakes" instance=ExtResource("7_ertux")]
-z_index = 500
 position = Vector2(96, 95)
 
 [connection signal="timeout" from="NextLevelInfo/Timer" to="NextLevelInfo" method="_on_timer_timeout"]

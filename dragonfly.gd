@@ -25,7 +25,7 @@ func _ready():
 
 func _process(delta):
 	# transparency
-	modulate.a = lerp(modulate.a, 1.0, 12 * delta)
+	modulate.a = lerp(modulate.a, 1.0, 20 * delta)
 	
 	if not disabled:
 		var collide = move_and_collide(velocity * delta)
