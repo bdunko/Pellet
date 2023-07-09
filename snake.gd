@@ -30,7 +30,6 @@ const FREE_SEGMENTS_MAX = 10
 var free_segments = FREE_SEGMENTS_MAX
 
 
-
 class Pair:
 	var pos: Vector2
 	var original_dir: Direction

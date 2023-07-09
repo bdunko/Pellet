@@ -7,7 +7,7 @@ enum State {
 }
 
 const DEFAULT_BULLET_SPEED = 1
-const FAST_BULLET_SPEED = 1.4
+const FAST_BULLET_SPEED = 1.3
 var bullet_speed_multiplier = DEFAULT_BULLET_SPEED
 
 var state = State.WAITING
@@ -33,8 +33,9 @@ var SCORE_TO_COMMENTARY = {
 	250 : "Not bad... but you can do better.",
 	1000 : "You're getting pretty good!",
 	2500 : "Wow! Nice job!",
-	5000 : "Hey, that's better than my high score... :(",
-	10000 : "Amazing score!!! Incredible!"
+	5000 : "Amazing score! Incredible!",
+	10000 : "Hey, that's better than my high score... :(",
+	25000 : "Unbelievable score... are you cheating?"
 }
 
 const LEVEL_TIMES = [-1, 5, 15, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 30, 30]
@@ -139,15 +140,10 @@ func _update_level():
 	elif level >= 16: #challenge
 		$Sky.next_sky() #midnight
 		# speed up moon
-		if level == 17 or level == 19:
+		if level == 20:
 			for bug in $Bugs.get_children():
 				if bug.has_method("IS_MOON"): #$HACK$
 					bug.fire_faster()
-		# second hornet
-		if level == 18 or level == 20:
-			_spawn_enemy(HORNET, HORNET_SPAWN)
-			forced_spawns = 1
-	
 	if level >= 2:
 		$NextLevelSound.play()
 		_spawn_rand_enemies(spawn_count - forced_spawns)
@@ -158,7 +154,7 @@ var level = 1
 const MAX_ANTS_MAX = 3 #too annoying otherwise
 var max_ants = 1
 const DEFAULT_SPAWN_COUNT = 2
-const MAX_SPAWN_COUNT = 10
+const MAX_SPAWN_COUNT = 8
 var spawn_count = DEFAULT_SPAWN_COUNT
 var enemy_pool = []
 const BEETLE = preload("res://beetle.tscn")
@@ -307,9 +303,9 @@ func _ready():
 	$NextLevelInfo.visible = false
 	$Grid.self_modulate = grid_color
 
-@onready var BASE_SPEED = 0.4
-const MORE_SPEED = 0.33
-const MOST_SPEED = 0.23
+@onready var BASE_SPEED = 0.42
+const MORE_SPEED = 0.36
+const MOST_SPEED = 0.30
 var speed_level = 0
 
 func _spawn_new_snake(color = 0):
@@ -491,7 +487,9 @@ func _on_timer_timeout():
 		
 func on_bullet_shot():
 	$BulletSound.play()
-	
+
+func on_moon_bullet_shot():
+	$MoonBulletSound.play()
 
 var music_state = 1
 func _on_music_control_pressed():

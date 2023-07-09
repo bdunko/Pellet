@@ -30,6 +30,8 @@ func _on_shot_timer_timeout():
 		bullet.rotation = position.direction_to(pellet_pos).angle()
 		get_parent().get_parent().find_child("Bullets").add_child(bullet)
 		bullet.hit_bug.connect(get_parent().get_parent().on_bug_killed)
+		bullet.shot.connect(get_parent().get_parent().on_moon_bullet_shot)
+		bullet.shoot()
 
 const FASTER_RATE = 0.66
 const FASTEST_RATE = 0.33
