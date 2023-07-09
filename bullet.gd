@@ -13,13 +13,12 @@ func _process(delta):
 	modulate.a = lerp(modulate.a, mod_target, 20 * delta)
 	modulate.r = lerp(modulate.r, mod_target, 20 * delta)
 	modulate.g = lerp(modulate.g, mod_target, 20 * delta)
+	if modulate.r == 0:
+		queue_free()
 	
 	var collide = move_and_collide(velocity  * delta) 
 	if collide != null:
 		call_deferred("_begin_destroy")
-		
-	if modulate.r == 0:
-		queue_free()
 
 func _on_collide_with_bug(body):
 	if body != bug_owner:

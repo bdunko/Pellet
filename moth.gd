@@ -39,7 +39,7 @@ func _process(delta):
 		if collision:
 			var reflect = collision.get_remainder().bounce(collision.get_normal())
 			velocity = velocity.bounce(collision.get_normal())
-			if velocity.y > velocity.x:
+			if abs(velocity.y) > abs(velocity.x):
 				if velocity.y > 0:
 					rotation_degrees = -180
 				else:

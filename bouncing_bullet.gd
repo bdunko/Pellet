@@ -9,8 +9,15 @@ func setup(pos, dir, speed, owned_bug):
 
 var COLLISIONS_BEFORE_FREE = 3
 var num_collisions = 0
+var mod_target = 1.0
 
 func _process(delta):
+	modulate.a = lerp(modulate.a, mod_target, 20 * delta)
+	modulate.r = lerp(modulate.r, mod_target, 20 * delta)
+	modulate.g = lerp(modulate.g, mod_target, 20 * delta)
+	if modulate.r == 0:
+		queue_free()
+		
 	var collision: KinematicCollision2D = move_and_collide(velocity * delta)
 	if collision:
 		_update_num_collisions()
@@ -29,4 +36,9 @@ func _on_collide_with_bug(body): #hmm... rethink this
 func _update_num_collisions():
 	num_collisions += 1
 	if num_collisions == COLLISIONS_BEFORE_FREE:
-		queue_free()
+		call_deferred("_begin_destroy")
+
+func _begin_destroy():
+	mod_target = 0.0
+	$CollisionShape2D.disabled = true
+	velocity = Vector2.ZERO
