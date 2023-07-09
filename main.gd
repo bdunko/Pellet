@@ -34,8 +34,8 @@ var SCORE_TO_COMMENTARY = {
 	10000 : "Amazing score!!! Incredible!"
 }
 
-#const LEVEL_TIMES = [-1, 5, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 35, 35, 40, 40, 45, 45, 50]
-const LEVEL_TIMES = [-1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5]
+const LEVEL_TIMES = [-1, 5, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 35, 35, 40, 40, 45, 45, 50]
+#const LEVEL_TIMES = [-1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5]
 
 var MAX_LEVEL = LEVEL_TIMES.size()
 var MAX_LEVEL_TIME = 60
