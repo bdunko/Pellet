@@ -39,7 +39,7 @@ var SCORE_TO_COMMENTARY = {
 	25000 : "Unbelievable score... are you cheating?"
 }
 
-const LEVEL_TIMES = [-1, 5, 15, 15, 15, 20, 20, 20, 20, 25, 25, 25, 30, 30, 30, 30]
+const LEVEL_TIMES = [-1, 5, 15, 15, 15, 15, 20, 20, 20, 20, 20, 20, 20, 20, 25, 25]
 #const LEVEL_TIMES = [-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 var MAX_LEVEL = LEVEL_TIMES.size()
