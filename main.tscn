@@ -1,22 +1,25 @@
-[gd_scene load_steps=33 format=3 uid="uid://b2owfgm8rrpak"]
+[gd_scene load_steps=39 format=3 uid="uid://j888sh1i6xvg"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_eks3d"]
+[ext_resource type="Script" path="res://ui/sky.gd" id="2_1co3b"]
 [ext_resource type="Texture2D" uid="uid://cfnee42a60ou6" path="res://assets/board.png" id="2_ff65i"]
-[ext_resource type="Script" path="res://sky.gd" id="2_iuh4t"]
 [ext_resource type="Texture2D" uid="uid://b72boic5wqc2x" path="res://assets/sky_space.png" id="2_teo7e"]
 [ext_resource type="Texture2D" uid="uid://dxjyhf8br5g6w" path="res://assets/sky_day.png" id="2_yd25x"]
 [ext_resource type="Texture2D" uid="uid://cm0mimc60tet" path="res://assets/sky_night.png" id="3_hrorm"]
 [ext_resource type="Texture2D" uid="uid://fdooebg583my" path="res://assets/grid.png" id="3_q3otb"]
 [ext_resource type="Texture2D" uid="uid://cqkf55e170y6u" path="res://assets/sky_evening.png" id="4_y164g"]
 [ext_resource type="Script" path="res://startupinfo.gd" id="5_162x5"]
-[ext_resource type="Script" path="res://nextlevelinfo.gd" id="5_ct2ys"]
-[ext_resource type="Script" path="res://deadinfo.gd" id="5_teiwi"]
 [ext_resource type="Texture2D" uid="uid://cay5ftkmugouq" path="res://assets/sky_morning.png" id="6_7fbtx"]
 [ext_resource type="PackedScene" uid="uid://xe84in6ej3m7" path="res://pellet.tscn" id="6_dvu1o"]
 [ext_resource type="PackedScene" uid="uid://de227doiyv2qb" path="res://snake.tscn" id="7_ertux"]
-[ext_resource type="Script" path="res://board.gd" id="9_na4cx"]
+[ext_resource type="Script" path="res://ui/board.gd" id="9_kfx03"]
 [ext_resource type="Texture2D" uid="uid://l5tuspu7fgkj" path="res://assets/board_black.png" id="10_l81du"]
 [ext_resource type="Texture2D" uid="uid://0c1wwikxym33" path="res://assets/board_autumn.png" id="11_ud181"]
+[ext_resource type="Texture2D" uid="uid://bvpakcq1cb3bd" path="res://assets/arrow.png" id="14_8c0an"]
+[ext_resource type="Script" path="res://ui/deadinfo.gd" id="14_qk0na"]
+[ext_resource type="Texture2D" uid="uid://ybh47yw24d8" path="res://assets/arrow_big.png" id="15_2a8ni"]
+[ext_resource type="Script" path="res://ui/nextlevelinfo.gd" id="15_4lwa7"]
+[ext_resource type="Texture2D" uid="uid://trkf8kekxgmh" path="res://assets/arrow_press.png" id="15_c2ayl"]
 [ext_resource type="AudioStream" uid="uid://cvqekm4ge747x" path="res://assets/sound/snake.mp3" id="18_2hrks"]
 [ext_resource type="AudioStream" uid="uid://b22f7tywcmlee" path="res://assets/sound/die.mp3" id="19_3536b"]
 [ext_resource type="AudioStream" uid="uid://blw2bawcgyjw4" path="res://assets/sound/bullet.mp3" id="19_dp7f8"]
@@ -30,6 +33,9 @@
 [ext_resource type="AudioStream" uid="uid://bd24mkc8s8nx" path="res://assets/sound/bgm5.mp3" id="28_m5f41"]
 [ext_resource type="AudioStream" uid="uid://8006g383kcen" path="res://assets/sound/bgm6.mp3" id="29_p4wmy"]
 [ext_resource type="AudioStream" uid="uid://p023jwsqrsws" path="res://assets/sound/star.mp3" id="30_ahq7j"]
+[ext_resource type="Texture2D" uid="uid://bwuf46betmc7s" path="res://assets/music_button.png" id="32_mhtye"]
+[ext_resource type="Texture2D" uid="uid://c7mdr7gjl84ro" path="res://assets/music_button_big.png" id="33_tfs3p"]
+[ext_resource type="Texture2D" uid="uid://ccavkwtt45efb" path="res://assets/music_button_press.png" id="34_ms4ux"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ji84y"]
 size = Vector2(4.5, 166)
@@ -93,7 +99,7 @@ bbcode_enabled = true
 text = "[center]Level 1[/center]"
 
 [node name="Sky" type="Node2D" parent="."]
-script = ExtResource("2_iuh4t")
+script = ExtResource("2_1co3b")
 
 [node name="SkyMidnight" type="Sprite2D" parent="Sky"]
 texture = ExtResource("2_teo7e")
@@ -152,7 +158,7 @@ texture = ExtResource("3_q3otb")
 centered = false
 
 [node name="Board" type="Node2D" parent="."]
-script = ExtResource("9_na4cx")
+script = ExtResource("9_kfx03")
 
 [node name="Black" type="Sprite2D" parent="Board"]
 position = Vector2(160, 90)
@@ -201,20 +207,54 @@ text = "Avoid Snek!!!"
 horizontal_alignment = 1
 
 [node name="HighScore" type="Label" parent="StartupInfo"]
-visible = false
-offset_top = 118.0
-offset_right = 320.0
-offset_bottom = 134.0
+offset_left = 80.0
+offset_top = 127.0
+offset_right = 240.0
+offset_bottom = 143.0
 theme_override_colors/font_color = Color(1, 0.839216, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
 text = "High Score: 9999"
 horizontal_alignment = 1
 
+[node name="LevelDownButton" type="TextureButton" parent="StartupInfo"]
+visible = false
+offset_left = 119.0
+offset_top = 89.0
+offset_right = 131.0
+offset_bottom = 101.0
+focus_mode = 0
+texture_normal = ExtResource("14_8c0an")
+texture_pressed = ExtResource("15_c2ayl")
+texture_hover = ExtResource("15_2a8ni")
+
+[node name="StartLevel" type="Label" parent="StartupInfo"]
+visible = false
+offset_left = 131.0
+offset_top = 87.0
+offset_right = 189.0
+offset_bottom = 103.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+text = "Level 1"
+horizontal_alignment = 1
+
+[node name="LevelUpButton" type="TextureButton" parent="StartupInfo"]
+visible = false
+offset_left = 189.0
+offset_top = 89.0
+offset_right = 201.0
+offset_bottom = 101.0
+focus_mode = 0
+texture_normal = ExtResource("14_8c0an")
+texture_pressed = ExtResource("15_c2ayl")
+texture_hover = ExtResource("15_2a8ni")
+flip_h = true
+
 [node name="DeadInfo" type="Node2D" parent="."]
 modulate = Color(1, 1, 1, 0)
 z_index = 4000
-script = ExtResource("5_teiwi")
+script = ExtResource("14_qk0na")
 
 [node name="DeadFilter" type="ColorRect" parent="DeadInfo"]
 offset_right = 320.0
@@ -226,6 +266,7 @@ color = Color(0, 0, 0, 0.623529)
 offset_top = 14.0
 offset_right = 320.0
 offset_bottom = 30.0
+mouse_filter = 2
 bbcode_enabled = true
 text = "[center]Oh no, you are [color=red]dead[/color]![/center]"
 
@@ -233,6 +274,7 @@ text = "[center]Oh no, you are [color=red]dead[/color]![/center]"
 offset_top = 32.0
 offset_right = 320.0
 offset_bottom = 45.0
+mouse_filter = 2
 bbcode_enabled = true
 text = "[center]You lasted [color=lightblue]1000[/color] seconds.[/center]"
 
@@ -240,6 +282,7 @@ text = "[center]You lasted [color=lightblue]1000[/color] seconds.[/center]"
 offset_top = 43.0
 offset_right = 320.0
 offset_bottom = 56.0
+mouse_filter = 2
 bbcode_enabled = true
 text = "[center]And earned [color=green]1000[/color] points![/center]"
 
@@ -248,6 +291,7 @@ offset_left = -1.0
 offset_top = 58.0
 offset_right = 319.0
 offset_bottom = 75.0
+mouse_filter = 2
 bbcode_enabled = true
 text = "[center]Not bad... but you can do better.[/center]"
 
@@ -256,6 +300,7 @@ offset_left = 1.0
 offset_top = 90.0
 offset_right = 320.0
 offset_bottom = 130.0
+mouse_filter = 2
 bbcode_enabled = true
 text = "[center]Press [color=yellow]Spacebar[/color] to try again.[/center]"
 
@@ -264,6 +309,7 @@ offset_left = 2.0
 offset_top = 114.0
 offset_right = 320.0
 offset_bottom = 172.0
+mouse_filter = 2
 bbcode_enabled = true
 text = "[center]- Tip -
 You get some points for surviving.
@@ -273,7 +319,7 @@ snake eat other enemies.[/center]"
 [node name="NextLevelInfo" type="Node2D" parent="."]
 z_index = 3999
 position = Vector2(127, 9)
-script = ExtResource("5_ct2ys")
+script = ExtResource("15_4lwa7")
 
 [node name="LevelUp" type="Label" parent="NextLevelInfo"]
 offset_left = 116.0
@@ -335,6 +381,10 @@ bus = &"Snake"
 stream = ExtResource("19_dp7f8")
 bus = &"Bullets"
 
+[node name="MoonBulletSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("30_ahq7j")
+bus = &"MoonBul"
+
 [node name="NextLevelSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("21_hy2j7")
 
@@ -375,19 +425,30 @@ stream = ExtResource("29_p4wmy")
 autoplay = true
 bus = &"Music6"
 
-[node name="MusicButton" type="Button" parent="."]
+[node name="MusicButton" type="TextureButton" parent="."]
 z_index = 4096
 offset_left = 9.0
 offset_top = 149.0
 offset_right = 68.0
 offset_bottom = 170.0
 focus_mode = 0
+mouse_filter = 1
+texture_normal = ExtResource("32_mhtye")
+texture_pressed = ExtResource("34_ms4ux")
+texture_hover = ExtResource("33_tfs3p")
+
+[node name="Text" type="Label" parent="MusicButton"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 58.0
+offset_bottom = 20.0
 text = "Music 1"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="MoonBulletSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("30_ahq7j")
-bus = &"MoonBul"
-
+[connection signal="pressed" from="StartupInfo/LevelDownButton" to="." method="_on_level_down_button_pressed"]
+[connection signal="pressed" from="StartupInfo/LevelUpButton" to="." method="_on_level_up_button_pressed"]
 [connection signal="timeout" from="NextLevelInfo/Timer" to="NextLevelInfo" method="_on_timer_timeout"]
 [connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]
 [connection signal="moved" from="Pellet" to="." method="_on_pellet_moved"]

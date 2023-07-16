@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://nmggdkaqks7m"]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://beetle.gd" id="1_pmue3"]
+[ext_resource type="Script" path="res://bugs/beetle.gd" id="1_pmue3"]
 [ext_resource type="Texture2D" uid="uid://gnsenqayyeir" path="res://assets/bugs/enemy_beetle.png" id="1_q0crj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_t758q"]

@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://27ewt5mll2od"]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Texture2D" uid="uid://bc3644en5rjpo" path="res://assets/moon.png" id="1_o2dt6"]
-[ext_resource type="Script" path="res://moon.gd" id="1_p5myj"]
+[ext_resource type="Script" path="res://bugs/moon.gd" id="1_p5myj"]
 
 [node name="Moon" type="CharacterBody2D"]
 z_index = 1600

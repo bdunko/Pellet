@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://sedwr6h2jbev"]
+[gd_scene load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://points.gd" id="1_m60hd"]
+[ext_resource type="Script" path="res://ui/points.gd" id="1_m60hd"]
 
 [node name="Points" type="Label"]
 z_index = 2000

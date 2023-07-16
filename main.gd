@@ -12,13 +12,17 @@ var bullet_speed_multiplier = DEFAULT_BULLET_SPEED
 
 var state = State.WAITING
 var highscore = 0
+var start_level = 1
+var max_level = 0
 
+const START_LEVEL_FORMAT = "Level %d"
 const HIGH_SCORE_FORMAT = "High Score: %d"
 const LEVEL_FORMAT = "[center]Level %d[/center]"
 const TIME_FORMAT = "[center]You lasted [color=lightblue]%d[/color] seconds.[/center]"
 const SCORE_FORMAT = "[center]And earned [color=green]%d[/color] points![/center]"
 const COMMENTARY_FORMAT = "[center]%s[/center]"
 const TIP_FORMAT = "[center]- Tip -\n%s"
+const MAX_LEVEL_END_TIP = "Congrats on reaching level 15!\nIn the future, you can press U\nat the start to unlock all levels."
 const tips = ["The snake can eat bugs.\nIt can block bullets too!",
  "You can touch the snake's body.\nOnly the head is deadly.",
  "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies.",
@@ -50,7 +54,7 @@ Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), 
 Color(219/255.0, 146/255.0, 94/255.0), Color(224/255.0, 117/255.0, 157/255.0),Color(168/255.0, 85/255.0, 211/255.0), 
 Color(209/255.0, 82/255.0, 73/255.0), Color(178/255.0, 222/255.0, 91/255.0), Color(91/255.0, 222/255.0, 215/255.0), 
 Color(163/255.0, 111/255.0, 222/255.0), Color(222/255.0, 109/255.0, 131/255.0), Color(45/255.0, 45/255.0, 45/255.0)]
-var MAX_GRID_COLOR = Color(15/255.0, 15/255.0, 15/255.0)
+var MAX_GRID_COLOR = Color(25/255.0, 25/255.0, 25/255.0)
 var grid_color= GRID_COLORS[1]
 
 const NEXT_LEVEL_TIPS = [
@@ -73,73 +77,98 @@ const NEXT_LEVEL_TIPS = [
 ]
 const MAX_LEVEL_TIP = "How much longer...?"
 
+func _update_level_graphics():
+	if level >= MAX_LEVEL:
+		grid_color = MAX_GRID_COLOR
+	else:
+		grid_color = GRID_COLORS[level]
+	
+	$Sky.set_sky(4)
+	$Board.set_board(2)
+	
+	if level >= 5:
+		$Sky.set_sky(3) #day
+	if level >= 8:
+		$Sky.set_sky(2) #evening
+		$Board.set_board(1) #autumn
+	if level >= 12:
+		$Sky.set_sky(1) #evening
+		$Board.set_board(0) #black
+	if level >= 16:
+		$Sky.set_sky(0) #midnight
+
+func _update_bug_pool():
+	enemy_pool.clear()
+	if level >= 2:
+		enemy_pool.append([BEETLE, BEETLE_SPAWN])
+	if level >= 4:
+		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
+	if level >= 7:
+		enemy_pool.append([SPIDER, SPIDER_SPAWN]) # add spider next time so only 1 spawns on 6
+	if level >= 9:
+		enemy_pool.append([ANT, ANT_SPAWN]) # add ants after
+	if level >= 13:
+		enemy_pool.append([MOTH, MOTH_SPAWN])
+
 func _update_level():
+	_update_level_graphics()
+	_update_bug_pool()
+	
 	$NextLevelInfo.visible = true
 	if level >= MAX_LEVEL:
 		$UI/Time.text = str(MAX_LEVEL_TIME)
-		grid_color = MAX_GRID_COLOR
 		$NextLevelInfo.next_level(MAX_LEVEL_TIP)
 	else:
 		$UI/LevelLabel.text = LEVEL_FORMAT % level
 		$UI/Time.text = str(LEVEL_TIMES[level])
-		grid_color = GRID_COLORS[level]
 		$NextLevelInfo.next_level(NEXT_LEVEL_TIPS[level])
 	
 	# 1 spawn per level
 	spawn_count = max(2, min(int(level/2.0), MAX_SPAWN_COUNT))
 	max_ants = max(1, min(int(level/6.0), MAX_ANTS_MAX))
 	
+	if level >= 8 and $Snakes.get_child_count() < 2:
+		_spawn_new_snake(1)
+	if level >= 12 and $Snakes.get_child_count() < 3:
+		_spawn_new_snake(2)
+	
+	if level >= 14:
+		_set_speed(2)
+	elif level >= 7:
+		_set_speed(1)
+	else:
+		_set_speed(0)
+
+	if level >= 15:
+		bullet_speed_multiplier = FAST_BULLET_SPEED
+	
 	# add enemies and stuff
 	# terrible horrible code structure $HACK$
 	var forced_spawns = 0
-	if level == 1:
-		pass
-	elif level == 2:
-		enemy_pool.append([BEETLE, BEETLE_SPAWN])
-	elif level == 4:
-		enemy_pool.append([DRAGONFLY, DRAGONFLY_SPAWN])
+	if level == 4:
 		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
 		forced_spawns = 1
 	elif level == 5:
-		$Sky.next_sky() #day
 		_spawn_enemy(DRAGONFLY, DRAGONFLY_SPAWN)
 		forced_spawns = 1
 	elif level == 6: 
 		_spawn_enemy(SPIDER, SPIDER_SPAWN)
 		forced_spawns = 1
-	elif level == 7:
-		enemy_pool.append([SPIDER, SPIDER_SPAWN]) # add spider next time so only 1 spawns on 5
-		speed_up()
-	elif level == 8: 
-		$Sky.next_sky() #evening
-		$Board.next_board()
-		_spawn_new_snake(1)
 	elif level == 9:
-		enemy_pool.append([ANT, ANT_SPAWN]) # add ants after
 		_spawn_enemy(ANT, ANT_SPAWN)
 		forced_spawns = 1
 	elif level == 10:
 		_spawn_enemy(HORNET, HORNET_SPAWN)
 		forced_spawns = 1
-	elif level == 12:
-		$Sky.next_sky() # night
-		$Board.next_board()
-		_spawn_new_snake(2)
 	elif level == 13: 
-		enemy_pool.append([MOTH, MOTH_SPAWN])
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		forced_spawns = 2
 		spawn_count += 1 #5
-	elif level == 14: 
-		speed_up()
 	elif level == 15: #moon
-		bullet_speed_multiplier = FAST_BULLET_SPEED
-		_spawn_enemy(MOON, MOON_SPAWN)
+		_spawn_enemy(MOON, MOON_SPAWN) #this will stop working if max level > 15
 		spawn_count += 1
-		pass
 	elif level >= 16: #challenge
-		$Sky.next_sky() #midnight
 		# speed up moon
 		if level == 20:
 			for bug in $Bugs.get_children():
@@ -158,21 +187,21 @@ const DEFAULT_SPAWN_COUNT = 2
 const MAX_SPAWN_COUNT = 8
 var spawn_count = DEFAULT_SPAWN_COUNT
 var enemy_pool = []
-const BEETLE = preload("res://beetle.tscn")
+const BEETLE = preload("res://bugs/beetle.tscn")
 const BEETLE_SPAWN = SpawnMode.GRID_NO_BORDER
-const DRAGONFLY = preload("res://dragonfly.tscn")
+const DRAGONFLY = preload("res://bugs/dragonfly.tscn")
 const DRAGONFLY_SPAWN = SpawnMode.GRID_NO_BORDER
-const SPIDER = preload("res://spider.tscn")
+const SPIDER = preload("res://bugs/spider.tscn")
 const SPIDER_SPAWN = SpawnMode.GRID_NO_BORDER
-const HORNET = preload("res://hornet.tscn")
+const HORNET = preload("res://bugs/hornet.tscn")
 const HORNET_SPAWN = SpawnMode.BOTTOM
-const ANT = preload("res://ant.tscn")
+const ANT = preload("res://bugs/ant.tscn")
 const ANT_SPAWN = SpawnMode.FRAME
-const MOTH = preload("res://moth.tscn")
+const MOTH = preload("res://bugs/moth.tscn")
 const MOTH_SPAWN = SpawnMode.GRID
 const SNAKE = preload("res://snake.tscn")
 const SNAKE_SPAWN = SpawnMode.GRID_NO_BORDER # $HACK$ lol because it always go right
-const MOON = preload("res://moon.tscn")
+const MOON = preload("res://bugs/moon.tscn")
 const MOON_SPAWN = SpawnMode.MOON
 const MOON_POSITION = Vector2(281,43)
 
@@ -339,7 +368,15 @@ func _update_dead_info():
 	$DeadInfo/Time.text = TIME_FORMAT % int(time_elapsed)
 	$DeadInfo/Score.text = SCORE_FORMAT % score
 	$DeadInfo/Tip.text = TIP_FORMAT % Global.choose_one(tips)
+	if max_level != 15 and level >= 15:
+		$DeadInfo/Tip.text = TIP_FORMAT % MAX_LEVEL_END_TIP
+		tips.append(MAX_LEVEL_END_TIP)
 	$DeadInfo/Commentary.text = COMMENTARY_FORMAT % _commentary_for_score()
+
+func _enable_skip():
+	$StartupInfo/LevelDownButton.visible = true
+	$StartupInfo/LevelUpButton.visible = true
+	$StartupInfo/StartLevel.visible = true
 
 func _on_pellet_dead():
 	if state != State.DEAD:
@@ -356,9 +393,11 @@ func _on_pellet_dead():
 		$DeadInfo.on_dead()
 		$NextLevelInfo.visible = false
 
-func speed_up():
-	speed_level += 1
-	if speed_level == 1:
+func _set_speed(speed):
+	speed_level = speed
+	if speed_level == 0:
+		$Timer.wait_time = BASE_SPEED
+	elif speed_level == 1:
 		$Timer.wait_time = MORE_SPEED
 	else:
 		$Timer.wait_time = MOST_SPEED
@@ -372,8 +411,6 @@ func _on_reset():
 	$Snakes/Snake.reset()
 	$Pellet.reset()
 	$Pellet.enable()
-	$Sky.reset()
-	$Board.reset()
 	state = State.WAITING
 	if score > highscore:
 		highscore = score
@@ -384,7 +421,14 @@ func _on_reset():
 	$StartupInfo.on_reset()
 	$DeadInfo.on_reset()
 	$UI/Score.text = str(0)
-	level = 1
+	if max_level == 0: #first death; enable level skip
+		max_level = level
+		_enable_skip()
+	if level > max_level:
+		max_level = level	
+	level = start_level
+	_update_level_graphics()
+	$StartupInfo/StartLevel.text = START_LEVEL_FORMAT % start_level
 	for bug in $Bugs.get_children():
 		bug.queue_free()
 	while $Snakes.get_child_count() != 1:
@@ -393,7 +437,7 @@ func _on_reset():
 	for bullet in $Bullets.get_children():
 		bullet.queue_free()
 	bullet_speed_multiplier = DEFAULT_BULLET_SPEED
-	_update_level()
+	
 	$NextLevelInfo.visible = false # $HACK$, must be after _update_level
 
 func _on_pellet_moved():
@@ -402,6 +446,8 @@ func _on_pellet_moved():
 		time_elapsed = 0
 		for snake in $Snakes.get_children():
 			snake.enable()
+		if level != 1:
+			_update_level()
 		$StartupInfo.on_playing()
 
 var time_elapsed = 0
@@ -423,6 +469,15 @@ func _process(delta: float) -> void:
 func _input(_event):
 	if Input.is_action_just_pressed("reset") and state == State.DEAD:
 		_on_reset()
+	if Input.is_action_just_pressed("unlock") and state == State.WAITING:
+		if max_level != 15:
+			max_level = 15
+			start_level = 15
+			var text = POINTS_TEXT.instantiate()
+			text.text = "Unlocked levels!"
+			text.position = $Pellet.position - Vector2(50, 15)
+			add_child(text)
+			_enable_skip()
 
 func _on_second_passed():
 	score += level
@@ -450,7 +505,7 @@ func is_grid_pos_snake(grid_pos):
 			return true
 	return false
 
-var POINTS_TEXT = preload("res://points.tscn")
+var POINTS_TEXT = preload("res://ui/points.tscn")
 const FULL_CLEAR_BONUS = 10
 func on_bug_killed(bug_pos):
 	$EatSound.play()
@@ -496,7 +551,7 @@ var music_state = 1
 func _on_music_control_pressed():
 	if music_state == 0:
 		music_state = 1
-		$MusicButton.text = "Music 1"
+		$MusicButton/Text.text = "Music 1"
 		$Music1.play(0)
 		AudioServer.set_bus_mute(2, false)
 		AudioServer.set_bus_mute(3, true)
@@ -507,7 +562,7 @@ func _on_music_control_pressed():
 	elif music_state == 1:
 		music_state = 2
 		$Music2.play(0)
-		$MusicButton.text = "Music 2"
+		$MusicButton/Text.text = "Music 2"
 		AudioServer.set_bus_mute(2, true)
 		AudioServer.set_bus_mute(3, false)
 		AudioServer.set_bus_mute(4, true)
@@ -517,7 +572,7 @@ func _on_music_control_pressed():
 	elif music_state == 2:
 		music_state = 3
 		$Music3.play(0)
-		$MusicButton.text = "Music 3"
+		$MusicButton/Text.text = "Music 3"
 		AudioServer.set_bus_mute(2, true)
 		AudioServer.set_bus_mute(3, true)
 		AudioServer.set_bus_mute(4, false)
@@ -527,7 +582,7 @@ func _on_music_control_pressed():
 	elif music_state == 3:
 		music_state = 4
 		$Music4.play(0)
-		$MusicButton.text = "Music 4"
+		$MusicButton/Text.text = "Music 4"
 		AudioServer.set_bus_mute(2, true)
 		AudioServer.set_bus_mute(3, true)
 		AudioServer.set_bus_mute(4, true)
@@ -537,7 +592,7 @@ func _on_music_control_pressed():
 	elif music_state == 4:
 		music_state = 5
 		$Music5.play(0)
-		$MusicButton.text = "Music 5"
+		$MusicButton/Text.text = "Music 5"
 		AudioServer.set_bus_mute(2, true)
 		AudioServer.set_bus_mute(3, true)
 		AudioServer.set_bus_mute(4, true)
@@ -547,7 +602,7 @@ func _on_music_control_pressed():
 	elif music_state == 5:
 		music_state = 6
 		$Music6.play(0)
-		$MusicButton.text = "Music 6"
+		$MusicButton/Text.text = "Music 6"
 		AudioServer.set_bus_mute(2, true)
 		AudioServer.set_bus_mute(3, true)
 		AudioServer.set_bus_mute(4, true)
@@ -563,4 +618,18 @@ func _on_music_control_pressed():
 		AudioServer.set_bus_mute(6, true)
 		AudioServer.set_bus_mute(7, true)
 		$Music1.play()
-		$MusicButton.text = "Music Off"
+		$MusicButton/Text.text = "Music Off"
+
+func _on_level_down_button_pressed():
+	if level > 1:
+		level -= 1
+		start_level = level
+	$StartupInfo/StartLevel.text = START_LEVEL_FORMAT % level
+	_update_level_graphics()
+
+func _on_level_up_button_pressed():
+	if level < max_level:
+		level += 1
+		start_level = level
+	$StartupInfo/StartLevel.text = START_LEVEL_FORMAT % level
+	_update_level_graphics()

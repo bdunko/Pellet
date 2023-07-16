@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://bbx2am1b5eg21"]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://bullet.gd" id="1_ib8vy"]
-[ext_resource type="Texture2D" uid="uid://q10b3erv14me" path="res://assets/bullet.png" id="1_xob3s"]
-[ext_resource type="AudioStream" uid="uid://blw2bawcgyjw4" path="res://assets/sound/bullet.mp3" id="3_slssx"]
+[ext_resource type="Script" path="res://bullets/bouncing_bullet.gd" id="1_8f5ya"]
+[ext_resource type="Texture2D" uid="uid://cndbuk03udp72" path="res://assets/bounce_bullet.png" id="2_pbh4n"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_og5ta"]
 radius = 1.0
@@ -10,10 +9,10 @@ radius = 1.0
 [node name="Bullet" type="CharacterBody2D"]
 collision_layer = 16
 collision_mask = 35
-script = ExtResource("1_ib8vy")
+script = ExtResource("1_8f5ya")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_xob3s")
+texture = ExtResource("2_pbh4n")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_og5ta")
@@ -24,8 +23,5 @@ collision_mask = 8
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("CircleShape2D_og5ta")
-
-[node name="BulletSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("3_slssx")
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_collide_with_bug"]

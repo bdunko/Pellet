@@ -1,11 +1,11 @@
 extends CharacterBody2D
 
-const BULLET = preload("res://bullet.tscn")
-const BULLET_SPEED = 35
+const BULLET = preload("res://bullets/moon_bullet.tscn")
+const BULLET_SPEED = 100
 
 var disabled = false
 
-var SHOT_PREVIEW_MODULATE = 0.5
+var SHOT_PREVIEW_MODULATE = 0.7
 
 func _ready():
 	modulate.a = 0
@@ -16,37 +16,41 @@ func _process(delta):
 	
 	if not disabled:
 		if $ShotTimer.time_left <= 0.2:
-			modulate.r = lerp(modulate.r, SHOT_PREVIEW_MODULATE, 20 * delta)
+			modulate.b = lerp(modulate.b, SHOT_PREVIEW_MODULATE, 20 * delta)
 		else:
-			modulate.r = lerp(modulate.r, 1.0, 30 * delta)
-	
-	#rotate to face player
-	var pellet_pos = get_parent().get_parent().find_child("Pellet").position
-	var x_diff = position.x - pellet_pos.x
-	var y_diff = position.y - pellet_pos.y
-
-	if abs(x_diff) > abs(y_diff): # face left or right
-		if x_diff > 0: 
-			rotation_degrees = -90
-		else:
-			rotation_degrees = 90
-	else: # face up or down
-		if y_diff > 0:
-			rotation_degrees = 0
-		else:
-			rotation_degrees = 180
+			modulate.b = lerp(modulate.b, 1.0, 30 * delta)
 
 func _on_shot_timer_timeout():
 	if not disabled:
 		var bullet = BULLET.instantiate()
-		
 		var pellet_pos = get_parent().get_parent().find_child("Pellet").position
 		var direction = Vector2(pellet_pos.x - position.x, pellet_pos.y - position.y).normalized()
 		bullet.setup(position, direction, BULLET_SPEED * get_parent().get_parent().bullet_speed_multiplier, self)
 		bullet.position = position
+		bullet.rotation = position.direction_to(pellet_pos).angle()
 		get_parent().get_parent().find_child("Bullets").add_child(bullet)
-		bullet.shot.connect(get_parent().get_parent().on_bullet_shot)
+		bullet.hit_bug.connect(get_parent().get_parent().on_bug_killed)
+		bullet.shot.connect(get_parent().get_parent().on_moon_bullet_shot)
 		bullet.shoot()
+
+const FASTER_RATE = 0.66
+const FASTEST_RATE = 0.33
+var fire_speed = 0
+
+func fire_faster():
+	fire_speed += 1
+	if fire_speed == 1:
+		$ShotTimer.wait_time = FASTER_RATE
+	else:
+		$ShotTimer.wait_time = FASTEST_RATE
 
 func disable():
 	disabled = true
+
+# TERRIBLE $HACK$
+func DONT_COUNT():
+	pass
+
+# TERRIBLE $HACK$
+func IS_MOON():
+	pass

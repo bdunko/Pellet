@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://monygl4alhwv"]
+[gd_scene load_steps=4 format=3 uid="uid://d14kddjox0lro"]
 
-[ext_resource type="Script" path="res://ant.gd" id="1_emq0p"]
-[ext_resource type="Texture2D" uid="uid://fdlc5hcwe0xe" path="res://assets/bugs/enemy_ant.png" id="1_nojnr"]
+[ext_resource type="Script" path="res://bugs/ant.gd" id="1_nbgum"]
+[ext_resource type="Texture2D" uid="uid://fdlc5hcwe0xe" path="res://assets/bugs/enemy_ant.png" id="2_e4kcw"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
 radius = 3.0
@@ -10,10 +10,10 @@ height = 10.0
 [node name="Ant" type="CharacterBody2D"]
 collision_layer = 8
 collision_mask = 130
-script = ExtResource("1_emq0p")
+script = ExtResource("1_nbgum")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_nojnr")
+texture = ExtResource("2_e4kcw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_mshyp")

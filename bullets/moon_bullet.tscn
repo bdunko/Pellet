@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://bq4lrg7fqjr3b"]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://moon_bullet.gd" id="1_4p1a6"]
+[ext_resource type="Script" path="res://bullets/moon_bullet.gd" id="1_4p1a6"]
 [ext_resource type="Texture2D" uid="uid://d3o7b8gu4houk" path="res://assets/moon_bullet.png" id="1_miniy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mgmwm"]

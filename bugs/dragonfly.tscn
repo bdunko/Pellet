@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://bacxbnpvt2ceu"]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Texture2D" uid="uid://bvetnuxbw1ahl" path="res://assets/bugs/enemy_dragonfly.png" id="1_7saqn"]
-[ext_resource type="Script" path="res://dragonfly.gd" id="1_ma5yb"]
+[ext_resource type="Script" path="res://bugs/dragonfly.gd" id="1_ma5yb"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
 radius = 1.0
