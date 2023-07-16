@@ -207,6 +207,7 @@ text = "Avoid Snek!!!"
 horizontal_alignment = 1
 
 [node name="HighScore" type="Label" parent="StartupInfo"]
+visible = false
 offset_left = 80.0
 offset_top = 127.0
 offset_right = 240.0
