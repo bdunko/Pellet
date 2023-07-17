@@ -43,6 +43,16 @@ class Pair:
 		return self
 
 func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
+	# greedy snake eats bug if possible
+	if get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x, grid_pos.y - 1)):
+		return Direction.UP
+	elif get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x, grid_pos.y + 1)):
+		return Direction.DOWN
+	elif get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x - 1, grid_pos.y)):
+		return Direction.LEFT
+	elif get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x + 1, grid_pos.y)):
+		return Direction.RIGHT
+	
 	# pre-generate collision map
 	var cmap := []
 	for x in range(0, Global.GRID_SIZE.x):
@@ -50,14 +60,8 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 		for y in range(0, Global.GRID_SIZE.y):
 			cmap[x].append(get_parent().get_parent().is_grid_pos_snake(Vector2(x, y)))
 	
-	var solutions = []
-	
 	# remember spots we checked for each possible direction
-	var checked = {}
-	checked[Direction.UP] = []
-	checked[Direction.DOWN] = []
-	checked[Direction.LEFT] = []
-	checked[Direction.RIGHT] = []
+	var checked = []
 	
 	var to_check = []
 	# initial spots to check - up down left right from starting position
@@ -67,9 +71,10 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 		Pair.new().setup(Vector2(grid_pos.x, grid_pos.y + 1), Direction.DOWN),
 		Pair.new().setup(Vector2(grid_pos.x, grid_pos.y - 1), Direction.UP)
 		]
+	next_checks.shuffle() #randomize a bit
 
 	# while we have stuff to check and no solutions
-	while next_checks.size() != 0 and solutions.size() == 0:
+	while next_checks.size() != 0:
 		for pair in next_checks: # add each spot to check to a list
 			to_check.append(pair)
 		next_checks.clear() # clear the list of spots to check in next iteration
@@ -77,33 +82,21 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 		# while we have spots to check on current depth
 		while to_check.size() != 0:
 			var current_check: Pair = to_check.pop_front()
-			if not Global.is_grid_pos_in_grid(current_check.pos) or cmap[current_check.pos.x][current_check.pos.y] or current_check.pos in checked[current_check.original_dir]: # can't go this way
+			# or current_check.pos in checked[current_check.original_dir]
+			if not Global.is_grid_pos_in_grid(current_check.pos) or cmap[current_check.pos.x][current_check.pos.y] or current_check.pos in checked: # can't go this way
 				continue
 			
 			# mark this spot as checked (for this direction)
-			checked[current_check.original_dir].append(current_check.pos)
+			#checked[current_check.original_dir].append(current_check.pos)
+			checked.append(current_check.pos)
 			
 			if current_check.pos == pellet_pos: # if we reached the pellet, this is a solution
-				solutions += [current_check.original_dir]
+				return current_check.original_dir
 			else: # append left, up, right, down
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(1, 0), current_check.original_dir))
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(-1, 0), current_check.original_dir))
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, 1), current_check.original_dir))
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, -1), current_check.original_dir))
-	
-	
-	if solutions.size() == 1: # found shortest path, go that way
-		return solutions[0]
-	elif solutions.size() != 0: # multiple valid paths of same length; if one direction has a bug immediately, prioritize it
-		if Direction.UP in solutions and get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x, grid_pos.y - 1)):
-			return Direction.UP
-		elif Direction.DOWN in solutions and get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x, grid_pos.y + 1)):
-			return Direction.DOWN
-		elif Direction.LEFT in solutions and get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x - 1, grid_pos.y)):
-			return Direction.LEFT
-		elif Direction.RIGHT in solutions and get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x + 1, grid_pos.y)):
-			return Direction.RIGHT
-		return Global.choose_one(solutions) # no bugs adjacent, go a random solution direction
 	
 	return Direction.NONE # no path at all, so don't move
 

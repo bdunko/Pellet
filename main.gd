@@ -299,13 +299,13 @@ func _spawn_enemy(enemy, spawnmode):
 			bug.position = Global.to_global_position(Vector2(x, y))
 			#nudge onto wall...
 			if x == 0: #left wall
-				bug.position -= Vector2(3, 0)
+				bug.position -= Vector2(2, 0)
 			elif x == Global.GRID_SIZE.x - 1: #right wall
-				bug.position += Vector2(3, 0)
+				bug.position += Vector2(2, 0)
 			elif y == 0: #top wall
-				bug.position -= Vector2(0, 3)
+				bug.position -= Vector2(0, 2)
 			else: #bottom wall
-				bug.position += Vector2(0, 3)
+				bug.position += Vector2(0, 2)
 			bug.setup(vertical)
 			queued_bugs.append(bug)
 			call_deferred("_spawn_queued_bugs")
@@ -378,10 +378,13 @@ func _update_dead_info():
 	$DeadInfo/Score.text = SCORE_FORMAT % int(score)
 	$DeadInfo/Tip.text = TIP_FORMAT % tips[current_tip]
 	current_tip = Global.increment_wrap(current_tip, len(tips))
-	if max_level != 15 and level >= 15:
+	if max_level != MAX_LEVEL and level >= MAX_LEVEL:
 		$DeadInfo/Tip.text = TIP_FORMAT % MAX_LEVEL_END_TIP
-		tips.append(MAX_LEVEL_END_TIP)
+		call_deferred("_add_max_tip")
 	$DeadInfo/Commentary.text = COMMENTARY_FORMAT % _commentary_for_score()
+
+func _add_max_tip():
+	tips.append(MAX_LEVEL_END_TIP)
 
 func _enable_skip():
 	$StartupInfo/LevelDownButton.visible = true
@@ -432,8 +435,8 @@ func _on_reset():
 	$UI/Score.text = str(0)
 	if level > max_level:
 		max_level = level
-		if max_level >= MAX_LEVEL:
-			max_level = MAX_LEVEL
+		if max_level >= MAX_LEVEL - 1:
+			max_level = MAX_LEVEL - 1
 		start_level = max_level
 		_enable_skip()
 	level = start_level

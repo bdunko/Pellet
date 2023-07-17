@@ -353,7 +353,7 @@ one_shot = true
 
 [node name="Pellet" parent="." instance=ExtResource("6_dvu1o")]
 z_index = 1200
-position = Vector2(94, 26)
+position = Vector2(215, 95)
 
 [node name="Bullets" type="Node2D" parent="."]
 z_index = 1500
