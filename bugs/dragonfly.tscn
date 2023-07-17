@@ -1,7 +1,29 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3 uid="uid://dum3l8cakpwjn"]
 
 [ext_resource type="Texture2D" uid="uid://bvetnuxbw1ahl" path="res://assets/bugs/enemy_dragonfly.png" id="1_7saqn"]
 [ext_resource type="Script" path="res://bugs/dragonfly.gd" id="1_ma5yb"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_730au"]
+atlas = ExtResource("1_7saqn")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0mg31"]
+atlas = ExtResource("1_7saqn")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_daovs"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_730au")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0mg31")
+}],
+"loop": true,
+"name": &"default",
+"speed": 4.0
+}]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
 radius = 1.0
@@ -12,8 +34,10 @@ collision_layer = 8
 collision_mask = 42
 script = ExtResource("1_ma5yb")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_7saqn")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_daovs")
+autoplay = "default"
+frame_progress = 0.0411977
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.5, 0)

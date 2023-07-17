@@ -1,7 +1,29 @@
-[gd_scene load_steps=4 format=3 uid="uid://cas4hsckf1wvc"]
+[gd_scene load_steps=7 format=3 uid="uid://cas4hsckf1wvc"]
 
 [ext_resource type="Script" path="res://bugs/spider.gd" id="1_yxtwg"]
 [ext_resource type="Texture2D" uid="uid://2akd0l042x80" path="res://assets/bugs/poison_spider.png" id="2_tqnii"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y8ugr"]
+atlas = ExtResource("2_tqnii")
+region = Rect2(0, 0, 14, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4b352"]
+atlas = ExtResource("2_tqnii")
+region = Rect2(14, 0, 14, 12)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vuaax"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y8ugr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4b352")
+}],
+"loop": true,
+"name": &"default",
+"speed": 4.0
+}]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_114oi"]
 radius = 4.0
@@ -11,8 +33,10 @@ collision_layer = 8
 collision_mask = 0
 script = ExtResource("1_yxtwg")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_tqnii")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_vuaax")
+autoplay = "default"
+frame_progress = 0.970628
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_114oi")

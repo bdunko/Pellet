@@ -50,3 +50,4 @@ func _on_shot_timer_timeout():
 
 func disable():
 	disabled = true
+	$AnimatedSprite2D.stop()

@@ -151,7 +151,7 @@ func move():
 		# fix rotations
 		for i in range(0, segments.size()):
 			var segment = segments[i]
-			if i == segments.size() - 1: # head case
+			if i == segments.size() - 1: # head 
 				segment.find_child("Sprite").rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, position)]
 			else:
 				var next_segment = segments[i+1]

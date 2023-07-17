@@ -353,7 +353,7 @@ one_shot = true
 
 [node name="Pellet" parent="." instance=ExtResource("6_dvu1o")]
 z_index = 1200
-position = Vector2(215, 95)
+position = Vector2(94, 26)
 
 [node name="Bullets" type="Node2D" parent="."]
 z_index = 1500
@@ -364,7 +364,7 @@ z_index = 1600
 [node name="Snakes" type="Node2D" parent="."]
 
 [node name="Snake" parent="Snakes" instance=ExtResource("7_ertux")]
-position = Vector2(96, 95)
+position = Vector2(95, 95)
 
 [node name="SnakeTimer" type="Timer" parent="."]
 wait_time = 0.36

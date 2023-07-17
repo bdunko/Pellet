@@ -17,7 +17,7 @@ func _process(delta):
 	modulate.a = lerp(modulate.a, 1.0, 12 * delta)
 
 func disable():
-	pass
+	$AnimatedSprite2D.stop()
 
 # Terrible $HACK$
 func poison():

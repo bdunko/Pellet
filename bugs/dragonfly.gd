@@ -42,3 +42,4 @@ func _process(delta):
 
 func disable():
 	disabled = true
+	$AnimatedSprite2D.stop()

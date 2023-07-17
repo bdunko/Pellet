@@ -49,6 +49,7 @@ func _process(delta):
 
 func disable():
 	disabled = true
+	$AnimatedSprite2D.stop()
 
 # $HACK$
 func IS_ANT():

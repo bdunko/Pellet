@@ -1,7 +1,29 @@
-[gd_scene load_steps=4 format=3 uid="uid://crwv15ogq261u"]
+[gd_scene load_steps=7 format=3 uid="uid://crwv15ogq261u"]
 
 [ext_resource type="Script" path="res://bugs/moth.gd" id="1_bresn"]
 [ext_resource type="Texture2D" uid="uid://c6i5gil2rc3c" path="res://assets/bugs/enemy_moth.png" id="2_37cd3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c8alk"]
+atlas = ExtResource("2_37cd3")
+region = Rect2(0, 0, 13, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gmrwy"]
+atlas = ExtResource("2_37cd3")
+region = Rect2(13, 0, 13, 14)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_4onex"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c8alk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gmrwy")
+}],
+"loop": true,
+"name": &"default",
+"speed": 4.0
+}]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mshyp"]
 radius = 2.0
@@ -12,8 +34,10 @@ collision_layer = 8
 collision_mask = 42
 script = ExtResource("1_bresn")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_37cd3")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_4onex")
+autoplay = "default"
+frame_progress = 0.735035
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_mshyp")

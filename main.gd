@@ -118,9 +118,9 @@ func _update_bug_pool():
 	if level >= 13:
 		enemy_pool.append([MOTH, MOTH_SPAWN])
 	
-	if level >= 14:
-		spawn_boost = 4
 	if level >= 13:
+		spawn_boost = 4
+	if level >= 11:
 		spawn_boost = 3
 	if level >= 9:
 		spawn_boost = 2
@@ -375,7 +375,7 @@ func _commentary_for_score():
 
 func _update_dead_info():
 	$DeadInfo/Time.text = TIME_FORMAT % int(time_elapsed)
-	$DeadInfo/Score.text = SCORE_FORMAT % score
+	$DeadInfo/Score.text = SCORE_FORMAT % int(score)
 	$DeadInfo/Tip.text = TIP_FORMAT % tips[current_tip]
 	current_tip = Global.increment_wrap(current_tip, len(tips))
 	if max_level != 15 and level >= 15:
@@ -422,7 +422,7 @@ func _on_reset():
 	$Pellet.enable()
 	state = State.WAITING
 	if score > highscore:
-		highscore = score
+		highscore = int(score)
 		$StartupInfo/HighScore.text = HIGH_SCORE_FORMAT % highscore
 		$StartupInfo/HighScore.visible = true
 	score = 0
@@ -468,13 +468,15 @@ func _process(delta: float) -> void:
 	var lerp_amt = GRID_COLOR_WEIGHT * delta
 	$Grid.self_modulate = Color(lerp($Grid.self_modulate.r, grid_color.r, lerp_amt), lerp($Grid.self_modulate.g, grid_color.g, lerp_amt), lerp($Grid.self_modulate.b, grid_color.b, lerp_amt))
 	
+	score += level * delta
+	
 	if state == State.PLAYING:
 		time_elapsed += delta
 		since_second += delta
 		if since_second > 1:
 			since_second -= 1
 			_on_second_passed()
-		$UI/Score.text = str(score)
+		$UI/Score.text = str(int(score))
 
 func _input(_event):
 	if Input.is_action_just_pressed("reset") and state == State.DEAD:
@@ -493,7 +495,6 @@ func _input(_event):
 			_update_level_graphics()
 
 func _on_second_passed():
-	score += level
 	$UI/Time.text = str(int($UI/Time.text) - 1) 
 	if $UI/Time.text == "0":
 		level += 1
