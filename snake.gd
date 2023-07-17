@@ -2,6 +2,9 @@ extends Node2D
 
 signal ate_bug
 
+signal snake_at
+signal snake_not_at
+
 enum Direction {
 	UP, DOWN, LEFT, RIGHT, NONE
 }
@@ -42,24 +45,7 @@ class Pair:
 		original_dir = dir
 		return self
 
-func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
-	# greedy snake eats bug if possible
-	if get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x, grid_pos.y - 1)):
-		return Direction.UP
-	elif get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x, grid_pos.y + 1)):
-		return Direction.DOWN
-	elif get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x - 1, grid_pos.y)):
-		return Direction.LEFT
-	elif get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x + 1, grid_pos.y)):
-		return Direction.RIGHT
-	
-	# pre-generate collision map
-	var cmap := []
-	for x in range(0, Global.GRID_SIZE.x):
-		cmap.append([])
-		for y in range(0, Global.GRID_SIZE.y):
-			cmap[x].append(get_parent().get_parent().is_grid_pos_snake(Vector2(x, y)))
-	
+func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2, snake_grid: Array) -> Direction:
 	# remember spots we checked for each possible direction
 	var checked = []
 	
@@ -73,6 +59,11 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 		]
 	next_checks.shuffle() #randomize a bit
 
+	# if there is a bug right next to us, greedy snake eats
+	for adjacent in next_checks:
+		if Global.is_grid_pos_in_grid(adjacent.pos) and not snake_grid[adjacent.pos.x][adjacent.pos.y] and get_parent().get_parent().is_grid_pos_bug(adjacent.pos):
+			return adjacent.original_dir
+		
 	# while we have stuff to check and no solutions
 	while next_checks.size() != 0:
 		for pair in next_checks: # add each spot to check to a list
@@ -83,7 +74,7 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 		while to_check.size() != 0:
 			var current_check: Pair = to_check.pop_front()
 			# or current_check.pos in checked[current_check.original_dir]
-			if not Global.is_grid_pos_in_grid(current_check.pos) or cmap[current_check.pos.x][current_check.pos.y] or current_check.pos in checked: # can't go this way
+			if not Global.is_grid_pos_in_grid(current_check.pos) or snake_grid[current_check.pos.x][current_check.pos.y] or current_check.pos in checked: # can't go this way
 				continue
 			
 			# mark this spot as checked (for this direction)
@@ -100,7 +91,7 @@ func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
 	
 	return Direction.NONE # no path at all, so don't move
 
-func move():
+func move(snake_grid):
 	if _enabled:
 		# store previous before moving
 		_previous_head_positions.push_front(position)
@@ -118,9 +109,14 @@ func move():
 		var pellet_pos = Global.to_grid_position(get_parent().get_parent().find_child("Pellet").position)
 		
 		# determine next movement
-		_direction = _dir_to_pellet(grid_pos, pellet_pos)
+		_direction = _dir_to_pellet(grid_pos, pellet_pos, snake_grid)
 		if _direction == Direction.NONE:
 			return
+			
+		# delete self from snake grid
+		emit_signal("snake_not_at", grid_pos) #head
+		for seg in $Segments.get_children():
+			emit_signal("snake_not_at", Global.to_grid_position(seg.position)) #segments
 		
 		# move according to direction
 		grid_pos += _MOVEMENT_BY_DIR[_direction]
@@ -149,9 +145,14 @@ func move():
 			else:
 				var next_segment = segments[i+1]
 				segment.find_child("Sprite").rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction_to(segment.position, next_segment.position)]
-		
+
 		# fix head's rotation
 		rotation_degrees = _ROTATION_DEGREES_BY_DIR[_direction]
+		
+		# add updated self back to snake grid
+		emit_signal("snake_at", grid_pos) #head
+		for seg in $Segments.get_children():
+			emit_signal("snake_at", Global.to_grid_position(seg.position)) #segments
 
 func is_snake_at(grid_pos: Vector2):
 	if grid_pos == Global.to_grid_position(position):

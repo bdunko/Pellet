@@ -23,7 +23,7 @@ const SCORE_FORMAT = "[center]And earned [color=green]%d[/color] points![/center
 const COMMENTARY_FORMAT = "[center]%s[/center]"
 const TIP_FORMAT = "[center]- Tip -\n%s"
 const MAX_LEVEL_END_TIP = "Congrats on reaching level 15!\nIn the future, you can press U\nat the start to unlock all levels."
-const tips = ["The snake can eat bugs.\nIt can block bullets too!",
+var tips = ["The snake can eat bugs.\nIt can block bullets too!",
  "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies.",
  "You can touch the snake's body.\nOnly the head is deadly.",
  "You can change the music with the\nbutton in the bottom right!",
@@ -143,8 +143,10 @@ func _update_level():
 	
 	if level >= 8 and $Snakes.get_child_count() < 2:
 		_spawn_new_snake(1)
+		_generate_snake_grid() #safety - regen these grids
 	if level >= 12 and $Snakes.get_child_count() < 3:
 		_spawn_new_snake(2)
+		_generate_snake_grid() #safety - regen these grids
 	
 	if level >= 7:
 		_set_speed(1)
@@ -356,6 +358,8 @@ func _spawn_new_snake(color = 0):
 		snek.enable()
 		snek.set_base_color(color)
 		snek.ate_bug.connect(on_bug_killed)
+		snek.snake_at.connect(snake_is_at)
+		snek.snake_not_at.connect(snake_is_not_at)
 		queued_snakes.append(snek)
 		call_deferred("_add_queued_snakes")
 
@@ -380,11 +384,8 @@ func _update_dead_info():
 	current_tip = Global.increment_wrap(current_tip, len(tips))
 	if max_level != MAX_LEVEL and level >= MAX_LEVEL:
 		$DeadInfo/Tip.text = TIP_FORMAT % MAX_LEVEL_END_TIP
-		call_deferred("_add_max_tip")
+		tips.append(MAX_LEVEL_END_TIP)
 	$DeadInfo/Commentary.text = COMMENTARY_FORMAT % _commentary_for_score()
-
-func _add_max_tip():
-	tips.append(MAX_LEVEL_END_TIP)
 
 func _enable_skip():
 	$StartupInfo/LevelDownButton.visible = true
@@ -450,13 +451,13 @@ func _on_reset():
 	for bullet in $Bullets.get_children():
 		bullet.queue_free()
 	bullet_speed_multiplier = DEFAULT_BULLET_SPEED
-	
 	$NextLevelInfo.visible = false # $HACK$, must be after _update_level
 
 func _on_pellet_moved():
 	if state == State.WAITING:
 		state = State.PLAYING
 		time_elapsed = 0
+		_generate_snake_grid()
 		for snake in $Snakes.get_children():
 			snake.enable()
 		if level != 1:
@@ -502,6 +503,21 @@ func _on_second_passed():
 	if $UI/Time.text == "0":
 		level += 1
 		_update_level()
+
+var snake_grid := []
+
+func _generate_snake_grid():
+	snake_grid = []
+	for x in range(0, Global.GRID_SIZE.x):
+		snake_grid.append([])
+		for y in range(0, Global.GRID_SIZE.y):
+			snake_grid[x].append(is_grid_pos_snake(Vector2(x, y)))
+
+func snake_is_at(grid_pos):
+	snake_grid[grid_pos.x][grid_pos.y] = true
+
+func snake_is_not_at(grid_pos):
+	snake_grid[grid_pos.x][grid_pos.y] = false
 
 func is_grid_pos_full(grid_pos) -> bool:
 	# is bug at pos?
@@ -557,10 +573,9 @@ func on_bug_killed(bug_pos):
 		bonus_text.position = Vector2(Global.RESOLUTION.x/2 - 50, 15)
 		add_child(bonus_text)
 
-
 func _on_snake_timer_timeout():
 	for s in $Snakes.get_children():
-		s.move()
+		s.move(snake_grid)
 	if state == State.PLAYING:
 		$MoveSound.play()
 		

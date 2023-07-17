@@ -454,5 +454,7 @@ vertical_alignment = 1
 [connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]
 [connection signal="moved" from="Pellet" to="." method="_on_pellet_moved"]
 [connection signal="ate_bug" from="Snakes/Snake" to="." method="on_bug_killed"]
+[connection signal="snake_at" from="Snakes/Snake" to="." method="snake_is_at"]
+[connection signal="snake_not_at" from="Snakes/Snake" to="." method="snake_is_not_at"]
 [connection signal="timeout" from="SnakeTimer" to="." method="_on_snake_timer_timeout"]
 [connection signal="pressed" from="MusicButton" to="." method="_on_music_control_pressed"]
