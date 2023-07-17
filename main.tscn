@@ -366,8 +366,8 @@ z_index = 1600
 [node name="Snake" parent="Snakes" instance=ExtResource("7_ertux")]
 position = Vector2(96, 95)
 
-[node name="Timer" type="Timer" parent="."]
-wait_time = 0.4
+[node name="SnakeTimer" type="Timer" parent="."]
+wait_time = 0.36
 autostart = true
 
 [node name="DieSound" type="AudioStreamPlayer" parent="."]
@@ -454,5 +454,5 @@ vertical_alignment = 1
 [connection signal="dead" from="Pellet" to="." method="_on_pellet_dead"]
 [connection signal="moved" from="Pellet" to="." method="_on_pellet_moved"]
 [connection signal="ate_bug" from="Snakes/Snake" to="." method="on_bug_killed"]
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="SnakeTimer" to="." method="_on_snake_timer_timeout"]
 [connection signal="pressed" from="MusicButton" to="." method="_on_music_control_pressed"]

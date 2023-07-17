@@ -40,3 +40,15 @@ var RNG = RandomNumberGenerator.new()
 func choose_one(options: Array[Variant]):
 	assert(options.size() != 0, "No options in array!")
 	return options[RNG.randi_range(0, options.size()-1)]
+
+func increment_wrap(i: int, maximum: int) -> int:
+	i += 1
+	if i >= maximum:
+		return 0
+	return i
+
+func decrement_wrap(i: int, minimum: int) -> int:
+	i -= 1
+	if i <= minimum:
+		return 0
+	return i

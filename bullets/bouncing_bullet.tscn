@@ -1,7 +1,29 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3 uid="uid://danmusbnko8hl"]
 
 [ext_resource type="Script" path="res://bullets/bouncing_bullet.gd" id="1_8f5ya"]
 [ext_resource type="Texture2D" uid="uid://cndbuk03udp72" path="res://assets/bounce_bullet.png" id="2_pbh4n"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h1u3e"]
+atlas = ExtResource("2_pbh4n")
+region = Rect2(0, 0, 5, 5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i6j2x"]
+atlas = ExtResource("2_pbh4n")
+region = Rect2(5, 0, 5, 5)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ec0mc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h1u3e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i6j2x")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_og5ta"]
 radius = 1.0
@@ -11,8 +33,10 @@ collision_layer = 16
 collision_mask = 35
 script = ExtResource("1_8f5ya")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_pbh4n")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_ec0mc")
+autoplay = "default"
+frame_progress = 0.626317
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_og5ta")

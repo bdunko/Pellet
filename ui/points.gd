@@ -14,8 +14,8 @@ func setup(pts):
 
 func setup_bonus(pts):
 	text = FORMAT_BONUS % pts
-	$VisibleTimer.wait_time = 0.6
-	speed = 25
+	$VisibleTimer.wait_time = 0.8
+	speed = 22
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

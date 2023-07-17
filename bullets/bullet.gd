@@ -28,7 +28,6 @@ func _process(delta):
 		var collide = move_and_collide(velocity  * delta) 
 		if collide != null:
 			call_deferred("_begin_destroy")
-		
 
 
 func _on_collide_with_bug(body):
@@ -42,3 +41,4 @@ func _begin_destroy():
 
 func disable():
 	disabled = true
+	$AnimatedSprite2D.stop()

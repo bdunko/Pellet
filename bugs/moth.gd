@@ -5,7 +5,7 @@ var SPEED = 45
 const BULLET = preload("res://bullets/bouncing_bullet.tscn")
 const BULLET_SPEED = 60
 
-const SHOT_PREVIEW_MODULATE = 0.5
+const SHOT_PREVIEW_MODULATE = 0.3
 
 func _ready():
 	modulate.a = 0

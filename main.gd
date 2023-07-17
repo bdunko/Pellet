@@ -13,7 +13,7 @@ var bullet_speed_multiplier = DEFAULT_BULLET_SPEED
 var state = State.WAITING
 var highscore = 0
 var start_level = 1
-var max_level = 0
+var max_level = 1
 
 const START_LEVEL_FORMAT = "Level %d"
 const HIGH_SCORE_FORMAT = "High Score: %d"
@@ -24,13 +24,15 @@ const COMMENTARY_FORMAT = "[center]%s[/center]"
 const TIP_FORMAT = "[center]- Tip -\n%s"
 const MAX_LEVEL_END_TIP = "Congrats on reaching level 15!\nIn the future, you can press U\nat the start to unlock all levels."
 const tips = ["The snake can eat bugs.\nIt can block bullets too!",
- "You can touch the snake's body.\nOnly the head is deadly.",
  "You get some points for surviving.\nBut you get more for making the\nsnake eat other enemies.",
- "If you have the snake eat every enemy,\nyou'll get a score bonus.",
- "Have you noticed?\nEnemies flash before shooting.",
+ "You can touch the snake's body.\nOnly the head is deadly.",
+ "You can change the music with the\nbutton in the bottom right!",
  "There's something pretty amazing at level 15...\nJust saying...",
- "Bugs will block bullets shot\nby other bugs.",
- "You can change the music with the\nbutton in the bottom right!"]
+ "Have you noticed?\nEnemies flash before shooting.",
+ "If you have the snake eat every enemy,\nyou'll get a score bonus.",
+ "Bugs will block bullets shot\nby other bugs."
+ ]
+var current_tip = 0
 
 var SCORE_TO_COMMENTARY = {
 	0 : "You let it catch you, didn't you..?",
@@ -43,11 +45,11 @@ var SCORE_TO_COMMENTARY = {
 	25000 : "Unbelievable score... are you cheating?"
 }
 
-const LEVEL_TIMES = [-1, 5, 15, 15, 15, 15, 20, 20, 20, 20, 20, 20, 20, 20, 25, 25]
+const LEVEL_TIMES = [-1, 5, 15, 15, 15, 15, 15, 20, 20, 20, 20, 20, 20, 20, 20, 20]
 #const LEVEL_TIMES = [-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
 var MAX_LEVEL = LEVEL_TIMES.size()
-var MAX_LEVEL_TIME = 30
+var MAX_LEVEL_TIME = 20
 
 var GRID_COLORS = [null, Color(57/255.0, 255/255.0, 120/255.0), Color(202/255.0, 205/255.0, 71/255.0), Color(222/255.0, 181/255.0, 190/255.0),
 Color(113/255.0, 225/255.0, 155/255.0), Color(234/255.0, 226/255.0, 155/255.0), Color(203/255.0, 105/255.0, 145/255.0),
@@ -72,12 +74,18 @@ const NEXT_LEVEL_TIPS = [
 	"No pressure...",
 	"Triple trouble!",
 	"Bullet-bouncing Moths??",
-	"Speed up!",
+	"Bullet speed up!",
 	"Uh oh..."
 ]
 const MAX_LEVEL_TIP = "How much longer...?"
 
 func _update_level_graphics():
+	if level >= MAX_LEVEL:
+		$UI/Time.text = str(MAX_LEVEL_TIME)
+	else:
+		$UI/Time.text = str(LEVEL_TIMES[level])
+	$UI/LevelLabel.text = LEVEL_FORMAT % level
+	
 	if level >= MAX_LEVEL:
 		grid_color = MAX_GRID_COLOR
 	else:
@@ -109,6 +117,15 @@ func _update_bug_pool():
 		enemy_pool.append([ANT, ANT_SPAWN]) # add ants after
 	if level >= 13:
 		enemy_pool.append([MOTH, MOTH_SPAWN])
+	
+	if level >= 14:
+		spawn_boost = 4
+	if level >= 13:
+		spawn_boost = 3
+	if level >= 9:
+		spawn_boost = 2
+	if level >= 5:
+		spawn_boost = 1
 
 func _update_level():
 	_update_level_graphics()
@@ -116,15 +133,12 @@ func _update_level():
 	
 	$NextLevelInfo.visible = true
 	if level >= MAX_LEVEL:
-		$UI/Time.text = str(MAX_LEVEL_TIME)
 		$NextLevelInfo.next_level(MAX_LEVEL_TIP)
 	else:
-		$UI/LevelLabel.text = LEVEL_FORMAT % level
-		$UI/Time.text = str(LEVEL_TIMES[level])
 		$NextLevelInfo.next_level(NEXT_LEVEL_TIPS[level])
 	
 	# 1 spawn per level
-	spawn_count = max(2, min(int(level/2.0), MAX_SPAWN_COUNT))
+	spawn_count = max(2, min(int(level/2.0) + spawn_boost, MAX_SPAWN_COUNT))
 	max_ants = max(1, min(int(level/6.0), MAX_ANTS_MAX))
 	
 	if level >= 8 and $Snakes.get_child_count() < 2:
@@ -132,14 +146,12 @@ func _update_level():
 	if level >= 12 and $Snakes.get_child_count() < 3:
 		_spawn_new_snake(2)
 	
-	if level >= 14:
-		_set_speed(2)
-	elif level >= 7:
+	if level >= 7:
 		_set_speed(1)
 	else:
 		_set_speed(0)
 
-	if level >= 15:
+	if level >= 14:
 		bullet_speed_multiplier = FAST_BULLET_SPEED
 	
 	# add enemies and stuff
@@ -159,15 +171,12 @@ func _update_level():
 		forced_spawns = 1
 	elif level == 10:
 		_spawn_enemy(HORNET, HORNET_SPAWN)
-		forced_spawns = 1
 	elif level == 13: 
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		_spawn_enemy(MOTH, MOTH_SPAWN)
 		forced_spawns = 2
-		spawn_count += 1 #5
 	elif level == 15: #moon
 		_spawn_enemy(MOON, MOON_SPAWN) #this will stop working if max level > 15
-		spawn_count += 1
 	elif level >= 16: #challenge
 		# speed up moon
 		if level == 20:
@@ -184,7 +193,8 @@ var level = 1
 const MAX_ANTS_MAX = 3 #too annoying otherwise
 var max_ants = 1
 const DEFAULT_SPAWN_COUNT = 2
-const MAX_SPAWN_COUNT = 8
+const MAX_SPAWN_COUNT = 10
+var spawn_boost = 0
 var spawn_count = DEFAULT_SPAWN_COUNT
 var enemy_pool = []
 const BEETLE = preload("res://bugs/beetle.tscn")
@@ -209,7 +219,7 @@ enum SpawnMode {
 	GRID, GRID_NO_BORDER, FRAME, BOTTOM, MOON
 }
 
-const SAFE_SPAWN_DIST = 8 #dont' spawn next to player if possible
+const SAFE_SPAWN_DIST = 9 #don't spawn next to player if possible
 func _try_find_legal_position(spawnmode, max_attempts = 25):
 	var tries = 0
 	while tries < max_attempts:
@@ -332,18 +342,17 @@ func _ready():
 	_update_level()
 	$NextLevelInfo.visible = false
 	$Grid.self_modulate = grid_color
+	$SnakeTimer.wait_time = BASE_SPEED
 
-@onready var BASE_SPEED = 0.42
-const MORE_SPEED = 0.36
-const MOST_SPEED = 0.30
 var speed_level = 0
+@onready var BASE_SPEED = 0.35
+const MOST_SPEED = 0.29
 
 func _spawn_new_snake(color = 0):
 	var rand_pos = _try_find_legal_position(SNAKE_SPAWN, 200) #try really hard to spawn this snek
 	if rand_pos != null:
 		var snek = SNAKE.instantiate()
 		snek.position = Global.to_global_position(rand_pos)
-		snek.no_free_segments()
 		snek.enable()
 		snek.set_base_color(color)
 		snek.ate_bug.connect(on_bug_killed)
@@ -367,7 +376,8 @@ func _commentary_for_score():
 func _update_dead_info():
 	$DeadInfo/Time.text = TIME_FORMAT % int(time_elapsed)
 	$DeadInfo/Score.text = SCORE_FORMAT % score
-	$DeadInfo/Tip.text = TIP_FORMAT % Global.choose_one(tips)
+	$DeadInfo/Tip.text = TIP_FORMAT % tips[current_tip]
+	current_tip = Global.increment_wrap(current_tip, len(tips))
 	if max_level != 15 and level >= 15:
 		$DeadInfo/Tip.text = TIP_FORMAT % MAX_LEVEL_END_TIP
 		tips.append(MAX_LEVEL_END_TIP)
@@ -394,19 +404,18 @@ func _on_pellet_dead():
 		$NextLevelInfo.visible = false
 
 func _set_speed(speed):
+	assert(speed >= 0 and speed <= 1)
 	speed_level = speed
 	if speed_level == 0:
-		$Timer.wait_time = BASE_SPEED
+		$SnakeTimer.wait_time = BASE_SPEED
 	elif speed_level == 1:
-		$Timer.wait_time = MORE_SPEED
-	else:
-		$Timer.wait_time = MOST_SPEED
+		$SnakeTimer.wait_time = MOST_SPEED
 
 func _on_reset():
 	$TransitionSound.play()
-	speed_level = 0
-	$Timer.wait_time = BASE_SPEED
+	_set_speed(0)
 	max_ants = 1
+	spawn_boost = 0
 	enemy_pool.clear()
 	$Snakes/Snake.reset()
 	$Pellet.reset()
@@ -421,11 +430,12 @@ func _on_reset():
 	$StartupInfo.on_reset()
 	$DeadInfo.on_reset()
 	$UI/Score.text = str(0)
-	if max_level == 0: #first death; enable level skip
-		max_level = level
-		_enable_skip()
 	if level > max_level:
-		max_level = level	
+		max_level = level
+		if max_level >= MAX_LEVEL:
+			max_level = MAX_LEVEL
+		start_level = max_level
+		_enable_skip()
 	level = start_level
 	_update_level_graphics()
 	$StartupInfo/StartLevel.text = START_LEVEL_FORMAT % start_level
@@ -473,11 +483,14 @@ func _input(_event):
 		if max_level != 15:
 			max_level = 15
 			start_level = 15
+			level = 15
 			var text = POINTS_TEXT.instantiate()
 			text.text = "Unlocked levels!"
 			text.position = $Pellet.position - Vector2(50, 15)
 			add_child(text)
 			_enable_skip()
+			$StartupInfo/StartLevel.text = START_LEVEL_FORMAT % level
+			_update_level_graphics()
 
 func _on_second_passed():
 	score += level
@@ -486,11 +499,10 @@ func _on_second_passed():
 		level += 1
 		_update_level()
 
-func is_grid_pos_full(grid_pos):
-	# are there any bug at pos?
-	for bug in $Bugs.get_children():
-		if Global.to_grid_position(bug.position) == grid_pos:
-			return true
+func is_grid_pos_full(grid_pos) -> bool:
+	# is bug at pos?
+	if is_grid_pos_bug(grid_pos):
+		return true
 	# is snake at pos?
 	if is_grid_pos_snake(grid_pos):
 		return true
@@ -499,7 +511,14 @@ func is_grid_pos_full(grid_pos):
 		return true
 	return false
 
-func is_grid_pos_snake(grid_pos):
+func is_grid_pos_bug(grid_pos) -> bool:
+	# are there any bug at pos?
+	for bug in $Bugs.get_children():
+		if Global.to_grid_position(bug.position) == grid_pos:
+			return true
+	return false
+
+func is_grid_pos_snake(grid_pos) -> bool:
 	for snake in $Snakes.get_children():
 		if snake.is_snake_at(grid_pos):
 			return true
@@ -535,7 +554,7 @@ func on_bug_killed(bug_pos):
 		add_child(bonus_text)
 
 
-func _on_timer_timeout():
+func _on_snake_timer_timeout():
 	for s in $Snakes.get_children():
 		s.move()
 	if state == State.PLAYING:
@@ -624,6 +643,7 @@ func _on_level_down_button_pressed():
 	if level > 1:
 		level -= 1
 		start_level = level
+	$UI/LevelLabel.text = LEVEL_FORMAT % level
 	$StartupInfo/StartLevel.text = START_LEVEL_FORMAT % level
 	_update_level_graphics()
 
@@ -631,5 +651,6 @@ func _on_level_up_button_pressed():
 	if level < max_level:
 		level += 1
 		start_level = level
+	$UI/LevelLabel.text = LEVEL_FORMAT % level
 	$StartupInfo/StartLevel.text = START_LEVEL_FORMAT % level
 	_update_level_graphics()

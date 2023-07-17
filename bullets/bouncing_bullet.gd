@@ -51,6 +51,7 @@ func _begin_destroy():
 
 func disable():
 	disabled = true
+	$AnimatedSprite2D.stop()
 
 func shoot():
 	emit_signal("shot")

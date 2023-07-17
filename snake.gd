@@ -26,8 +26,8 @@ var _enabled = false
 
 @onready var STARTING_POS = position
 @onready var STARTING_ROT = rotation_degrees
-const FREE_SEGMENTS_MAX = 10
-var free_segments = FREE_SEGMENTS_MAX
+const QUEUED_SEGMENTS_DEFAULT = 10
+var queued_segments = QUEUED_SEGMENTS_DEFAULT
 
 
 class Pair:
@@ -43,38 +43,69 @@ class Pair:
 		return self
 
 func _dir_to_pellet(grid_pos: Vector2, pellet_pos: Vector2) -> Direction:
-	var checked = []
+	# pre-generate collision map
+	var cmap := []
+	for x in range(0, Global.GRID_SIZE.x):
+		cmap.append([])
+		for y in range(0, Global.GRID_SIZE.y):
+			cmap[x].append(get_parent().get_parent().is_grid_pos_snake(Vector2(x, y)))
+	
+	var solutions = []
+	
+	# remember spots we checked for each possible direction
+	var checked = {}
+	checked[Direction.UP] = []
+	checked[Direction.DOWN] = []
+	checked[Direction.LEFT] = []
+	checked[Direction.RIGHT] = []
+	
 	var to_check = []
+	# initial spots to check - up down left right from starting position
 	var next_checks = [
 		Pair.new().setup(Vector2(grid_pos.x + 1, grid_pos.y), Direction.RIGHT),
 		Pair.new().setup(Vector2(grid_pos.x - 1, grid_pos.y), Direction.LEFT),
 		Pair.new().setup(Vector2(grid_pos.x, grid_pos.y + 1), Direction.DOWN),
 		Pair.new().setup(Vector2(grid_pos.x, grid_pos.y - 1), Direction.UP)
 		]
-	next_checks.shuffle()
-	
-	while next_checks.size() != 0:
-		for pair in next_checks:
+
+	# while we have stuff to check and no solutions
+	while next_checks.size() != 0 and solutions.size() == 0:
+		for pair in next_checks: # add each spot to check to a list
 			to_check.append(pair)
-		next_checks.clear()
-		
+		next_checks.clear() # clear the list of spots to check in next iteration
+
+		# while we have spots to check on current depth
 		while to_check.size() != 0:
 			var current_check: Pair = to_check.pop_front()
-			if not Global.is_grid_pos_in_grid(current_check.pos) or get_parent().get_parent().is_grid_pos_snake(current_check.pos) or current_check.pos in checked: # can't go this way
+			if not Global.is_grid_pos_in_grid(current_check.pos) or cmap[current_check.pos.x][current_check.pos.y] or current_check.pos in checked[current_check.original_dir]: # can't go this way
 				continue
 			
-			checked.append(current_check.pos)
+			# mark this spot as checked (for this direction)
+			checked[current_check.original_dir].append(current_check.pos)
 			
-			if current_check.pos == pellet_pos:
-				return current_check.original_dir # found a path
+			if current_check.pos == pellet_pos: # if we reached the pellet, this is a solution
+				solutions += [current_check.original_dir]
 			else: # append left, up, right, down
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(1, 0), current_check.original_dir))
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(-1, 0), current_check.original_dir))
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, 1), current_check.original_dir))
 				next_checks.append(Pair.new().setup(current_check.pos + Vector2(0, -1), current_check.original_dir))
 	
-	# stuck, wait
-	return Direction.NONE 
+	
+	if solutions.size() == 1: # found shortest path, go that way
+		return solutions[0]
+	elif solutions.size() != 0: # multiple valid paths of same length; if one direction has a bug immediately, prioritize it
+		if Direction.UP in solutions and get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x, grid_pos.y - 1)):
+			return Direction.UP
+		elif Direction.DOWN in solutions and get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x, grid_pos.y + 1)):
+			return Direction.DOWN
+		elif Direction.LEFT in solutions and get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x - 1, grid_pos.y)):
+			return Direction.LEFT
+		elif Direction.RIGHT in solutions and get_parent().get_parent().is_grid_pos_bug(Vector2(grid_pos.x + 1, grid_pos.y)):
+			return Direction.RIGHT
+		return Global.choose_one(solutions) # no bugs adjacent, go a random solution direction
+	
+	return Direction.NONE # no path at all, so don't move
 
 func move():
 	if _enabled:
@@ -84,9 +115,9 @@ func move():
 			_previous_head_positions.remove_at(99)
 		
 		# initial grows
-		if(free_segments != 0):
+		if(queued_segments != 0):
 			_grow_snake()
-			free_segments -= 1
+			queued_segments -= 1
 		
 		# get my grid position
 		var grid_pos = Global.to_grid_position(position)
@@ -97,10 +128,6 @@ func move():
 		_direction = _dir_to_pellet(grid_pos, pellet_pos)
 		if _direction == Direction.NONE:
 			return
-		
-		# $HACK$ - force a right on first move, fixes a graphical glitch
-		if _previous_head_positions.size() == 1:
-			_direction = Direction.RIGHT
 		
 		# move according to direction
 		grid_pos += _MOVEMENT_BY_DIR[_direction]
@@ -178,7 +205,7 @@ func reset():
 	# clear prev pos
 	_previous_head_positions.clear()
 	# free segs
-	free_segments = FREE_SEGMENTS_MAX
+	queued_segments = QUEUED_SEGMENTS_DEFAULT
 
 
 func disable():
@@ -196,7 +223,8 @@ func _on_bug_body_entered(body):
 	else:
 		$YumTimer.start()
 	
-	call_deferred("_grow_snake")
+	#call_deferred("_grow_snake")
+	queued_segments += 1
 	body.queue_free()
 	emit_signal("ate_bug", body.position)
 
@@ -232,9 +260,6 @@ func recolor_parts(c):
 	$HeadSprite.modulate = c
 	for seg in $Segments.get_children():
 		seg.modulate = c
-
-func no_free_segments():
-	free_segments = 1
 
 func _ready():
 	$HeadSprite.modulate = color

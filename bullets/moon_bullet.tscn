@@ -1,7 +1,29 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3 uid="uid://rn8uudkryy6o"]
 
 [ext_resource type="Script" path="res://bullets/moon_bullet.gd" id="1_4p1a6"]
 [ext_resource type="Texture2D" uid="uid://d3o7b8gu4houk" path="res://assets/moon_bullet.png" id="1_miniy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ofi2c"]
+atlas = ExtResource("1_miniy")
+region = Rect2(0, 0, 21, 11)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w2t2d"]
+atlas = ExtResource("1_miniy")
+region = Rect2(21, 0, 21, 11)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_67qk7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ofi2c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w2t2d")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mgmwm"]
 size = Vector2(14, 6)
@@ -16,8 +38,10 @@ collision_layer = 16
 collision_mask = 0
 script = ExtResource("1_4p1a6")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_miniy")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_67qk7")
+autoplay = "default"
+frame_progress = 0.301793
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-1, 0)

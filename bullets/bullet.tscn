@@ -1,8 +1,30 @@
-[gd_scene load_steps=5 format=3 uid="uid://bbx2am1b5eg21"]
+[gd_scene load_steps=8 format=3 uid="uid://bbx2am1b5eg21"]
 
 [ext_resource type="Script" path="res://bullets/bullet.gd" id="1_vd8pm"]
 [ext_resource type="Texture2D" uid="uid://q10b3erv14me" path="res://assets/bullet.png" id="2_tk56n"]
 [ext_resource type="AudioStream" uid="uid://blw2bawcgyjw4" path="res://assets/sound/bullet.mp3" id="3_jn4vm"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6mai0"]
+atlas = ExtResource("2_tk56n")
+region = Rect2(0, 0, 7, 7)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ujbur"]
+atlas = ExtResource("2_tk56n")
+region = Rect2(7, 0, 7, 7)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_x5mh2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6mai0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ujbur")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_og5ta"]
 radius = 1.0
@@ -12,8 +34,10 @@ collision_layer = 16
 collision_mask = 35
 script = ExtResource("1_vd8pm")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_tk56n")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_x5mh2")
+autoplay = "default"
+frame_progress = 0.384111
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_og5ta")
