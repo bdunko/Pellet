@@ -101,12 +101,13 @@ text = "[center]Level 1[/center]"
 
 [node name="Virtual Joystick" parent="UI" instance=ExtResource("37_xkuap")]
 z_index = 4096
-offset_left = 221.0
-offset_top = -96.0
-offset_right = 344.0
-offset_bottom = 21.0
-deadzone_size = 0.0
-clampzone_size = 24.0
+offset_left = 251.0
+offset_top = -69.0
+offset_right = 311.0
+offset_bottom = -9.0
+deadzone_size = 1.0
+clampzone_size = 5.0
+joystick_mode = 1
 action_left = "left"
 action_right = "right"
 action_up = "up"
